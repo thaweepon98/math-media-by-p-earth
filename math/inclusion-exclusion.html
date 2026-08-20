@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : จำนวนสมาชิกของเซตจำกัด (Inclusion-Exclusion)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #6C63FF;
+    --secondary: #FF6584;
+    --accent: #43D9AD;
+    --warning: #FFB347;
+    --bg: #F0F4FF;
+    --card: #FFFFFF;
+    --text: #2D3748;
+    --muted: #718096;
+    --border: #E2E8F0;
+    --shadow: 0 4px 24px rgba(108,99,255,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+    color: white;
+    padding: 16px 40px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; }
+  header p  { font-size: .9rem; opacity: .85; margin-top: 2px; }
+
+  /* ── Tab Nav ── */
+  nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 24px 0;
+    background: white;
+    border-bottom: 3px solid var(--border);
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 10px 10px 0 0;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .25s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+  .tab-btn:hover { color: var(--primary); background: #f0eeff; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #f0eeff; }
+
+  /* ── Main ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 16px; }
+
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 22px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon { font-size: 1.5rem; }
+
+  /* ── Step box ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .step-num {
+    min-width: 36px; height: 36px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .step-body { flex: 1; padding-top: 6px; font-size: 1.05rem; line-height: 1.7; }
+
+  /* ── Highlight boxes ── */
+  .box-info  { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+  .box-warn  { background: #FFF7ED; border-left: 4px solid var(--warning); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+  .box-ok    { background: #ECFDF5; border-left: 4px solid var(--accent);  border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+  .box-pink  { background: #FFF0F3; border-left: 4px solid var(--secondary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+
+  /* ── Formula ── */
+  .formula {
+    background: linear-gradient(135deg,#6C63FF,#9B59B6);
+    color: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 16px 0;
+    letter-spacing: .5px;
+  }
+
+  /* ── Mode toggle ── */
+  .mode-toggle { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mode-btn {
+    padding: 12px 24px;
+    border: 2px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    background: white;
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .mode-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+
+  /* ── Numeric inputs ── */
+  .num-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+  .num-field { text-align: center; }
+  .num-field label { display: block; font-weight: 700; font-size: .74rem; color: var(--muted); margin-bottom: 3px; }
+  .num-box {
+    width: 52px; padding: 5px; border: 2px solid var(--primary);
+    border-radius: 7px; font-size: .9rem; text-align: center;
+    font-family: 'Sarabun', sans-serif; font-weight: 700; color: var(--primary);
+  }
+
+  /* ── Formula term toggle buttons ── */
+  .term-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .term-btn {
+    padding: 7px 14px;
+    border: 2px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    transition: all .2s;
+    background: white;
+    color: var(--text);
+  }
+  .term-btn:hover { border-color: var(--primary); }
+  .term-btn.plus.active  { border-color: var(--accent); background: #ECFDF5; color: #047857; }
+  .term-btn.minus.active { border-color: var(--secondary); background: #FFF0F3; color: #BE185D; }
+
+  /* ── Live formula readout ── */
+  .formula-live { font-size: .95rem; line-height: 1.9; margin: 8px 0; }
+  .term-disp { font-weight: 800; padding: 2px 6px; border-radius: 6px; transition: all .2s; }
+  .term-disp.inactive { opacity: .3; }
+  .term-disp.plus  { color: #047857; background: #ECFDF5; }
+  .term-disp.minus { color: #BE185D; background: #FFF0F3; }
+
+  .total-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; font-size: .95rem; }
+  .total-row strong { font-size: 1.1rem; }
+
+  /* ── SVG venn ── */
+  .venn-wrap { text-align: center; }
+  .venn-wrap svg { width: 100%; max-width: 600px; height: auto; }
+
+  /* ── Legend ── */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; justify-content: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; }
+  .legend-swatch { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--border); }
+
+  /* ── Stacked layout for the interactive venn tab: controls on top, diagram below ── */
+  .venn-layout { display: flex; flex-direction: column; gap: 16px; }
+  .subhead { font-weight: 700; font-size: .95rem; color: var(--primary); margin: 4px 0 8px; display: flex; align-items: center; gap: 6px; }
+  .mini-divider { border-top: 1px solid var(--border); margin: 14px 0; }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .card { padding: 16px 14px; }
+    .tab-btn { font-size: .85rem; padding: 8px 12px; }
+    .num-box { width: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔀 จำนวนสมาชิกของเซตจำกัด</h1>
+  <p>Inclusion-Exclusion Principle • สื่อการสอนแบบโต้ตอบ</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" onclick="showTab('concept')">📖 หลักการ</button>
+  <button class="tab-btn" onclick="showTab('venn')">🎯 แผนภาพเวนน์เชิงโต้ตอบ</button>
+</nav>
+
+<main>
+
+<!-- ══════════════ TAB 1: หลักการ ══════════════ -->
+<section id="tab-concept" class="tab-panel active">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">❓</span>ปัญหา: การนับซ้ำ</div>
+    <p style="font-size:1.05rem; line-height:1.8;">
+      ถ้าเราอยากรู้ว่า A กับ B รวมกันมีสมาชิกกี่ตัว แล้วลองเอา <strong>n(A) + n(B)</strong> ตรงๆ
+      สมาชิกที่อยู่ใน <strong>ทั้ง A และ B</strong> (คือ A∩B) จะถูกนับไป <strong>2 ครั้ง</strong> —
+      ครั้งหนึ่งตอนนับ A อีกครั้งตอนนับ B จึงต้อง <strong>ลบส่วนที่นับซ้ำออก 1 ครั้ง</strong>
+    </p>
+    <div class="formula">n(A∪B) = n(A) + n(B) − n(A∩B)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧩</span>เมื่อมี 3 เซต ยิ่งซับซ้อนขึ้น</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">บวก <strong>n(A) + n(B) + n(C)</strong> ก่อน — แต่สมาชิกที่อยู่ในคู่ที่ซ้อนกัน (A∩B, A∩C, B∩C) จะถูกนับ 2 ครั้ง</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">ลบ <strong>n(A∩B) + n(A∩C) + n(B∩C)</strong> ออก เพื่อแก้การนับซ้ำของคู่ — แต่สมาชิกที่อยู่ใน <strong>ทั้งสามเซตพร้อมกัน</strong> (A∩B∩C) ถูกบวกไป 3 ครั้ง (ตอนนับ A, B, C) แล้วถูกลบไป 3 ครั้ง (ตอนลบ A∩B, A∩C, B∩C) จึงกลายเป็น <strong>0 ครั้ง</strong> — หายไปเลย!</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">จึงต้อง <strong>บวก n(A∩B∩C) กลับเข้ามา 1 ครั้ง</strong> เพื่อให้สมาชิกกลุ่มนี้ถูกนับพอดี 1 ครั้ง</div>
+      </div>
+    </div>
+    <div class="formula">n(A∪B∪C) = n(A)+n(B)+n(C) − n(A∩B) − n(A∩C) − n(B∩C) + n(A∩B∩C)</div>
+    <div class="box-info">
+      <strong>💡 ลองด้วยตัวเอง:</strong> ไปที่แท็บ "แผนภาพเวนน์เชิงโต้ตอบ" แล้วลองกดปุ่มแต่ละพจน์ของสูตรตามลำดับใดก็ได้
+      สังเกตตัวเลขกำกับกลางแต่ละชิ้นส่วนของวงกลม — มันจะขึ้นๆ ลงๆ ตามพจน์ที่กด และจะ<strong>นิ่งที่ 1 ทุกชิ้นส่วน</strong> ก็ต่อเมื่อกดครบสูตรที่ถูกต้องเท่านั้น
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════ TAB 2: แผนภาพเวนน์เชิงโต้ตอบ ══════════════ -->
+<section id="tab-venn" class="tab-panel">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔀</span>เลือกโหมด</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeBtn2" onclick="showVennMode(2)">2 เซต (A, B)</button>
+      <button class="mode-btn" id="modeBtn3" onclick="showVennMode(3)">3 เซต (A, B, C)</button>
+    </div>
+  </div>
+
+  <!-- ═══ 2-SET PANEL ═══ -->
+  <div id="venn2">
+  <div class="venn-layout">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔢</span>จำนวนสมาชิกที่กำหนดให้</div>
+      <div class="num-row">
+        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="in2-A" value="30" oninput="updateNum(2,'A',this.value)"></div>
+        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="in2-B" value="25" oninput="updateNum(2,'B',this.value)"></div>
+        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="in2-AB" value="10" oninput="updateNum(2,'AB',this.value)"></div>
+      </div>
+
+      <div class="mini-divider"></div>
+
+      <div class="subhead"><span class="icon">🎛️</span>กดปุ่มตามพจน์ของสูตร (กดลำดับใดก็ได้)</div>
+      <div class="term-row">
+        <button class="term-btn plus"  id="term2-A"  onclick="toggleTerm(2,'A')">+ |A|</button>
+        <button class="term-btn plus"  id="term2-B"  onclick="toggleTerm(2,'B')">+ |B|</button>
+        <button class="term-btn minus" id="term2-AB" onclick="toggleTerm(2,'AB')">− |A∩B|</button>
+      </div>
+
+      <div class="formula-live">
+        n(A∪B) =
+        <span class="term-disp plus inactive"  id="disp2-A">|A|</span> +
+        <span class="term-disp plus inactive"  id="disp2-B">|B|</span> −
+        <span class="term-disp minus inactive" id="disp2-AB">|A∩B|</span>
+      </div>
+
+      <div class="total-row">
+        <div>ผลรวมจากพจน์ที่เลือก (running total) = <strong id="running2">0</strong></div>
+        <div>n(A∪B) ตามสูตรมาตรฐาน = <strong id="correct2">0</strong></div>
+      </div>
+      <div id="match2"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="venn-wrap">
+        <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="clipA2"><circle cx="150" cy="160" r="110"/></clipPath>
+            <clipPath id="clipB2"><circle cx="250" cy="160" r="110"/></clipPath>
+            <mask id="mask2NotB" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="320">
+              <rect x="0" y="0" width="400" height="320" fill="white"/>
+              <circle cx="250" cy="160" r="110" fill="black"/>
+            </mask>
+            <mask id="mask2NotA" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="320">
+              <rect x="0" y="0" width="400" height="320" fill="white"/>
+              <circle cx="150" cy="160" r="110" fill="black"/>
+            </mask>
+          </defs>
+
+          <g clip-path="url(#clipA2)"><rect id="rect-2-Aonly" x="0" y="0" width="400" height="320" mask="url(#mask2NotB)" fill="#E2E8F0" fill-opacity=".25"/></g>
+          <g clip-path="url(#clipB2)"><rect id="rect-2-Bonly" x="0" y="0" width="400" height="320" mask="url(#mask2NotA)" fill="#E2E8F0" fill-opacity=".25"/></g>
+          <g clip-path="url(#clipA2)"><g clip-path="url(#clipB2)"><rect id="rect-2-AB" x="0" y="0" width="400" height="320" fill="#E2E8F0" fill-opacity=".25"/></g></g>
+
+          <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="250" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+
+          <text x="90" y="55" text-anchor="middle" font-size="26" font-weight="800" fill="var(--primary)">A</text>
+          <text x="310" y="55" text-anchor="middle" font-size="26" font-weight="800" fill="var(--primary)">B</text>
+
+          <g id="badge-2-Aonly" transform="translate(110,160)">
+            <circle r="16" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-2-Bonly" transform="translate(290,160)">
+            <circle r="16" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-2-AB" transform="translate(200,160)">
+            <circle r="16" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#718096">0</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="legend-row" id="legend"></div>
+    </div>
+
+  </div>
+  </div>
+
+  <!-- ═══ 3-SET PANEL ═══ -->
+  <div id="venn3" style="display:none;">
+  <div class="venn-layout">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔢</span>จำนวนสมาชิกที่กำหนดให้</div>
+      <div class="num-row">
+        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="in3-A" value="40" oninput="updateNum(3,'A',this.value)"></div>
+        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="in3-B" value="35" oninput="updateNum(3,'B',this.value)"></div>
+        <div class="num-field"><label>n(C)</label><input type="number" class="num-box" id="in3-C" value="30" oninput="updateNum(3,'C',this.value)"></div>
+        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="in3-AB" value="15" oninput="updateNum(3,'AB',this.value)"></div>
+        <div class="num-field"><label>n(A∩C)</label><input type="number" class="num-box" id="in3-AC" value="12" oninput="updateNum(3,'AC',this.value)"></div>
+        <div class="num-field"><label>n(B∩C)</label><input type="number" class="num-box" id="in3-BC" value="10" oninput="updateNum(3,'BC',this.value)"></div>
+        <div class="num-field"><label>n(A∩B∩C)</label><input type="number" class="num-box" id="in3-ABC" value="5" oninput="updateNum(3,'ABC',this.value)"></div>
+      </div>
+
+      <div class="mini-divider"></div>
+
+      <div class="subhead"><span class="icon">🎛️</span>กดปุ่มตามพจน์ของสูตร (กดลำดับใดก็ได้)</div>
+      <div class="term-row">
+        <button class="term-btn plus"  id="term3-A"   onclick="toggleTerm(3,'A')">+ |A|</button>
+        <button class="term-btn plus"  id="term3-B"   onclick="toggleTerm(3,'B')">+ |B|</button>
+        <button class="term-btn plus"  id="term3-C"   onclick="toggleTerm(3,'C')">+ |C|</button>
+        <button class="term-btn minus" id="term3-AB"  onclick="toggleTerm(3,'AB')">− |A∩B|</button>
+        <button class="term-btn minus" id="term3-AC"  onclick="toggleTerm(3,'AC')">− |A∩C|</button>
+        <button class="term-btn minus" id="term3-BC"  onclick="toggleTerm(3,'BC')">− |B∩C|</button>
+        <button class="term-btn plus"  id="term3-ABC" onclick="toggleTerm(3,'ABC')">+ |A∩B∩C|</button>
+      </div>
+
+      <div class="formula-live">
+        n(A∪B∪C) =
+        <span class="term-disp plus inactive"  id="disp3-A">|A|</span> +
+        <span class="term-disp plus inactive"  id="disp3-B">|B|</span> +
+        <span class="term-disp plus inactive"  id="disp3-C">|C|</span> −
+        <span class="term-disp minus inactive" id="disp3-AB">|A∩B|</span> −
+        <span class="term-disp minus inactive" id="disp3-AC">|A∩C|</span> −
+        <span class="term-disp minus inactive" id="disp3-BC">|B∩C|</span> +
+        <span class="term-disp plus inactive"  id="disp3-ABC">|A∩B∩C|</span>
+      </div>
+
+      <div class="total-row">
+        <div>ผลรวมจากพจน์ที่เลือก (running total) = <strong id="running3">0</strong></div>
+        <div>n(A∪B∪C) ตามสูตรมาตรฐาน = <strong id="correct3">0</strong></div>
+      </div>
+      <div id="match3"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="venn-wrap">
+        <svg viewBox="0 0 400 345" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="clipA3"><circle cx="200" cy="132" r="110"/></clipPath>
+            <clipPath id="clipB3"><circle cx="150" cy="219" r="110"/></clipPath>
+            <clipPath id="clipC3"><circle cx="250" cy="219" r="110"/></clipPath>
+
+            <mask id="mask3NotBC" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="150" cy="219" r="110" fill="black"/>
+              <circle cx="250" cy="219" r="110" fill="black"/>
+            </mask>
+            <mask id="mask3NotAC" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="200" cy="132" r="110" fill="black"/>
+              <circle cx="250" cy="219" r="110" fill="black"/>
+            </mask>
+            <mask id="mask3NotAB" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="200" cy="132" r="110" fill="black"/>
+              <circle cx="150" cy="219" r="110" fill="black"/>
+            </mask>
+            <mask id="mask3NotC" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="250" cy="219" r="110" fill="black"/>
+            </mask>
+            <mask id="mask3NotB" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="150" cy="219" r="110" fill="black"/>
+            </mask>
+            <mask id="mask3NotA" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="380">
+              <rect x="0" y="0" width="400" height="380" fill="white"/>
+              <circle cx="200" cy="132" r="110" fill="black"/>
+            </mask>
+          </defs>
+
+          <g clip-path="url(#clipA3)"><rect id="rect-3-Aonly" x="0" y="0" width="400" height="380" mask="url(#mask3NotBC)" fill="#E2E8F0" fill-opacity=".25"/></g>
+          <g clip-path="url(#clipB3)"><rect id="rect-3-Bonly" x="0" y="0" width="400" height="380" mask="url(#mask3NotAC)" fill="#E2E8F0" fill-opacity=".25"/></g>
+          <g clip-path="url(#clipC3)"><rect id="rect-3-Conly" x="0" y="0" width="400" height="380" mask="url(#mask3NotAB)" fill="#E2E8F0" fill-opacity=".25"/></g>
+          <g clip-path="url(#clipA3)"><g clip-path="url(#clipB3)"><rect id="rect-3-ABonly" x="0" y="0" width="400" height="380" mask="url(#mask3NotC)" fill="#E2E8F0" fill-opacity=".25"/></g></g>
+          <g clip-path="url(#clipA3)"><g clip-path="url(#clipC3)"><rect id="rect-3-AConly" x="0" y="0" width="400" height="380" mask="url(#mask3NotB)" fill="#E2E8F0" fill-opacity=".25"/></g></g>
+          <g clip-path="url(#clipB3)"><g clip-path="url(#clipC3)"><rect id="rect-3-BConly" x="0" y="0" width="400" height="380" mask="url(#mask3NotA)" fill="#E2E8F0" fill-opacity=".25"/></g></g>
+          <g clip-path="url(#clipA3)"><g clip-path="url(#clipB3)"><g clip-path="url(#clipC3)"><rect id="rect-3-ABC" x="0" y="0" width="400" height="380" fill="#E2E8F0" fill-opacity=".25"/></g></g></g>
+
+          <circle cx="200" cy="132" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="150" cy="219" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="250" cy="219" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+
+          <text x="200" y="35" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">A</text>
+          <text x="70" y="315" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">B</text>
+          <text x="330" y="315" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">C</text>
+
+          <g id="badge-3-Aonly" transform="translate(200,76)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-Bonly" transform="translate(101,247)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-Conly" transform="translate(299,247)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-ABonly" transform="translate(133,151)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-AConly" transform="translate(267,151)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-BConly" transform="translate(200,267)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+          <g id="badge-3-ABC" transform="translate(200,190)">
+            <circle r="13" fill="#E2E8F0" stroke="white" stroke-width="1.5"/>
+            <text text-anchor="middle" dy="4" font-size="11" font-weight="800" fill="#718096">0</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="legend-row" id="legend3"></div>
+    </div>
+
+  </div>
+  </div>
+
+</section>
+
+</main>
+
+<script>
+// ══════════════ Tab switching ══════════════
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function showVennMode(modeNum) {
+  document.getElementById('venn2').style.display = modeNum === 2 ? 'block' : 'none';
+  document.getElementById('venn3').style.display = modeNum === 3 ? 'block' : 'none';
+  document.getElementById('modeBtn2').classList.toggle('active', modeNum === 2);
+  document.getElementById('modeBtn3').classList.toggle('active', modeNum === 3);
+}
+
+// ══════════════ Inclusion-Exclusion state ══════════════
+const coverage2 = {
+  A:  { sign: 1,  regions: ['Aonly', 'AB'] },
+  B:  { sign: 1,  regions: ['Bonly', 'AB'] },
+  AB: { sign: -1, regions: ['AB'] }
+};
+const coverage3 = {
+  A:   { sign: 1,  regions: ['Aonly', 'ABonly', 'AConly', 'ABC'] },
+  B:   { sign: 1,  regions: ['Bonly', 'ABonly', 'BConly', 'ABC'] },
+  C:   { sign: 1,  regions: ['Conly', 'AConly', 'BConly', 'ABC'] },
+  AB:  { sign: -1, regions: ['ABonly', 'ABC'] },
+  AC:  { sign: -1, regions: ['AConly', 'ABC'] },
+  BC:  { sign: -1, regions: ['BConly', 'ABC'] },
+  ABC: { sign: 1,  regions: ['ABC'] }
+};
+const regions2 = ['Aonly', 'Bonly', 'AB'];
+const regions3 = ['Aonly', 'Bonly', 'Conly', 'ABonly', 'AConly', 'BConly', 'ABC'];
+
+const state = {
+  active2: { A: false, B: false, AB: false },
+  active3: { A: false, B: false, C: false, AB: false, AC: false, BC: false, ABC: false },
+  nums2:  { A: 30, B: 25, AB: 10 },
+  nums3:  { A: 40, B: 35, C: 30, AB: 15, AC: 12, BC: 10, ABC: 5 }
+};
+
+const REGION_HUE = '#6C63FF';
+
+function opacityForBadge(v) {
+  const a = Math.abs(v);
+  if (a === 0) return 0.06;
+  if (a === 1) return 0.30;
+  if (a === 2) return 0.55;
+  return 0.85;
+}
+function iconForBadge(v) {
+  if (v < 0)   return '▼';
+  if (v === 0) return '';
+  if (v === 1) return '✓';
+  return '⚠';
+}
+
+function toggleTerm(modeNum, key) {
+  const active = modeNum === 2 ? state.active2 : state.active3;
+  active[key] = !active[key];
+  render(modeNum);
+}
+
+function updateNum(modeNum, key, val) {
+  const nums = modeNum === 2 ? state.nums2 : state.nums3;
+  nums[key] = Number(val) || 0;
+  render(modeNum);
+}
+
+function computeBadges(modeNum) {
+  const cov = modeNum === 2 ? coverage2 : coverage3;
+  const active = modeNum === 2 ? state.active2 : state.active3;
+  const regionList = modeNum === 2 ? regions2 : regions3;
+  const badges = {};
+  regionList.forEach(r => badges[r] = 0);
+  Object.keys(cov).forEach(termKey => {
+    if (!active[termKey]) return;
+    const { sign, regions } = cov[termKey];
+    regions.forEach(r => badges[r] += sign);
+  });
+  return badges;
+}
+
+function computeTotals(modeNum) {
+  const cov = modeNum === 2 ? coverage2 : coverage3;
+  const active = modeNum === 2 ? state.active2 : state.active3;
+  const nums = modeNum === 2 ? state.nums2 : state.nums3;
+  let running = 0;
+  Object.keys(cov).forEach(termKey => {
+    if (active[termKey]) running += cov[termKey].sign * (nums[termKey] || 0);
+  });
+  const correct = modeNum === 2
+    ? nums.A + nums.B - nums.AB
+    : nums.A + nums.B + nums.C - nums.AB - nums.AC - nums.BC + nums.ABC;
+  return { running, correct };
+}
+
+function allTermsActive(modeNum) {
+  const active = modeNum === 2 ? state.active2 : state.active3;
+  return Object.keys(active).every(k => active[k]);
+}
+
+function render(modeNum) {
+  const badges = computeBadges(modeNum);
+  Object.keys(badges).forEach(r => {
+    const val = badges[r];
+    const icon = iconForBadge(val);
+    const g = document.getElementById(`badge-${modeNum}-${r}`);
+    const rectRegion = document.getElementById(`rect-${modeNum}-${r}`);
+    if (g) {
+      const marker = g.querySelector('circle');
+      marker.setAttribute('fill', REGION_HUE);
+      marker.setAttribute('stroke', val < 0 ? '#FF6584' : '#ffffff');
+      const label = (val > 0 ? '+' : '') + val + (icon ? ' ' + icon : '');
+      g.querySelector('text').textContent = label;
+      g.querySelector('text').setAttribute('fill', '#ffffff');
+    }
+    if (rectRegion) {
+      rectRegion.setAttribute('fill', REGION_HUE);
+      rectRegion.setAttribute('fill-opacity', opacityForBadge(val));
+    }
+  });
+
+  const active = modeNum === 2 ? state.active2 : state.active3;
+  Object.keys(active).forEach(k => {
+    const btn = document.getElementById(`term${modeNum}-${k}`);
+    const disp = document.getElementById(`disp${modeNum}-${k}`);
+    if (btn) btn.classList.toggle('active', active[k]);
+    if (disp) disp.classList.toggle('inactive', !active[k]);
+  });
+
+  const { running, correct } = computeTotals(modeNum);
+  document.getElementById(`running${modeNum}`).textContent = running;
+  document.getElementById(`correct${modeNum}`).textContent = correct;
+
+  const matchEl = document.getElementById(`match${modeNum}`);
+  if (allTermsActive(modeNum)) {
+    matchEl.className = 'box-ok';
+    matchEl.textContent = '✅ กดครบทุกพจน์ของสูตรแล้ว — ทุกชิ้นส่วนถูกนับพอดี 1 ครั้ง!';
+  } else {
+    matchEl.className = '';
+    matchEl.textContent = '';
+  }
+}
+
+function buildLegend(elId) {
+  const items = [
+    { opacity: 0.06, label: '0 = ยังไม่ถูกนับ' },
+    { opacity: 0.30, label: '1 = นับถูกต้อง ✓' },
+    { opacity: 0.55, label: '2 = นับซ้ำ ⚠' },
+    { opacity: 0.85, label: '≥3 = นับซ้ำมาก ⚠' }
+  ];
+  const wrap = document.getElementById(elId);
+  wrap.innerHTML = items.map(it =>
+    `<div class="legend-item"><span class="legend-swatch" style="background:rgba(108,99,255,${it.opacity})"></span>${it.label}</div>`
+  ).join('') +
+  `<div class="legend-item"><span class="legend-swatch" style="background:#6C63FF; border-color:#FF6584; border-width:2px;"></span>ติดลบ = ลบเกิน ▼ (ขอบตัวเลขกำกับเป็นสีชมพู)</div>`;
+}
+
+window.addEventListener('load', () => {
+  buildLegend('legend');
+  buildLegend('legend3');
+  render(2);
+  render(3);
+});
+</script>
+
+</body>
+</html>

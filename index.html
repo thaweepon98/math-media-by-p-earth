@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รวมสื่อการสอน by P'Earth</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #1B3B6F;
+  --secondary: #FF6584;
+  --accent: #43D9AD;
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --text: #2D3748;
+  --muted: #718096;
+  --border: #E2E8F0;
+  --shadow: 0 4px 24px rgba(108,99,255,0.10);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%);
+  color: white;
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+
+header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+header p { font-size: 0.95rem; opacity: 0.9; }
+
+.crumb {
+  max-width: 1000px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+}
+.crumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.crumb a:hover { text-decoration: underline; }
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(108,99,255,0.18);
+}
+
+.card .icon { font-size: 2.2rem; }
+.card .title { font-size: 1.1rem; font-weight: 700; }
+.card .desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+.card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.card .tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: #E7ECF5;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.empty-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 16px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 รวมสื่อการสอน by P'Earth</h1>
+  <p>เลือกรายวิชาเพื่อดูสื่อการสอนทั้งหมด</p>
+</header>
+
+<main>
+  <div id="subjectGrid" class="grid"></div>
+  <p id="emptyNote" class="empty-note" style="display:none;">ยังไม่มีรายวิชา</p>
+</main>
+
+<script>
+// เพิ่มวิชาใหม่: เพิ่ม object ในนี้ (slug ต้องตรงกับชื่อโฟลเดอร์)
+const SUBJECTS = [
+  { slug: "math", title: "คณิตศาสตร์", desc: "สื่อการสอนวิชาคณิตศาสตร์", icon: "📐" }
+];
+
+const grid = document.getElementById("subjectGrid");
+if (SUBJECTS.length === 0) {
+  document.getElementById("emptyNote").style.display = "block";
+} else {
+  grid.innerHTML = SUBJECTS.map(s => `
+    <a class="card" href="./${s.slug}/index.html">
+      <div class="icon">${s.icon}</div>
+      <div class="title">${s.title}</div>
+      <div class="desc">${s.desc}</div>
+    </a>
+  `).join("");
+}
+</script>
+
+</body>
+</html>
