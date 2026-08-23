@@ -223,6 +223,45 @@
   .venn-layout { display: flex; flex-direction: column; gap: 16px; }
   .subhead { font-weight: 700; font-size: .95rem; color: var(--primary); margin: 4px 0 8px; display: flex; align-items: center; gap: 6px; }
   .mini-divider { border-top: 1px solid var(--border); margin: 14px 0; }
+
+  /* ── ขั้นนำ: กำหนดโจทย์เอง ── */
+  .text-box, .text-area {
+    width: 100%; padding: 8px 10px; border: 2px solid var(--border);
+    border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .95rem; color: var(--text);
+  }
+  .text-area { resize: vertical; }
+
+  /* ── ขั้นนำ: ลาก-วางชื่อนักเตะ ── */
+  .chip-pool {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; margin: 10px 0;
+    background: #F7F9FC; border: 2px dashed var(--border); border-radius: 12px; min-height: 56px;
+  }
+  .chip {
+    padding: 8px 16px; background: white; border: 2px solid var(--primary); border-radius: 30px;
+    font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: .9rem; color: var(--primary);
+    cursor: grab; user-select: none; touch-action: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  }
+  .chip.dragging { opacity: .5; }
+  .chip.correct { border-color: var(--accent); background: #ECFDF5; color: #047857; cursor: default; }
+  .chip.wrong-shake { animation: shakeChip .4s; border-color: var(--secondary); }
+  @keyframes shakeChip { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  .groups-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) {
+    .groups-grid { grid-template-columns: 1fr; }
+  }
+
+  .intro-venn-wrap { position: relative; max-width: 600px; margin: 16px auto 0; }
+  .intro-venn-wrap svg { display: block; width: 100%; height: auto; }
+  .drop-zone {
+    position: absolute; top: 16%; bottom: 16%;
+    border-radius: 14px; border: 2px dashed transparent;
+    display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px;
+    padding: 6px; overflow: auto;
+  }
+  .drop-zone.drag-over { background: rgba(108,99,255,.12); border-color: var(--primary); }
+
   @media (max-width: 600px) {
     header h1 { font-size: 1.3rem; }
     .card { padding: 16px 14px; }
@@ -240,14 +279,111 @@
 </header>
 
 <nav>
-  <button class="tab-btn active" onclick="showTab('concept')">📖 หลักการ</button>
+  <button class="tab-btn active" onclick="showTab('intro')">🎬 ขั้นนำ: โจทย์ปัญหา</button>
+  <button class="tab-btn" onclick="showTab('concept')">📖 หลักการ</button>
   <button class="tab-btn" onclick="showTab('venn')">🎯 แผนภาพเวนน์เชิงโต้ตอบ</button>
 </nav>
 
 <main>
 
+<!-- ══════════════ TAB 0: ขั้นนำ โจทย์ปัญหา ══════════════ -->
+<section id="tab-intro" class="tab-panel active">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚽</span>สถานการณ์: จัดทีมรวมดาวพรีเมียร์ลีก</div>
+    <p style="font-size:1.05rem; line-height:1.8;">
+      วันนี้ครูได้รับบทเป็นผู้จัดการทีมฟุตบอล กำลังจะจัดทีมรวมดาวพรีเมียร์ลีก
+      ครูมีรายชื่อนักเตะในมือ โดยแบ่งความถนัดของนักเตะออกเป็น 3 ส่วน ดังนี้
+    </p>
+  </div>
+
+  <div class="groups-grid">
+    <div class="card">
+      <div class="card-title"><span class="icon">🛡️</span>กลุ่ม A : กองหลัง (5 คน)</div>
+      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
+        <li>จอห์น สโตนส์</li>
+        <li>ติอาโก้ ซิลวา</li>
+        <li>รูเบน ดิอาส</li>
+        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
+        <li>เอ็นโกโล่ ก็องเต้</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🎯</span>กลุ่ม B : กองกลาง (6 คน)</div>
+      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
+        <li>เควิน เดอ บรอยน์</li>
+        <li>เอ็นโกโล่ ก็องเต้</li>
+        <li>จอห์น สโตนส์</li>
+        <li>ฟิล โฟเด้น</li>
+        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
+        <li>โคล พาลเมอร์</li>
+      </ol>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-title"><span class="icon">🔁</span>กลุ่ม C : เล่นได้ 2 ตำแหน่ง (กองกลาง และ กองหลัง) (3 คน)</div>
+      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
+        <li>จอห์น สโตนส์</li>
+        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
+        <li>เอ็นโกโล่ ก็องเต้</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🖐️</span>ลากชื่อนักเตะไปวางในกลุ่มให้ถูกต้อง</div>
+    <div class="total-row">
+      <div>จัดถูกแล้ว <strong id="introProgress">0</strong> / <strong id="introTotal">8</strong> คน</div>
+    </div>
+    <div id="introPool" class="chip-pool"></div>
+
+    <div class="intro-venn-wrap">
+      <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+        <circle cx="250" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+        <text id="introLabelASvg" x="90" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">กองหลัง</text>
+        <text id="introLabelBSvg" x="310" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">กองกลาง</text>
+      </svg>
+      <div class="drop-zone" id="introZoneAonly" data-zone="Aonly" style="left:10%; width:25%;"></div>
+      <div class="drop-zone" id="introZoneAB" data-zone="AB" style="left:35%; width:30%;"></div>
+      <div class="drop-zone" id="introZoneBonly" data-zone="Bonly" style="left:65%; width:25%;"></div>
+    </div>
+    <div id="introMatch"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">✏️</span>กำหนดโจทย์เอง (เปลี่ยนชื่อเซต/รายชื่อได้)</div>
+    <div class="num-row" style="align-items:flex-start;">
+      <div style="flex:1; min-width:220px;">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;">ชื่อเซต A</label>
+        <input type="text" id="introLabelA" class="text-box" value="กองหลัง" oninput="renderIntroLabels()">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;">รายชื่อสมาชิกเซต A (บรรทัดละ 1 ชื่อ)</label>
+        <textarea id="introMembersA" class="text-area" rows="5">จอห์น สโตนส์
+ติอาโก้ ซิลวา
+รูเบน ดิอาส
+เทรนต์ อเล็กซานเดอร์-อาร์โนลด์
+เอ็นโกโล่ ก็องเต้</textarea>
+      </div>
+      <div style="flex:1; min-width:220px;">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;">ชื่อเซต B</label>
+        <input type="text" id="introLabelB" class="text-box" value="กองกลาง" oninput="renderIntroLabels()">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;">รายชื่อสมาชิกเซต B (บรรทัดละ 1 ชื่อ)</label>
+        <textarea id="introMembersB" class="text-area" rows="6">เควิน เดอ บรอยน์
+เอ็นโกโล่ ก็องเต้
+จอห์น สโตนส์
+ฟิล โฟเด้น
+เทรนต์ อเล็กซานเดอร์-อาร์โนลด์
+โคล พาลเมอร์</textarea>
+      </div>
+    </div>
+    <button class="mode-btn active" style="margin-top:12px;" onclick="generateIntroPuzzle()">🔄 สร้างโจทย์ / เริ่มใหม่</button>
+  </div>
+
+</section>
+
 <!-- ══════════════ TAB 1: หลักการ ══════════════ -->
-<section id="tab-concept" class="tab-panel active">
+<section id="tab-concept" class="tab-panel">
 
   <div class="card">
     <div class="card-title"><span class="icon">❓</span>ปัญหา: การนับซ้ำ</div>
@@ -292,6 +428,7 @@
     <div class="mode-toggle">
       <button class="mode-btn active" id="modeBtn2" onclick="showVennMode(2)">2 เซต (A, B)</button>
       <button class="mode-btn" id="modeBtn3" onclick="showVennMode(3)">3 เซต (A, B, C)</button>
+      <button class="mode-btn" id="modeBtnD" onclick="showVennMode('D')">✏️ กรอกจำนวนเอง</button>
     </div>
   </div>
 
@@ -516,6 +653,149 @@
   </div>
   </div>
 
+  <!-- ═══ กรอกจำนวนเอง PANEL ═══ -->
+  <div id="vennD" style="display:none;">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔀</span>เลือกจำนวนเซต</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeBtnD2" onclick="showDirectMode(2)">2 เซต (A, B)</button>
+      <button class="mode-btn" id="modeBtnD3" onclick="showDirectMode(3)">3 เซต (A, B, C)</button>
+    </div>
+  </div>
+
+  <!-- 2-SET DIRECT -->
+  <div id="vennD2">
+  <div class="venn-layout">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔢</span>กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</div>
+      <div class="num-row">
+        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="inD2-A" value="30" oninput="renderDirect2()"></div>
+        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="inD2-B" value="25" oninput="renderDirect2()"></div>
+        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="inD2-AB" value="10" oninput="renderDirect2()"></div>
+      </div>
+      <div class="mini-divider"></div>
+      <div class="subhead"><span class="icon">👁️</span>เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</div>
+      <div class="term-row">
+        <button class="term-btn plus active" id="visD2-Aonly" onclick="toggleVisD2('Aonly')">เฉพาะ A</button>
+        <button class="term-btn plus active" id="visD2-AB" onclick="toggleVisD2('AB')">A∩B</button>
+        <button class="term-btn plus active" id="visD2-Bonly" onclick="toggleVisD2('Bonly')">เฉพาะ B</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="venn-wrap">
+        <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="250" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+
+          <text x="90" y="30" text-anchor="middle" font-size="26" font-weight="800" fill="var(--primary)">A</text>
+          <text x="310" y="30" text-anchor="middle" font-size="26" font-weight="800" fill="var(--primary)">B</text>
+
+          <g id="badgeD2-Aonly-g" transform="translate(110,160)">
+            <circle r="22" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD2-Aonly" text-anchor="middle" dy="6" font-size="18" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD2-AB-g" transform="translate(200,160)">
+            <circle r="22" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD2-AB" text-anchor="middle" dy="6" font-size="18" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD2-Bonly-g" transform="translate(290,160)">
+            <circle r="22" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD2-Bonly" text-anchor="middle" dy="6" font-size="18" font-weight="800" fill="white">0</text>
+          </g>
+        </svg>
+      </div>
+      <div class="total-row">
+        <div>n(A∪B) = <strong id="badgeD2-Total">0</strong></div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  <!-- 3-SET DIRECT -->
+  <div id="vennD3" style="display:none;">
+  <div class="venn-layout">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔢</span>กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</div>
+      <div class="num-row">
+        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="inD3-A" value="40" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="inD3-B" value="35" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(C)</label><input type="number" class="num-box" id="inD3-C" value="30" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="inD3-AB" value="15" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(A∩C)</label><input type="number" class="num-box" id="inD3-AC" value="12" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(B∩C)</label><input type="number" class="num-box" id="inD3-BC" value="10" oninput="renderDirect3()"></div>
+        <div class="num-field"><label>n(A∩B∩C)</label><input type="number" class="num-box" id="inD3-ABC" value="5" oninput="renderDirect3()"></div>
+      </div>
+      <div class="mini-divider"></div>
+      <div class="subhead"><span class="icon">👁️</span>เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</div>
+      <div class="term-row">
+        <button class="term-btn plus active" id="visD3-Aonly" onclick="toggleVisD3('Aonly')">เฉพาะ A</button>
+        <button class="term-btn plus active" id="visD3-Bonly" onclick="toggleVisD3('Bonly')">เฉพาะ B</button>
+        <button class="term-btn plus active" id="visD3-Conly" onclick="toggleVisD3('Conly')">เฉพาะ C</button>
+        <button class="term-btn plus active" id="visD3-ABonly" onclick="toggleVisD3('ABonly')">A∩B เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-AConly" onclick="toggleVisD3('AConly')">A∩C เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-BConly" onclick="toggleVisD3('BConly')">B∩C เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-ABC" onclick="toggleVisD3('ABC')">A∩B∩C</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="venn-wrap">
+        <svg viewBox="0 0 400 345" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="132" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="150" cy="219" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+          <circle cx="250" cy="219" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+
+          <text x="200" y="30" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">A</text>
+          <text x="55" y="315" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">B</text>
+          <text x="345" y="315" text-anchor="middle" font-size="24" font-weight="800" fill="var(--primary)">C</text>
+
+          <g id="badgeD3-Aonly-g" transform="translate(200,76)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-Aonly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-Bonly-g" transform="translate(101,247)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-Bonly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-Conly-g" transform="translate(299,247)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-Conly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-ABonly-g" transform="translate(133,151)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-ABonly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-AConly-g" transform="translate(267,151)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-AConly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-BConly-g" transform="translate(200,267)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-BConly" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+          <g id="badgeD3-ABC-g" transform="translate(200,190)">
+            <circle r="17" fill="var(--primary)" stroke="white" stroke-width="1.5"/>
+            <text id="badgeD3-ABC" text-anchor="middle" dy="5" font-size="14" font-weight="800" fill="white">0</text>
+          </g>
+        </svg>
+      </div>
+      <div class="total-row">
+        <div>n(A∪B∪C) = <strong id="badgeD3-Total">0</strong></div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  </div>
+
 </section>
 
 </main>
@@ -532,8 +812,72 @@ function showTab(id) {
 function showVennMode(modeNum) {
   document.getElementById('venn2').style.display = modeNum === 2 ? 'block' : 'none';
   document.getElementById('venn3').style.display = modeNum === 3 ? 'block' : 'none';
+  document.getElementById('vennD').style.display = modeNum === 'D' ? 'block' : 'none';
   document.getElementById('modeBtn2').classList.toggle('active', modeNum === 2);
   document.getElementById('modeBtn3').classList.toggle('active', modeNum === 3);
+  document.getElementById('modeBtnD').classList.toggle('active', modeNum === 'D');
+}
+
+// ══════════════ กรอกจำนวนเอง: แสดงตัวเลขบนแผนภาพทันที ══════════════
+function showDirectMode(modeNum) {
+  document.getElementById('vennD2').style.display = modeNum === 2 ? 'block' : 'none';
+  document.getElementById('vennD3').style.display = modeNum === 3 ? 'block' : 'none';
+  document.getElementById('modeBtnD2').classList.toggle('active', modeNum === 2);
+  document.getElementById('modeBtnD3').classList.toggle('active', modeNum === 3);
+}
+
+function setBadge(prefix, key, value, visible) {
+  const g = document.getElementById('badge' + prefix + '-' + key + '-g');
+  const text = document.getElementById('badge' + prefix + '-' + key);
+  g.querySelector('circle').setAttribute('fill', visible ? 'var(--primary)' : '#E2E8F0');
+  text.textContent = visible ? value : '';
+}
+
+const visD2 = { Aonly: true, AB: true, Bonly: true };
+function toggleVisD2(key) {
+  visD2[key] = !visD2[key];
+  document.getElementById('visD2-' + key).classList.toggle('active', visD2[key]);
+  renderDirect2();
+}
+function renderDirect2() {
+  const nA = Number(document.getElementById('inD2-A').value) || 0;
+  const nB = Number(document.getElementById('inD2-B').value) || 0;
+  const nAB = Number(document.getElementById('inD2-AB').value) || 0;
+  const aOnly = nA - nAB;
+  const bOnly = nB - nAB;
+  setBadge('D2', 'Aonly', aOnly, visD2.Aonly);
+  setBadge('D2', 'AB', nAB, visD2.AB);
+  setBadge('D2', 'Bonly', bOnly, visD2.Bonly);
+  document.getElementById('badgeD2-Total').textContent = aOnly + bOnly + nAB;
+}
+
+const visD3 = { Aonly: true, Bonly: true, Conly: true, ABonly: true, AConly: true, BConly: true, ABC: true };
+function toggleVisD3(key) {
+  visD3[key] = !visD3[key];
+  document.getElementById('visD3-' + key).classList.toggle('active', visD3[key]);
+  renderDirect3();
+}
+function renderDirect3() {
+  const nA = Number(document.getElementById('inD3-A').value) || 0;
+  const nB = Number(document.getElementById('inD3-B').value) || 0;
+  const nC = Number(document.getElementById('inD3-C').value) || 0;
+  const nAB = Number(document.getElementById('inD3-AB').value) || 0;
+  const nAC = Number(document.getElementById('inD3-AC').value) || 0;
+  const nBC = Number(document.getElementById('inD3-BC').value) || 0;
+  const nABC = Number(document.getElementById('inD3-ABC').value) || 0;
+
+  const regions = {
+    Aonly: nA - nAB - nAC + nABC,
+    Bonly: nB - nAB - nBC + nABC,
+    Conly: nC - nAC - nBC + nABC,
+    ABonly: nAB - nABC,
+    AConly: nAC - nABC,
+    BConly: nBC - nABC,
+    ABC: nABC
+  };
+  Object.keys(regions).forEach(key => setBadge('D3', key, regions[key], visD3[key]));
+  const total = Object.values(regions).reduce((a, b) => a + b, 0);
+  document.getElementById('badgeD3-Total').textContent = total;
 }
 
 // ══════════════ Inclusion-Exclusion state ══════════════
@@ -684,7 +1028,148 @@ window.addEventListener('load', () => {
   buildLegend('legend3');
   render(2);
   render(3);
+  renderDirect2();
+  renderDirect3();
+  generateIntroPuzzle();
 });
+
+// ══════════════ ขั้นนำ: โจทย์ปัญหา (ลาก-วางชื่อนักเตะ) ══════════════
+let introData = {};      // ชื่อ -> โซนที่ถูกต้อง ('Aonly' | 'Bonly' | 'AB')
+let introPlacedCount = 0;
+let dragState = null;
+
+function parseLines(text) {
+  return text.split('\n').map(s => s.trim()).filter(Boolean);
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderIntroLabels() {
+  const labelA = document.getElementById('introLabelA').value.trim() || 'A';
+  const labelB = document.getElementById('introLabelB').value.trim() || 'B';
+  document.getElementById('introLabelASvg').textContent = labelA;
+  document.getElementById('introLabelBSvg').textContent = labelB;
+}
+
+function generateIntroPuzzle() {
+  const listA = parseLines(document.getElementById('introMembersA').value);
+  const listB = parseLines(document.getElementById('introMembersB').value);
+  const setA = new Set(listA);
+  const setB = new Set(listB);
+  const union = Array.from(new Set([...listA, ...listB]));
+
+  introData = {};
+  union.forEach(name => {
+    const inA = setA.has(name);
+    const inB = setB.has(name);
+    introData[name] = inA && inB ? 'AB' : (inA ? 'Aonly' : 'Bonly');
+  });
+
+  renderIntroLabels();
+
+  ['Aonly', 'AB', 'Bonly'].forEach(z => {
+    document.getElementById('introZone' + z).innerHTML = '';
+  });
+
+  introPlacedCount = 0;
+  document.getElementById('introProgress').textContent = '0';
+  document.getElementById('introTotal').textContent = union.length;
+  const matchEl = document.getElementById('introMatch');
+  matchEl.className = '';
+  matchEl.textContent = '';
+
+  const pool = document.getElementById('introPool');
+  pool.innerHTML = '';
+  shuffle(union).forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = name;
+    chip.dataset.name = name;
+    chip.addEventListener('pointerdown', onChipPointerDown);
+    pool.appendChild(chip);
+  });
+}
+
+function onChipPointerDown(e) {
+  const chip = e.currentTarget;
+  if (chip.classList.contains('correct')) return;
+  e.preventDefault();
+
+  const rect = chip.getBoundingClientRect();
+  dragState = { chip, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top };
+
+  chip.classList.add('dragging');
+  document.body.appendChild(chip);
+  chip.style.position = 'fixed';
+  chip.style.zIndex = 1000;
+  chip.style.left = (e.clientX - dragState.offsetX) + 'px';
+  chip.style.top = (e.clientY - dragState.offsetY) + 'px';
+  chip.style.pointerEvents = 'none';
+
+  document.addEventListener('pointermove', onChipPointerMove);
+  document.addEventListener('pointerup', onChipPointerUp);
+  document.addEventListener('pointercancel', onChipPointerUp);
+}
+
+function onChipPointerMove(e) {
+  if (!dragState) return;
+  const chip = dragState.chip;
+  chip.style.left = (e.clientX - dragState.offsetX) + 'px';
+  chip.style.top = (e.clientY - dragState.offsetY) + 'px';
+
+  const target = document.elementFromPoint(e.clientX, e.clientY);
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  const zoneEl = target && target.closest ? target.closest('.drop-zone') : null;
+  if (zoneEl) zoneEl.classList.add('drag-over');
+}
+
+function onChipPointerUp(e) {
+  if (!dragState) return;
+  const chip = dragState.chip;
+  document.removeEventListener('pointermove', onChipPointerMove);
+  document.removeEventListener('pointerup', onChipPointerUp);
+  document.removeEventListener('pointercancel', onChipPointerUp);
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+
+  const target = document.elementFromPoint(e.clientX, e.clientY);
+  const zoneEl = target && target.closest ? target.closest('.drop-zone') : null;
+
+  chip.classList.remove('dragging');
+  chip.style.position = '';
+  chip.style.left = '';
+  chip.style.top = '';
+  chip.style.zIndex = '';
+  chip.style.pointerEvents = '';
+
+  const correctZone = introData[chip.dataset.name];
+
+  if (zoneEl && zoneEl.dataset.zone === correctZone) {
+    zoneEl.appendChild(chip);
+    chip.classList.add('correct');
+    introPlacedCount++;
+    document.getElementById('introProgress').textContent = introPlacedCount;
+    if (introPlacedCount === Object.keys(introData).length) {
+      const matchEl = document.getElementById('introMatch');
+      matchEl.className = 'box-ok';
+      matchEl.textContent = '✅ เก่งมาก! จัดนักเตะครบทุกคนถูกตำแหน่งแล้ว';
+    }
+  } else {
+    document.getElementById('introPool').appendChild(chip);
+    if (zoneEl) {
+      chip.classList.add('wrong-shake');
+      setTimeout(() => chip.classList.remove('wrong-shake'), 400);
+    }
+  }
+
+  dragState = null;
+}
 </script>
 
 </body>
