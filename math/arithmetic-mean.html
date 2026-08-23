@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สื่อการสอน : ค่าเฉลี่ยเลขคณิต (Level the Boxes)</title>
+<title>สื่อการสอน : ค่าเฉลี่ยเลขคณิต (The Meaning of MEAN)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -227,11 +227,9 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   background:repeating-linear-gradient(135deg, var(--slice), var(--slice) 6px, var(--slice-2) 6px, var(--slice-2) 12px);
 }
 .frac{
-  display:flex; flex-direction:column; align-items:center; line-height:1;
+  line-height:1; white-space:nowrap;
   font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.62rem; color:#4A2E00;
 }
-.frac .num{ padding-bottom:1px; border-bottom:1.4px solid #4A2E00; }
-.frac .den{ padding-top:1px; }
 
 .col-controls{
   display:flex; align-items:center; gap:6px; margin-top:8px;
@@ -323,7 +321,7 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   <div class="crumb"><a href="./index.html">← กลับหน้าวิชา</a></div>
 
   <header>
-    <h1>⚖️ Level the Boxes</h1>
+    <h1>⚖️ The Meaning of MEAN</h1>
     <p>รวมข้อมูลทุกตัวเข้ากอง แล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ — นั่นคือค่าเฉลี่ยเลขคณิต</p>
   </header>
 
@@ -765,12 +763,24 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     splitInput.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.keyCode === 13) runSplit(); });
   }
 
-  function renderUnit(u, pileId, isTop, boxUnit) {
-    // slices get a legibility floor so the ⅟N label stays readable even when N is large
-    const h = u.kind === 'slice' ? Math.max(MIN_SLICE_H, boxUnit * unitValue(u)) : Math.max(4, boxUnit * unitValue(u));
-    const inner = u.kind === 'slice'
-      ? `<span class="frac"><span class="num">${u.num}</span><span class="den">${u.den}</span></span>`
-      : '';
+  // slices get a legibility floor so the ⅟N label stays readable even when N is large —
+  // but the floor is applied to the PILE's total slice height once, not once per slice
+  // token, so a fractional remainder held as several small cuts doesn't stack extra
+  // padding on top of itself and end up taller than the same value held as one cut
+  function sliceHeights(units, boxUnit) {
+    const slices = units.filter(u => u.kind === 'slice');
+    const heights = new Map();
+    if (!slices.length) return heights;
+    const natural = slices.map(u => boxUnit * unitValue(u));
+    const total = natural.reduce((a, b) => a + b, 0);
+    const scale = total > 0 && total < MIN_SLICE_H ? MIN_SLICE_H / total : 1;
+    slices.forEach((u, i) => heights.set(u.id, natural[i] * scale));
+    return heights;
+  }
+
+  function renderUnit(u, pileId, isTop, boxUnit, sliceH) {
+    const h = u.kind === 'slice' ? sliceH.get(u.id) : Math.max(4, boxUnit * unitValue(u));
+    const inner = u.kind === 'slice' ? `<span class="frac">${u.num}/${u.den}</span>` : '';
     return `<div class="unit-box ${u.kind === 'slice' ? 'slice' : ''} ${isTop ? 'top-unit' : ''}"
                  style="height:${h}px;width:${BOX_W}px"
                  data-unit-id="${u.id}" data-pile-id="${pileId}"
@@ -781,7 +791,8 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     const val = pileValue(col.units);
     const locked = !canEdit();
     const removable = canEdit() && getN() > MIN_COLUMNS;
-    const unitsHtml = col.units.map((u, i) => renderUnit(u, col.id, i === col.units.length - 1, boxUnit)).join('');
+    const sliceH = sliceHeights(col.units, boxUnit);
+    const unitsHtml = col.units.map((u, i) => renderUnit(u, col.id, i === col.units.length - 1, boxUnit, sliceH)).join('');
     return `
       <div class="col-wrap ${removable ? 'can-remove' : ''}">
         <button class="col-remove" title="ลบคอลัมน์นี้" onclick="__meanTool.removeColumn('${col.id}')">✕</button>
@@ -816,9 +827,12 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     const chunks = chunkSumTokens(state.sum);
     let seen = 0;
     const stacksHtml = chunks.map(chunk => {
+      // each chunk renders as its own stack-area, so the slice floor is computed
+      // per chunk too — matching what's actually stacked together on screen
+      const sliceH = sliceHeights(chunk, boxUnit);
       const html = chunk.map((u, i) => {
         seen++;
-        return renderUnit(u, 'sum', seen === state.sum.length, boxUnit);
+        return renderUnit(u, 'sum', seen === state.sum.length, boxUnit, sliceH);
       }).join('');
       return `<div class="stack-area" data-pile-id="sum" style="--stack-max-h:${STACK_AREA_MAX}px">${html}</div>`;
     }).join('');
@@ -841,15 +855,22 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     board.innerHTML = `${colsHtml}${addBtn}${renderSumColumn(boxUnit)}`;
 
     if (isDone()) {
-      // measure live geometry so the line lands exactly on the number line regardless
-      // of footer (controls+label) height below the stack — no magic pixel constants
+      // measure live geometry so the line lands exactly on top of the boxes — using
+      // the actual DOM top of the tallest column's topmost box (not a boxUnit*xbar
+      // formula) means it still lines up even when the MIN_SLICE_H legibility floor
+      // makes equal-value columns render at slightly different heights depending on
+      // how many separate slice tokens they're built from — no magic pixel constants.
+      // Every column is mathematically equal once isDone(), but that's exactly why we
+      // can't assume the FIRST column's top-unit is the tallest one on screen — the
+      // floor above can still tip a different column a few px taller, so scan all of
+      // them and take the highest.
       const boardRect = board.getBoundingClientRect();
-      const aStack = board.querySelector('.stack-area');
-      const footerH = aStack ? boardRect.bottom - aStack.getBoundingClientRect().bottom : 0;
+      const topBoxes = [...board.querySelectorAll('.unit-box.top-unit')];
+      const highestTop = topBoxes.length ? Math.min(...topBoxes.map(el => el.getBoundingClientRect().top)) : null;
       const xbar = getSigma() / getN();
       const line = document.createElement('div');
       line.className = 'mean-line';
-      line.style.bottom = (footerH + boxUnit * xbar) + 'px';
+      line.style.bottom = (highestTop !== null ? boardRect.bottom - highestTop : boxUnit * xbar) + 'px';
       line.innerHTML = `<span class="tag">x̄ = ${fmt(xbar)}</span>`;
       board.appendChild(line);
     }
