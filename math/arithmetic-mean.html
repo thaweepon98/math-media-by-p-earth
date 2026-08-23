@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ค่าเฉลี่ยเลขคณิต (Level the Boxes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1B3B6F;
+  --primary-2:#2C5F8A;
+  --secondary:#FF6584;
+  --accent:#43D9AD;
+  --accent-2:#2FBF95;
+  --slice:#FFB238;
+  --slice-2:#E8971A;
+  --bg:#F0F4FF;
+  --card:#FFFFFF;
+  --track:#E7ECF9;
+  --text:#2D3748;
+  --muted:#718096;
+  --border:#DDE4F5;
+  --shadow:0 4px 24px rgba(27,59,111,0.10);
+  --radius:16px;
+  --line:#1B3B6F;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --primary:#8FB3E8;
+    --primary-2:#5A87C4;
+    --secondary:#FF95AB;
+    --accent:#48E3C0;
+    --accent-2:#2FBF95;
+    --slice:#FFC768;
+    --slice-2:#E8971A;
+    --bg:#0E1626;
+    --card:#161F35;
+    --track:#1D2740;
+    --text:#E7ECF7;
+    --muted:#93A1C2;
+    --border:#2A3654;
+    --shadow:0 4px 28px rgba(0,0,0,0.45);
+    --line:#8FB3E8;
+  }
+}
+:root[data-theme="dark"]{
+  --primary-2:#5A87C4;
+  --primary:#8FB3E8;
+  --secondary:#FF95AB;
+  --accent:#48E3C0;
+  --accent-2:#2FBF95;
+  --slice:#FFC768;
+  --slice-2:#E8971A;
+  --bg:#0E1626;
+  --card:#161F35;
+  --track:#1D2740;
+  --text:#E7ECF7;
+  --muted:#93A1C2;
+  --border:#2A3654;
+  --shadow:0 4px 28px rgba(0,0,0,0.45);
+  --line:#8FB3E8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Sarabun',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:20px 16px 40px;
+}
+.mono{ font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+
+.wrap{ max-width:1040px; margin:0 auto; }
+
+.crumb{ margin-bottom:14px; }
+.crumb a{ color:var(--primary); text-decoration:none; font-weight:600; font-size:.9rem; }
+.crumb a:hover{ text-decoration:underline; }
+
+header{ text-align:center; margin-bottom:18px; }
+header h1{
+  font-size:1.5rem; font-weight:800; margin:0 0 4px;
+  letter-spacing:.2px;
+}
+header p{ margin:0; color:var(--muted); font-size:.92rem; }
+
+/* ---- stat readout bar ---- */
+.stats{
+  display:flex; gap:0; justify-content:center; align-items:stretch;
+  background:linear-gradient(135deg,var(--primary) 0%, var(--primary-2) 100%);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-bottom:22px;
+  flex-wrap:wrap;
+}
+.stat{
+  flex:1 1 140px;
+  padding:14px 18px;
+  text-align:center;
+  border-right:1px solid rgba(255,255,255,.18);
+}
+.stat:last-child{ border-right:none; }
+.stat .k{ font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.75); margin-bottom:4px; }
+.stat .v{ font-size:1.5rem; font-weight:700; color:#fff; }
+.stat .v small{ font-size:.85rem; font-weight:500; opacity:.8; }
+
+/* ---- toolbar ---- */
+.toolbar{
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin-bottom:22px;
+}
+.btn{
+  font-family:'Sarabun',sans-serif;
+  border:none; cursor:pointer;
+  border-radius:999px;
+  padding:10px 20px;
+  font-size:.92rem; font-weight:700;
+  display:inline-flex; align-items:center; gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  box-shadow:0 2px 10px rgba(27,59,111,0.12);
+}
+.btn:active{ transform:translateY(1px); }
+.btn:disabled{ opacity:.35; cursor:not-allowed; box-shadow:none; }
+.btn-combine{ background:var(--accent); color:#093B2E; }
+.btn-distribute{ background:var(--secondary); color:#3E0011; }
+.btn-place{ background:var(--slice); color:#4A2E00; }
+.btn-reset{ background:var(--card); color:var(--text); border:1px solid var(--border); }
+.btn:not(:disabled):hover{ transform:translateY(-1px); }
+
+.split-control{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--card); border:1px solid var(--border); border-radius:999px;
+  padding:6px 8px 6px 16px; box-shadow:0 2px 10px rgba(27,59,111,0.12);
+}
+.split-control.is-disabled{ opacity:.4; pointer-events:none; }
+.split-control span{ font-size:.88rem; font-weight:600; color:var(--text); white-space:nowrap; }
+.split-control input{
+  width:44px; font:inherit; font-family:'JetBrains Mono',monospace; text-align:center;
+  border:1px solid var(--border); border-radius:6px; padding:4px 2px;
+  background:var(--bg); color:var(--text);
+}
+.split-control input.invalid{ border-color:var(--secondary); }
+.split-control button{
+  font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px;
+  padding:8px 16px; font-size:.88rem; font-weight:700; background:var(--slice); color:#4A2E00;
+}
+
+/* ---- board ---- */
+.board-scroll{
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:6px;
+  margin-bottom:8px;
+}
+.board{
+  display:flex;
+  /* top-align, not bottom-align: every .stack-area has the same fixed height, so
+     top-aligning keeps the number line (its bottom border) level across all columns
+     no matter how much extra footer content (e.g. the split controls) "รวม" carries */
+  align-items:flex-start;
+  gap:0;
+  min-width:max-content;
+  padding:0 4px;
+  position:relative;
+}
+
+.col-wrap{
+  display:flex; flex-direction:column; align-items:center;
+  width:88px; flex:0 0 auto;
+  padding:0 6px;
+  position:relative;
+}
+.col-wrap.is-sum{
+  margin-left:18px;
+  padding-left:18px;
+  border-left:2px dashed var(--border);
+  width:auto;
+}
+.sum-stacks{ display:flex; gap:4px; align-items:flex-end; }
+
+.col-remove{
+  align-self:flex-end;
+  width:20px; height:20px; border-radius:50%;
+  border:none; background:transparent; color:var(--muted);
+  font-size:.85rem; cursor:pointer; line-height:1;
+  margin-bottom:2px;
+  visibility:hidden;
+}
+.col-wrap.can-remove .col-remove{ visibility:visible; }
+.col-remove:hover{ color:var(--secondary); }
+
+.stack-area{
+  position:relative;
+  height:var(--stack-max-h,300px);
+  width:100%;
+  /* without this, an EMPTY stack-area (width:100% of an auto-sized flex parent, e.g.
+     "รวม" before anything lands there) collapses to 0px wide — a real cursor can never
+     land on a 0px target even though the column still looks ~50px wide on screen */
+  min-width:56px;
+  display:flex; flex-direction:column-reverse; align-items:center;
+  justify-content:flex-start;
+  border-bottom:3px solid var(--line);
+}
+.col-wrap.is-sum .stack-area{ border-bottom-color:var(--secondary); }
+.stack-area.drop-hover{ background:var(--track); border-radius:8px 8px 0 0; box-shadow:inset 0 0 0 2px var(--accent); }
+
+.unit-box{
+  width:56px;
+  border-radius:6px;
+  background:linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 4px rgba(0,0,0,.08);
+  flex:0 0 auto;
+  margin-top:2px;
+  display:flex; align-items:center; justify-content:center;
+  touch-action:none;
+  cursor:grab;
+}
+.unit-box.grabbing{ cursor:grabbing; }
+.unit-box:not(.top-unit){ cursor:default; }
+.unit-box.dimmed{ opacity:.25; }
+.unit-box.slice{
+  background:repeating-linear-gradient(135deg, var(--slice), var(--slice) 6px, var(--slice-2) 6px, var(--slice-2) 12px);
+}
+.frac{
+  display:flex; flex-direction:column; align-items:center; line-height:1;
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.62rem; color:#4A2E00;
+}
+.frac .num{ padding-bottom:1px; border-bottom:1.4px solid #4A2E00; }
+.frac .den{ padding-top:1px; }
+
+.col-controls{
+  display:flex; align-items:center; gap:6px; margin-top:8px;
+}
+.stepper{
+  width:24px; height:24px; border-radius:6px; border:1px solid var(--border);
+  background:var(--card); color:var(--primary); font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:.95rem;
+}
+.stepper:disabled{ opacity:.3; cursor:not-allowed; }
+.col-value{
+  min-width:26px; text-align:center; font-weight:700; font-size:1rem;
+  font-family:'JetBrains Mono',monospace;
+  border-radius:6px; padding:2px 4px; cursor:text;
+  border:1px solid transparent;
+}
+.col-value:not(.locked):hover{ border-color:var(--border); }
+.col-value input{
+  width:34px; font:inherit; font-family:'JetBrains Mono',monospace; text-align:center;
+  border:1px solid var(--primary); border-radius:6px; padding:1px 2px;
+}
+.col-label{
+  margin-top:6px; font-size:.78rem; color:var(--muted); font-weight:600; white-space:nowrap;
+}
+.col-wrap.is-sum .col-label{ color:var(--secondary); font-weight:700; }
+
+.axis-note{
+  text-align:center; color:var(--muted); font-size:.8rem; margin-top:2px;
+}
+
+.add-col-btn{
+  flex:0 0 auto;
+  align-self:center;
+  margin:0 6px 34px;
+  width:44px; height:44px; border-radius:50%;
+  border:2px dashed var(--border); background:transparent;
+  color:var(--muted); font-size:1.3rem; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.add-col-btn:hover:not(:disabled){ border-color:var(--accent-2); color:var(--accent-2); }
+.add-col-btn:disabled{ opacity:.3; cursor:not-allowed; }
+
+.mean-line{
+  position:absolute; left:0; right:0; height:0;
+  border-top:2px dashed var(--secondary);
+  pointer-events:none;
+}
+.mean-line .tag{
+  position:absolute; right:0; top:-11px;
+  background:var(--secondary); color:#fff; font-size:.65rem; font-weight:700;
+  padding:1px 6px; border-radius:999px;
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+
+.status{
+  text-align:center; margin-top:18px; min-height:1.4em;
+  font-weight:700; color:var(--accent-2); font-size:.98rem;
+}
+
+.hint{
+  max-width:640px; margin:26px auto 0; background:var(--card);
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 18px; box-shadow:var(--shadow); font-size:.85rem; color:var(--muted); line-height:1.6;
+}
+.hint b{ color:var(--text); }
+
+.drag-ghost{
+  position:fixed; z-index:999; pointer-events:none;
+  width:56px; border-radius:6px;
+  background:linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+  display:flex; align-items:center; justify-content:center;
+  transform:translate(-50%,-50%);
+}
+.drag-ghost.slice{
+  background:repeating-linear-gradient(135deg, var(--slice), var(--slice) 6px, var(--slice-2) 6px, var(--slice-2) 12px);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="crumb"><a href="./index.html">← กลับหน้าวิชา</a></div>
+
+  <header>
+    <h1>⚖️ Level the Boxes</h1>
+    <p>รวมข้อมูลทุกตัวเข้ากอง แล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ — นั่นคือค่าเฉลี่ยเลขคณิต</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar" id="toolbar"></div>
+
+  <div class="board-scroll">
+    <div class="board" id="board"></div>
+  </div>
+  <p class="axis-note">เส้นทึบ = เส้นจำนวน · แต่ละคอลัมน์คือข้อมูล 1 ตัว · กล่อง 1 ใบ = 1 หน่วย</p>
+
+  <p class="status" id="status"></p>
+
+  <div class="hint">
+    <b>วิธีเล่น:</b> ปรับจำนวนกล่องแต่ละคอลัมน์ด้วยปุ่ม +/- หรือคลิกตัวเลขเพื่อพิมพ์ค่าตรงๆ <b>ลากกล่อง (จับที่กล่องบนสุดของแต่ละกอง) ไปวางที่คอลัมน์ไหนหรือกอง “รวม” ก็ได้ด้วยมือเองได้ตลอดเวลา</b> — ลากไปแค่ไหนกล่องก็ไปวางอยู่ตรงนั้นเฉยๆ ยังไม่ถูกตัดหรือทำอะไรทั้งนั้น จะเล่นเองทั้งหมดโดยไม่ต้องกดปุ่มอัตโนมัติเลยก็ได้ หรือจะกด <b>“รวมอัตโนมัติ”</b> ให้กล่องบินไปกองที่ “รวม” เอง แล้วกด <b>“เกลี่ยอัตโนมัติ”</b> ให้แจกกลับคืนแต่ละคอลัมน์ให้เท่ากันก็ได้ — พอมีกล่องเต็มอยู่ในกอง “รวม” (ลากไปเองหรือกดรวมอัตโนมัติก็ได้) ให้พิมพ์ตัวเลขในช่อง <b>“แบ่ง 1 กล่องเป็น ___ ส่วน”</b> ที่แถบด้านบนแล้วกด <b>“แบ่ง 1 กล่อง”</b> เพื่อตัดกล่องนั้นเป็นเศษส่วน (ถ้ากอง “รวม” ยังไม่มีกล่องเลย จะหยิบจากคอลัมน์ที่สูงสุดให้แทน) จากนั้นกด <b>“เอาชิ้นที่แบ่งไปใส่”</b> เพื่อแจกชิ้นเศษที่ตัดไว้ (หรือจะลากไปวางเองก็ได้เช่นกัน) ทำซ้ำได้ทีละกล่องจนกองรวมหมด
+  </div>
+</div>
+
+<div id="dragLayer"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const MIN_COLUMNS = 2, MAX_COLUMNS = 12, MAX_VALUE = 15, NEW_COL_VALUE = 5;
+  const BOX_W = 56, STACK_AREA_MAX = 300, BOX_UNIT_MIN = 9, BOX_UNIT_MAX = 34, MIN_SLICE_H = 16;
+  const FLIGHT_MS = 420, FLIGHT_GAP_MS = 90;
+  const SUM_CHUNK_TARGET = 8, SUM_CHUNK_MAX = 3; // wrap the "รวม" pile into up to 3 side-by-side stacks
+  const SPLIT_PARTS_MAX = 30;
+
+  let uid = 1;
+  const nextId = () => 'u' + (uid++);
+  const whole = () => ({ id: nextId(), kind: 'whole' });
+  const sliceOf = (den) => ({ id: nextId(), kind: 'slice', num: 1, den });
+  const unitValue = (u) => u.kind === 'whole' ? 1 : u.num / u.den;
+  const pileValue = (arr) => arr.reduce((s, u) => s + unitValue(u), 0);
+
+  // splits the "รวม" pile's tokens into up to SUM_CHUNK_MAX side-by-side stacks
+  // (by token count, not value) so it wraps instead of growing arbitrarily tall
+  function chunkSumTokens(tokens) {
+    if (tokens.length === 0) return [[]];
+    const numChunks = Math.min(SUM_CHUNK_MAX, Math.max(1, Math.ceil(tokens.length / SUM_CHUNK_TARGET)));
+    const chunkSize = Math.ceil(tokens.length / numChunks);
+    const chunks = [];
+    for (let i = 0; i < tokens.length; i += chunkSize) chunks.push(tokens.slice(i, i + chunkSize));
+    return chunks;
+  }
+
+  function makeColumn(index, value) {
+    return {
+      id: 'c' + index,
+      label: 'ข้อมูล ' + index,
+      units: Array.from({ length: value }, whole),
+    };
+  }
+
+  let rawSnapshot = [5, 8, 6, 10];
+  let state = freshState();
+  let lastSplitCount = ''; // remembered across split rounds so the input doesn't reset each time
+
+  function freshState() {
+    return {
+      columns: rawSnapshot.map((v, i) => makeColumn(i + 1, v)),
+      sum: [],
+      animating: false,
+    };
+  }
+
+  // ---------- derived values ----------
+  function getN() { return state.columns.length; }
+  function getSigma() {
+    let s = pileValue(state.sum);
+    for (const c of state.columns) s += pileValue(c.units);
+    return s;
+  }
+  function wholeCountIn(arr) { return arr.filter(u => u.kind === 'whole').length; }
+  // "done" is a plain mathematical fact, not a staged phase: รวม is empty AND every
+  // column's value actually equals the mean. With free-form manual dragging, emptying
+  // รวม no longer guarantees equality by construction (e.g. the user may have only
+  // routed a couple of boxes through it) — so this must check the real numbers,
+  // not just "have we been through the motions".
+  function isDone() {
+    if (state.sum.length > 0) return false;
+    const xbar = getSigma() / getN();
+    return state.columns.every(c => Math.abs(pileValue(c.units) - xbar) < 1e-9);
+  }
+  // editing a column's count directly (+/-, typing) is only safe while รวม is empty —
+  // once any box is out there mid-transfer, resizing a column would silently
+  // create/destroy units and desync Σx from what's on screen
+  function canEdit() { return state.sum.length === 0; }
+
+  // ---------- mutation ----------
+  function findPile(id) { return id === 'sum' ? state.sum : state.columns.find(c => c.id === id).units; }
+
+  function moveUnit(fromId, toId, unitId) {
+    const from = findPile(fromId), to = findPile(toId);
+    const idx = from.findIndex(u => u.id === unitId);
+    if (idx === -1) return false;
+    const [unit] = from.splice(idx, 1);
+    to.push(unit);
+    return true;
+  }
+
+  // any pile may drop onto any other pile, any time — column<->column included, so the
+  // user can hand-place/rearrange boxes directly instead of always routing through "รวม"
+  function legalMove(fromId, toId) {
+    return fromId !== toId;
+  }
+
+  // the column with the least total value right now — used by the auto actions so they
+  // top up whichever column is furthest behind instead of a fixed left-to-right order,
+  // which matters once the user has been hand-placing boxes out of that order already
+  function lowestColumn() {
+    return state.columns.reduce((min, c) => pileValue(c.units) < pileValue(min.units) ? c : min);
+  }
+
+  // ---------- editing (only while รวม is empty — see canEdit) ----------
+  function addColumn() {
+    if (!canEdit() || getN() >= MAX_COLUMNS) return;
+    state.columns.push(makeColumn(getN() + 1, NEW_COL_VALUE));
+    syncSnapshot();
+    render();
+  }
+  function removeColumn(id) {
+    if (!canEdit() || getN() <= MIN_COLUMNS) return;
+    state.columns = state.columns.filter(c => c.id !== id);
+    state.columns.forEach((c, i) => { c.label = 'ข้อมูล ' + (i + 1); c.id = 'c' + (i + 1); });
+    syncSnapshot();
+    render();
+  }
+  function incUnit(id, delta) {
+    if (!canEdit()) return;
+    const col = state.columns.find(c => c.id === id);
+    const v = col.units.length + delta;
+    setExactValue(id, v);
+  }
+  function setExactValue(id, value) {
+    if (!canEdit()) return;
+    value = Math.max(0, Math.min(MAX_VALUE, Math.round(value) || 0));
+    const col = state.columns.find(c => c.id === id);
+    col.units = Array.from({ length: value }, whole);
+    syncSnapshot();
+    render();
+  }
+  function syncSnapshot() { rawSnapshot = state.columns.map(c => c.units.length); }
+  function resetAll() { state = freshState(); lastSplitCount = ''; render(); }
+
+  // ---------- fraction split ----------
+  // a whole box anywhere — already in รวม, or still sitting in a column — can be split;
+  // the user doesn't have to move it to รวม by hand or via "รวมอัตโนมัติ" first
+  function canOfferSplit() {
+    if (wholeCountIn(state.sum) > 0) return true;
+    return state.columns.some(c => wholeCountIn(c.units) > 0);
+  }
+
+  // splits ONE specific whole box (by id, found in whichever pile it's currently in —
+  // a column or รวม) into `parts` equal slices. The slices always land in รวม, which
+  // stays the one staging area for pending fractional pieces regardless of where the
+  // box came from; placing them out to the columns is a separate step (placeSlices,
+  // the split-control button re-picking, or dragging them out by hand).
+  function splitUnit(fromId, unitId, parts) {
+    if (!Number.isInteger(parts) || parts < 2 || parts > SPLIT_PARTS_MAX) return false;
+    const pile = findPile(fromId);
+    const idx = pile.findIndex(u => u.id === unitId && u.kind === 'whole');
+    if (idx === -1) return false;
+    lastSplitCount = String(parts);
+    pile.splice(idx, 1);
+    state.sum.push(...Array.from({ length: parts }, () => sliceOf(parts)));
+    render();
+    return true;
+  }
+
+  // picks which whole box the "แบ่ง 1 กล่อง" button acts on: prefer one already staged
+  // in รวม; otherwise take one from whichever column currently holds the most — that's
+  // the one furthest above the mean, i.e. the most likely "leftover" the user means
+  function pickBoxToSplit() {
+    const wholesInSum = state.sum.filter(u => u.kind === 'whole');
+    if (wholesInSum.length) return { fromId: 'sum', unitId: wholesInSum[wholesInSum.length - 1].id };
+    const highest = state.columns.reduce((max, c) => pileValue(c.units) > pileValue(max.units) ? c : max);
+    const wholesInCol = highest.units.filter(u => u.kind === 'whole');
+    return wholesInCol.length ? { fromId: highest.id, unitId: wholesInCol[wholesInCol.length - 1].id } : null;
+  }
+
+  function splitOneBox(parts) {
+    if (state.animating) return;
+    const pick = pickBoxToSplit();
+    if (!pick) return;
+    splitUnit(pick.fromId, pick.unitId, parts);
+  }
+
+  // flies every slice currently sitting in the รวม pile out to the columns, one per
+  // column per round, leaving any whole (un-split) boxes untouched
+  async function placeSlices() {
+    if (state.animating) return;
+    if (!state.sum.some(u => u.kind === 'slice')) return;
+    state.animating = true;
+    render();
+    let slice;
+    // pick the neediest column fresh before each slice — so a column the user already
+    // hand-placed a slice into (now higher) is skipped in favor of one still missing it
+    while ((slice = state.sum.filter(u => u.kind === 'slice').pop())) {
+      const col = lowestColumn();
+      await animateFlight(slice.id, 'sum', col.id, true);
+      moveUnit('sum', col.id, slice.id);
+      render();
+      await sleep(FLIGHT_GAP_MS);
+    }
+    state.animating = false;
+    render();
+  }
+
+  // ---------- auto animation ----------
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function unitEl(unitId) { return document.querySelector('.unit-box[data-unit-id="' + unitId + '"]'); }
+  // "รวม" can render as multiple side-by-side stacks sharing data-pile-id="sum" (see
+  // chunkSumTokens); a freshly moved/split unit always appends to the END of its array,
+  // which renders in the LAST such stack — so that's always the correct animation target
+  function trackEl(pileId) {
+    const all = document.querySelectorAll('.stack-area[data-pile-id="' + pileId + '"]');
+    return all[all.length - 1] || null;
+  }
+
+  async function animateFlight(unitId, fromId, toId, isSlice) {
+    const srcEl = unitEl(unitId);
+    const dstTrack = trackEl(toId);
+    if (!srcEl || !dstTrack) return; // no DOM (e.g. offscreen) — skip visual, still move instantly
+    const srcRect = srcEl.getBoundingClientRect();
+    const dstRect = dstTrack.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost' + (isSlice ? ' slice' : '');
+    ghost.style.height = srcRect.height + 'px';
+    ghost.style.left = (srcRect.left + srcRect.width / 2) + 'px';
+    ghost.style.top = (srcRect.top + srcRect.height / 2) + 'px';
+    document.getElementById('dragLayer').appendChild(ghost);
+    srcEl.classList.add('dimmed');
+    const targetX = dstRect.left + dstRect.width / 2;
+    const targetY = dstRect.top + 6;
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        ghost.style.transition = 'left ' + FLIGHT_MS + 'ms ease, top ' + FLIGHT_MS + 'ms ease';
+        requestAnimationFrame(() => {
+          ghost.style.left = targetX + 'px';
+          ghost.style.top = targetY + 'px';
+        });
+        setTimeout(resolve, FLIGHT_MS);
+      });
+    });
+    ghost.remove();
+  }
+
+  async function autoCombine() {
+    if (state.animating || !state.columns.some(c => c.units.length > 0)) return;
+    state.animating = true; render();
+    for (const col of [...state.columns]) {
+      while (col.units.length) {
+        const unit = col.units[col.units.length - 1];
+        await animateFlight(unit.id, col.id, 'sum', false);
+        moveUnit(col.id, 'sum', unit.id);
+        render();
+        await sleep(FLIGHT_GAP_MS);
+      }
+    }
+    state.animating = false; render();
+  }
+
+  async function autoDistribute() {
+    if (state.animating || wholeCountIn(state.sum) < getN()) return;
+    state.animating = true; render();
+    // only start a round when a FULL round's worth of whole boxes remains — otherwise
+    // a partial pass would hand the last few boxes unevenly to just the first columns,
+    // instead of leaving them for the "แบ่งเป็น N ส่วน" fraction-split step
+    while (wholeCountIn(state.sum) >= getN()) {
+      // a round always hands exactly N boxes to N columns, but which column goes first
+      // is picked by current lowest value — same reasoning as placeSlices above
+      for (let i = 0; i < getN(); i++) {
+        const col = lowestColumn();
+        const unit = state.sum.filter(u => u.kind === 'whole').pop();
+        await animateFlight(unit.id, 'sum', col.id, false);
+        moveUnit('sum', col.id, unit.id);
+        render();
+        await sleep(FLIGHT_GAP_MS);
+      }
+    }
+    state.animating = false; render();
+  }
+
+  // ---------- pointer drag & drop ----------
+  const drag = { active: false, unitId: null, fromId: null, ghost: null, pointerId: null, isSlice: false };
+
+  function onPointerDown(e) {
+    if (state.animating) return;
+    const box = e.target.closest('.unit-box.top-unit');
+    if (!box) return;
+    const pileId = box.dataset.pileId, unitId = box.dataset.unitId;
+    // any top-of-stack unit (column or sum, any phase) may start a drag — legalMove() checks the drop target
+    e.preventDefault();
+    drag.active = true;
+    drag.unitId = unitId;
+    drag.fromId = pileId;
+    drag.isSlice = box.classList.contains('slice');
+    drag.pointerId = e.pointerId;
+    box.setPointerCapture(e.pointerId);
+    box.classList.add('grabbing');
+
+    const rect = box.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost' + (drag.isSlice ? ' slice' : '');
+    ghost.style.height = rect.height + 'px';
+    ghost.style.left = e.clientX + 'px';
+    ghost.style.top = e.clientY + 'px';
+    if (drag.isSlice) ghost.innerHTML = box.innerHTML;
+    document.getElementById('dragLayer').appendChild(ghost);
+    drag.ghost = ghost;
+    box.style.opacity = '.25';
+  }
+
+  function onPointerMove(e) {
+    if (!drag.active || e.pointerId !== drag.pointerId) return;
+    drag.ghost.style.left = e.clientX + 'px';
+    drag.ghost.style.top = e.clientY + 'px';
+    document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+    const hit = hitTestColumn(e.clientX, e.clientY);
+    if (hit) hit.el.classList.add('drop-hover');
+  }
+
+  // "รวม" can render as several stack-area elements sharing data-pile-id="sum" (see
+  // chunkSumTokens), so this returns the SPECIFIC hovered element (for hover highlight)
+  // alongside its pileId (for legalMove/moveUnit, which only care about "sum" vs a column id).
+  function hitTestColumn(x, y) {
+    const tracks = document.querySelectorAll('.stack-area');
+    for (const t of tracks) {
+      const r = t.getBoundingClientRect();
+      // generous margin on every side — a narrow/near-empty stack-area is a small
+      // target, and real cursors/fingers are never pixel-perfect
+      if (x >= r.left - 20 && x <= r.right + 20 && y >= r.top - 40 && y <= r.bottom + 60) {
+        return { pileId: t.dataset.pileId, el: t };
+      }
+    }
+    return null;
+  }
+
+  function onPointerUp(e) {
+    if (!drag.active || e.pointerId !== drag.pointerId) return;
+    const hit = hitTestColumn(e.clientX, e.clientY);
+    document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+    drag.ghost.remove();
+    const srcBox = unitEl(drag.unitId);
+    if (srcBox) { srcBox.style.opacity = ''; srcBox.classList.remove('grabbing'); }
+
+    // dragging a box always just moves it — dropped in รวม, it sits there as a plain
+    // whole box; splitting it is a separate, deliberate step via the "แบ่ง" button
+    if (hit && legalMove(drag.fromId, hit.pileId)) {
+      moveUnit(drag.fromId, hit.pileId, drag.unitId);
+      render();
+    }
+    drag.active = false; drag.unitId = null; drag.fromId = null; drag.ghost = null; drag.pointerId = null;
+  }
+
+  // safety net: if the OS/browser ever revokes pointer capture mid-drag without a
+  // matching pointerup/pointercancel (app switch, touch interruption), force cleanup
+  // so the ghost and dimmed source box never get stuck permanently
+  function onLostPointerCapture(e) {
+    if (!drag.active || e.pointerId !== drag.pointerId) return;
+    if (drag.ghost) drag.ghost.remove();
+    const srcBox = unitEl(drag.unitId);
+    if (srcBox) { srcBox.style.opacity = ''; srcBox.classList.remove('grabbing'); }
+    document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
+    drag.active = false; drag.unitId = null; drag.fromId = null; drag.ghost = null; drag.pointerId = null;
+  }
+
+  document.addEventListener('pointerdown', onPointerDown);
+  document.addEventListener('pointermove', onPointerMove);
+  document.addEventListener('pointerup', onPointerUp);
+  document.addEventListener('pointercancel', onPointerUp);
+  document.addEventListener('lostpointercapture', onLostPointerCapture);
+
+  // ---------- render ----------
+  function computeBoxUnit() {
+    let maxVal = 1;
+    for (const c of state.columns) maxVal = Math.max(maxVal, pileValue(c.units));
+    // "รวม" wraps into multiple stacks (chunkSumTokens), so only the tallest CHUNK's
+    // value should drive the scale — not the whole pile's total, or every box would
+    // shrink to fit one giant column even though it never actually renders that tall
+    for (const chunk of chunkSumTokens(state.sum)) maxVal = Math.max(maxVal, pileValue(chunk));
+    const px = STACK_AREA_MAX / Math.max(maxVal, 1);
+    return Math.max(BOX_UNIT_MIN, Math.min(BOX_UNIT_MAX, px));
+  }
+
+  function renderStats() {
+    const N = getN(), sigma = getSigma(), xbar = sigma / N;
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><div class="k">ผลรวม Σx</div><div class="v mono">${fmt(sigma)}</div></div>
+      <div class="stat"><div class="k">จำนวนข้อมูล N</div><div class="v mono">${N}</div></div>
+      <div class="stat"><div class="k">ค่าเฉลี่ย x̄ = Σx / N</div><div class="v mono">${fmt(xbar)}</div></div>
+    `;
+  }
+  function fmt(n) {
+    if (Number.isInteger(n)) return String(n);
+    return n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  }
+
+  function renderToolbar() {
+    const w = wholeCountIn(state.sum);
+    const sliceWaiting = state.sum.filter(u => u.kind === 'slice').length;
+    const hasRawLeft = state.columns.some(c => c.units.length > 0);
+    const combineEnabled = !state.animating && hasRawLeft;
+    const distributeEnabled = !state.animating && w >= getN();
+    const splitEnabled = !state.animating && canOfferSplit();
+    const placeEnabled = !state.animating && sliceWaiting > 0;
+    document.getElementById('toolbar').innerHTML = `
+      <button class="btn btn-combine" id="btnCombine" ${combineEnabled ? '' : 'disabled'}>📦 รวมอัตโนมัติ</button>
+      <button class="btn btn-distribute" id="btnDistribute" ${distributeEnabled ? '' : 'disabled'}>🤲 เกลี่ยอัตโนมัติ</button>
+      <div class="split-control ${splitEnabled ? '' : 'is-disabled'}" id="splitControl">
+        <span>แบ่ง 1 กล่องเป็น</span>
+        <input type="number" id="splitCountInput" min="2" max="${SPLIT_PARTS_MAX}" value="${lastSplitCount}" placeholder="?">
+        <span>ส่วน</span>
+        <button id="btnSplit">✂️ แบ่ง 1 กล่อง</button>
+      </div>
+      <button class="btn btn-place" id="btnPlace" ${placeEnabled ? '' : 'disabled'}>📥 เอาชิ้นที่แบ่งไปใส่ (${sliceWaiting})</button>
+      <button class="btn btn-reset" id="btnReset">↺ เริ่มใหม่</button>
+    `;
+    document.getElementById('btnCombine').onclick = autoCombine;
+    document.getElementById('btnDistribute').onclick = autoDistribute;
+    document.getElementById('btnPlace').onclick = placeSlices;
+    document.getElementById('btnReset').onclick = resetAll;
+    const splitInput = document.getElementById('splitCountInput');
+    const runSplit = () => {
+      const parts = parseInt(splitInput.value, 10);
+      if (!Number.isInteger(parts) || parts < 2 || parts > SPLIT_PARTS_MAX) {
+        splitInput.classList.add('invalid');
+        setTimeout(() => splitInput.classList.remove('invalid'), 700);
+        return;
+      }
+      splitOneBox(parts);
+    };
+    document.getElementById('btnSplit').onclick = runSplit;
+    splitInput.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.keyCode === 13) runSplit(); });
+  }
+
+  function renderUnit(u, pileId, isTop, boxUnit) {
+    // slices get a legibility floor so the ⅟N label stays readable even when N is large
+    const h = u.kind === 'slice' ? Math.max(MIN_SLICE_H, boxUnit * unitValue(u)) : Math.max(4, boxUnit * unitValue(u));
+    const inner = u.kind === 'slice'
+      ? `<span class="frac"><span class="num">${u.num}</span><span class="den">${u.den}</span></span>`
+      : '';
+    return `<div class="unit-box ${u.kind === 'slice' ? 'slice' : ''} ${isTop ? 'top-unit' : ''}"
+                 style="height:${h}px;width:${BOX_W}px"
+                 data-unit-id="${u.id}" data-pile-id="${pileId}"
+                 title="${u.kind === 'slice' ? '1/' + u.den + ' หน่วย' : '1 หน่วย'}">${inner}</div>`;
+  }
+
+  function renderColumn(col, boxUnit) {
+    const val = pileValue(col.units);
+    const locked = !canEdit();
+    const removable = canEdit() && getN() > MIN_COLUMNS;
+    const unitsHtml = col.units.map((u, i) => renderUnit(u, col.id, i === col.units.length - 1, boxUnit)).join('');
+    return `
+      <div class="col-wrap ${removable ? 'can-remove' : ''}">
+        <button class="col-remove" title="ลบคอลัมน์นี้" onclick="__meanTool.removeColumn('${col.id}')">✕</button>
+        <div class="stack-area" data-pile-id="${col.id}" style="--stack-max-h:${STACK_AREA_MAX}px">${unitsHtml}</div>
+        <div class="col-controls">
+          <button class="stepper" ${locked ? 'disabled' : ''} onclick="__meanTool.incUnit('${col.id}',-1)">−</button>
+          ${renderEditableValue(col.id, val, locked)}
+          <button class="stepper" ${locked ? 'disabled' : ''} onclick="__meanTool.incUnit('${col.id}',1)">+</button>
+        </div>
+        <div class="col-label">${col.label}</div>
+      </div>
+    `;
+  }
+
+  function renderEditableValue(colId, val, locked) {
+    return `<span class="col-value mono ${locked ? 'locked' : ''}" ${locked ? '' : `onclick="__meanTool.editValue('${colId}', this)"`}>${fmt(val)}</span>`;
+  }
+
+  function editValue(colId, el) {
+    if (!canEdit()) return;
+    const col = state.columns.find(c => c.id === colId);
+    const current = col.units.length;
+    el.innerHTML = `<input type="number" min="0" max="${MAX_VALUE}" value="${current}">`;
+    const input = el.querySelector('input');
+    input.focus(); input.select();
+    const commit = () => setExactValue(colId, parseInt(input.value, 10));
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.keyCode === 13) input.blur(); });
+  }
+
+  function renderSumColumn(boxUnit) {
+    const chunks = chunkSumTokens(state.sum);
+    let seen = 0;
+    const stacksHtml = chunks.map(chunk => {
+      const html = chunk.map((u, i) => {
+        seen++;
+        return renderUnit(u, 'sum', seen === state.sum.length, boxUnit);
+      }).join('');
+      return `<div class="stack-area" data-pile-id="sum" style="--stack-max-h:${STACK_AREA_MAX}px">${html}</div>`;
+    }).join('');
+    return `
+      <div class="col-wrap is-sum">
+        <span class="col-remove"></span>
+        <div class="sum-stacks">${stacksHtml}</div>
+        <div class="col-controls"><span class="col-value mono">${fmt(pileValue(state.sum))}</span></div>
+        <div class="col-label">รวม</div>
+      </div>
+    `;
+  }
+
+  function renderBoard() {
+    const boxUnit = computeBoxUnit();
+    const colsHtml = state.columns.map(c => renderColumn(c, boxUnit)).join('');
+    const addDisabled = !canEdit() || getN() >= MAX_COLUMNS;
+    const addBtn = `<button class="add-col-btn" ${addDisabled ? 'disabled' : ''} onclick="__meanTool.addColumn()" title="เพิ่มข้อมูล">+</button>`;
+    const board = document.getElementById('board');
+    board.innerHTML = `${colsHtml}${addBtn}${renderSumColumn(boxUnit)}`;
+
+    if (isDone()) {
+      // measure live geometry so the line lands exactly on the number line regardless
+      // of footer (controls+label) height below the stack — no magic pixel constants
+      const boardRect = board.getBoundingClientRect();
+      const aStack = board.querySelector('.stack-area');
+      const footerH = aStack ? boardRect.bottom - aStack.getBoundingClientRect().bottom : 0;
+      const xbar = getSigma() / getN();
+      const line = document.createElement('div');
+      line.className = 'mean-line';
+      line.style.bottom = (footerH + boxUnit * xbar) + 'px';
+      line.innerHTML = `<span class="tag">x̄ = ${fmt(xbar)}</span>`;
+      board.appendChild(line);
+    }
+  }
+
+  function renderStatus() {
+    const el = document.getElementById('status');
+    if (isDone()) {
+      el.textContent = `เกลี่ยเสร็จแล้ว! ทุกคอลัมน์เท่ากันที่ ${fmt(getSigma() / getN())} หน่วย นั่นคือค่าเฉลี่ยเลขคณิต`;
+      return;
+    }
+    const w = wholeCountIn(state.sum), n = getN();
+    const sliceWaiting = state.sum.filter(u => u.kind === 'slice').length;
+    if (sliceWaiting > 0) {
+      el.textContent = `แบ่งไว้แล้ว ${sliceWaiting} ชิ้น — กด "เอาชิ้นที่แบ่งไปใส่" เพื่อแจกให้แต่ละคอลัมน์`;
+    } else if (w > 0 && w < n) {
+      el.textContent = `เหลือกล่องเต็ม ${w} ใบ ไม่พอแจกครบ ${n} คอลัมน์ — พิมพ์จำนวนส่วนแล้วกด "แบ่ง 1 กล่อง"`;
+    } else {
+      el.textContent = state.sum.length ? `กำลังเกลี่ยคืน... เหลือในกองรวม ${fmt(pileValue(state.sum))} หน่วย` : '';
+    }
+  }
+
+  function render() {
+    renderStats();
+    renderToolbar();
+    renderBoard();
+    renderStatus();
+  }
+
+  window.__meanTool = { addColumn, removeColumn, incUnit, editValue };
+  render();
+})();
+</script>
+</body>
+</html>
