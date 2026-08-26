@@ -835,9 +835,16 @@ function applyLang(lang) {
 }
 
 function toggleLang() {
-  const next = getLang() === 'en' ? 'th' : 'en';
+  const prev = getLang();
+  const next = prev === 'en' ? 'th' : 'en';
   langMemory = next;
   try { localStorage.setItem('siteLang', next); } catch (e) {}
+  // ถ้าโจทย์ตัวอย่าง (ชื่อกลุ่ม/รายชื่อ) ยังเป็นค่าเริ่มต้นของภาษาเดิมอยู่ (ครูยังไม่ได้แก้เอง)
+  // ให้สลับเป็นค่าเริ่มต้นของภาษาใหม่ไปด้วย — ถ้าครูแก้เองแล้วจะไม่แตะต้อง
+  if (isUsingIntroDefaults(prev)) {
+    setIntroDefaults(next);
+    generateIntroPuzzle();
+  }
   applyLang(next);
 }
 
@@ -1082,6 +1089,7 @@ window.addEventListener('load', () => {
   render(3);
   renderDirect2();
   renderDirect3();
+  setIntroDefaults(getLang());
   generateIntroPuzzle();
   applyLang(getLang());
 });
@@ -1090,6 +1098,39 @@ window.addEventListener('load', () => {
 let introData = {};      // ชื่อ -> โซนที่ถูกต้อง ('Aonly' | 'Bonly' | 'AB')
 let introPlacedCount = 0;
 let dragState = null;
+
+// ค่าเริ่มต้นของโจทย์ตัวอย่าง 2 ภาษา (รายชื่อที่ซ้ำกัน 3 อย่างต้องสะกดตรงกันทุกตัวอักษรระหว่าง A กับ B
+// เพื่อให้ระบบตรวจจับ A∩B ได้ถูกต้อง)
+const INTRO_DEFAULTS = {
+  th: {
+    labelA: 'ของทอด',
+    labelB: 'ของหวาน',
+    membersA: 'ไก่ทอด\nเฟรนช์ฟรายส์\nนักเก็ตไก่\nเกี๊ยวทอด\nปอเปี๊ยะ\nกล้วยทอด\nปาท่องโก๋ทอดจิ้มนมข้นหวาน\nไอศกรีมทอด',
+    membersB: 'โดนัท\nเครปเย็น\nวาฟเฟิล\nบราวนี่\nกล้วยทอด\nปาท่องโก๋ทอดจิ้มนมข้นหวาน\nไอศกรีมทอด'
+  },
+  en: {
+    labelA: 'Fried Foods',
+    labelB: 'Desserts',
+    membersA: 'Fried Chicken\nFrench Fries\nChicken Nuggets\nFried Wonton\nSpring Rolls\nFried Banana\nFried Thai Doughnut with Sweet Condensed Milk\nFried Ice Cream',
+    membersB: 'Donut\nIced Crepe\nWaffle\nBrownie\nFried Banana\nFried Thai Doughnut with Sweet Condensed Milk\nFried Ice Cream'
+  }
+};
+
+function setIntroDefaults(lang) {
+  const d = INTRO_DEFAULTS[lang];
+  document.getElementById('introLabelA').value = d.labelA;
+  document.getElementById('introLabelB').value = d.labelB;
+  document.getElementById('introMembersA').value = d.membersA;
+  document.getElementById('introMembersB').value = d.membersB;
+}
+
+function isUsingIntroDefaults(lang) {
+  const d = INTRO_DEFAULTS[lang];
+  return document.getElementById('introLabelA').value === d.labelA
+    && document.getElementById('introLabelB').value === d.labelB
+    && document.getElementById('introMembersA').value === d.membersA
+    && document.getElementById('introMembersB').value === d.membersB;
+}
 
 function parseLines(text) {
   return text.split('\n').map(s => s.trim()).filter(Boolean);
