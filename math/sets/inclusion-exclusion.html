@@ -1089,7 +1089,15 @@ window.addEventListener('load', () => {
   render(3);
   renderDirect2();
   renderDirect3();
-  setIntroDefaults(getLang());
+  const savedIntro = loadIntroCustom();
+  if (savedIntro) {
+    document.getElementById('introLabelA').value = savedIntro.labelA;
+    document.getElementById('introLabelB').value = savedIntro.labelB;
+    document.getElementById('introMembersA').value = savedIntro.membersA;
+    document.getElementById('introMembersB').value = savedIntro.membersB;
+  } else {
+    setIntroDefaults(getLang());
+  }
   generateIntroPuzzle();
   applyLang(getLang());
 });
@@ -1111,8 +1119,8 @@ const INTRO_DEFAULTS = {
   en: {
     labelA: 'Fried Foods',
     labelB: 'Desserts',
-    membersA: 'Fried Chicken\nFrench Fries\nChicken Nuggets\nFried Wonton\nSpring Rolls\nFried Banana\nFried Thai Doughnut with Sweet Condensed Milk\nFried Ice Cream',
-    membersB: 'Donut\nIced Crepe\nWaffle\nBrownie\nFried Banana\nFried Thai Doughnut with Sweet Condensed Milk\nFried Ice Cream'
+    membersA: 'Fried Chicken\nFrench Fries\nChicken Nuggets\nFried Wonton\nSpring Rolls\nFried Banana\nPatongko with sweetened condensed milk\nFried Ice Cream',
+    membersB: 'Donut\nIced Crepe\nWaffle\nBrownie\nFried Banana\nPatongko with sweetened condensed milk\nFried Ice Cream'
   }
 };
 
@@ -1122,6 +1130,27 @@ function setIntroDefaults(lang) {
   document.getElementById('introLabelB').value = d.labelB;
   document.getElementById('introMembersA').value = d.membersA;
   document.getElementById('introMembersB').value = d.membersB;
+}
+
+// ── จำโจทย์ที่ครูกำหนดเอง ไว้ข้ามการรีเฟรชหน้า (คนละ key กับ siteLang) ──
+const INTRO_CUSTOM_KEY = 'inclExclIntroCustom';
+
+function saveIntroCustom() {
+  try {
+    localStorage.setItem(INTRO_CUSTOM_KEY, JSON.stringify({
+      labelA: document.getElementById('introLabelA').value,
+      labelB: document.getElementById('introLabelB').value,
+      membersA: document.getElementById('introMembersA').value,
+      membersB: document.getElementById('introMembersB').value
+    }));
+  } catch (e) {}
+}
+
+function loadIntroCustom() {
+  try {
+    const raw = localStorage.getItem(INTRO_CUSTOM_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
 }
 
 function isUsingIntroDefaults(lang) {
@@ -1212,6 +1241,7 @@ function checkDuplicates() {
 }
 
 function generateIntroPuzzle() {
+  saveIntroCustom(); // จำโจทย์ปัจจุบัน (ค่าเริ่มต้นหรือที่ครูแก้เอง) ไว้ข้ามการรีเฟรชหน้า
   const listA = parseLines(document.getElementById('introMembersA').value);
   const listB = parseLines(document.getElementById('introMembersB').value);
   const setA = new Set(listA);
