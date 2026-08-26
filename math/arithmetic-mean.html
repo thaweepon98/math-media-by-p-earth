@@ -262,8 +262,15 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
 }
 .col-label{
   margin-top:6px; font-size:.78rem; color:var(--muted); font-weight:600; white-space:nowrap;
+  max-width:110px; overflow:hidden; text-overflow:ellipsis;
+  border-radius:6px; padding:2px 4px; border:1px solid transparent; cursor:text;
 }
-.col-wrap.is-sum .col-label{ color:var(--secondary); font-weight:700; }
+.col-label:hover{ border-color:var(--border); }
+.col-label input{
+  width:90px; font:inherit; font-size:.78rem; text-align:center;
+  border:1px solid var(--primary); border-radius:6px; padding:1px 2px;
+}
+.col-wrap.is-sum .col-label{ color:var(--secondary); font-weight:700; cursor:default; }
 
 .axis-note{
   text-align:center; color:var(--muted); font-size:.8rem; margin-top:2px;
@@ -424,7 +431,7 @@ function t(key) { return I18N[getLang()][key]; }
 (function(){
   "use strict";
 
-  const MIN_COLUMNS = 2, MAX_COLUMNS = 12, MAX_VALUE = 15, NEW_COL_VALUE = 5;
+  const MIN_COLUMNS = 2, MAX_COLUMNS = 12, MAX_VALUE = 15, NEW_COL_VALUE = 5, LABEL_MAX_LEN = 20;
   const BOX_W = 56, STACK_AREA_MAX = 300, BOX_UNIT_MIN = 9, BOX_UNIT_MAX = 34, MIN_SLICE_H = 16;
   const FLIGHT_MS = 420, FLIGHT_GAP_MS = 90;
   const SUM_CHUNK_TARGET = 8, SUM_CHUNK_MAX = 3; // wrap the "รวม" pile into up to 3 side-by-side stacks
@@ -448,23 +455,31 @@ function t(key) { return I18N[getLang()][key]; }
     return chunks;
   }
 
-  function makeColumn(index, value) {
+  function makeColumn(index, value, label) {
     return {
       id: 'c' + index,
       units: Array.from({ length: value }, whole),
+      label: label || null, // custom text set via editLabel; null = show the default "Data N" / "ข้อมูล N"
     };
   }
-  // label is derived from id (not stored) so it re-renders in the current language;
-  // removeColumn keeps ids sequential 1..N, so the index is always right there in the id
-  function columnLabel(col) { return t('colLabel')(parseInt(col.id.slice(1), 10)); }
+  // falls back to the id-derived default (re-renders in the current language) unless the
+  // user gave this column its own text via editLabel
+  function columnLabel(col) {
+    if (col.label) return col.label;
+    return t('colLabel')(parseInt(col.id.slice(1), 10));
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  }
 
   let rawSnapshot = [5, 8, 6, 10];
+  let rawLabels = [null, null, null, null]; // parallel to rawSnapshot, so custom labels survive Restart
   let state = freshState();
   let lastSplitCount = ''; // remembered across split rounds so the input doesn't reset each time
 
   function freshState() {
     return {
-      columns: rawSnapshot.map((v, i) => makeColumn(i + 1, v)),
+      columns: rawSnapshot.map((v, i) => makeColumn(i + 1, v, rawLabels[i])),
       sum: [],
       animating: false,
     };
@@ -546,7 +561,10 @@ function t(key) { return I18N[getLang()][key]; }
     syncSnapshot();
     render();
   }
-  function syncSnapshot() { rawSnapshot = state.columns.map(c => c.units.length); }
+  function syncSnapshot() {
+    rawSnapshot = state.columns.map(c => c.units.length);
+    rawLabels = state.columns.map(c => c.label);
+  }
   function resetAll() { state = freshState(); lastSplitCount = ''; render(); }
 
   // ---------- fraction split ----------
@@ -881,7 +899,7 @@ function t(key) { return I18N[getLang()][key]; }
           ${renderEditableValue(col.id, val, locked)}
           <button class="stepper" ${locked ? 'disabled' : ''} onclick="__meanTool.incUnit('${col.id}',1)">+</button>
         </div>
-        <div class="col-label">${columnLabel(col)}</div>
+        <div class="col-label" title="${escapeHtml(columnLabel(col))}" onclick="__meanTool.editLabel('${col.id}', this)">${escapeHtml(columnLabel(col))}</div>
       </div>
     `;
   }
@@ -898,6 +916,28 @@ function t(key) { return I18N[getLang()][key]; }
     const input = el.querySelector('input');
     input.focus(); input.select();
     const commit = () => setExactValue(colId, parseInt(input.value, 10));
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.keyCode === 13) input.blur(); });
+  }
+
+  // renaming a column's label is just display text — it doesn't touch units/Σx, so unlike
+  // setExactValue it's allowed even mid-transfer (canEdit() not required)
+  function setLabel(colId, value) {
+    const col = state.columns.find(c => c.id === colId);
+    if (!col) return;
+    const trimmed = value.trim().slice(0, LABEL_MAX_LEN);
+    col.label = trimmed || null; // empty input reverts to the default "Data N" / "ข้อมูล N"
+    syncSnapshot();
+    render();
+  }
+
+  function editLabel(colId, el) {
+    const col = state.columns.find(c => c.id === colId);
+    const current = col.label || '';
+    el.innerHTML = `<input type="text" maxlength="${LABEL_MAX_LEN}" value="${escapeHtml(current)}" placeholder="${escapeHtml(columnLabel(col))}">`;
+    const input = el.querySelector('input');
+    input.focus(); input.select();
+    const commit = () => setLabel(colId, input.value);
     input.addEventListener('blur', commit);
     input.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.keyCode === 13) input.blur(); });
   }
@@ -979,7 +1019,7 @@ function t(key) { return I18N[getLang()][key]; }
     renderStatus();
   }
 
-  window.__meanTool = { addColumn, removeColumn, incUnit, editValue };
+  window.__meanTool = { addColumn, removeColumn, incUnit, editValue, editLabel };
   window.__meanRerender = render;
   render();
   applyLang(getLang());
