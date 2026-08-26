@@ -60,6 +60,21 @@
     z-index: 2;
   }
   .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle {
+    position: absolute;
+    top: 12px; right: 20px;
+    background: rgba(255,255,255,.15);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,.5);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
 
   /* ── Tab Nav ── */
   nav {
@@ -231,7 +246,7 @@
   }
   .text-area { resize: vertical; }
 
-  /* ── ขั้นนำ: ลาก-วางชื่อนักเตะ ── */
+  /* ── ขั้นนำ: ลาก-วางชื่อเพื่อน ── */
   .chip-pool {
     display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; margin: 10px 0;
     background: #F7F9FC; border: 2px dashed var(--border); border-radius: 12px; min-height: 56px;
@@ -252,10 +267,28 @@
     .groups-grid { grid-template-columns: 1fr; }
   }
 
+  /* ── ขั้นนำ: จอ 2 คอลัมน์ (ซ้าย = รายชื่อ+สังเกตของซ้ำ, ขวา = ลากวางใส่วงเวนน์) ── */
+  .intro-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .intro-left .groups-grid { grid-template-columns: 1fr; }
+  @media (max-width: 800px) {
+    .intro-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ── ขั้นนำ: คลิกเลือกของที่คิดว่าซ้ำกัน ── */
+  .click-list li {
+    cursor: pointer; user-select: none; border-radius: 8px;
+    border: 2px solid transparent; padding: 2px 6px; transition: all .15s;
+  }
+  .click-list li:hover { background: #F7F9FC; }
+  .click-list li.dup-selected { border-color: var(--primary); background: #E7ECF5; font-weight: 700; }
+  .click-list li.dup-correct { border-color: var(--accent); background: #ECFDF5; color: #047857; font-weight: 700; }
+  .click-list li.dup-wrong { border-color: var(--secondary); background: #FFF0F3; color: #BE185D; }
+  .click-list li.dup-missed { border-color: var(--warning); background: #FFF7ED; }
+
   .intro-venn-wrap { position: relative; max-width: 600px; margin: 16px auto 0; }
   .intro-venn-wrap svg { display: block; width: 100%; height: auto; }
   .drop-zone {
-    position: absolute; top: 16%; bottom: 16%;
+    position: absolute; top: 28%; bottom: 28%;
     border-radius: 14px; border: 2px dashed transparent;
     display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px;
     padding: 6px; overflow: auto;
@@ -273,15 +306,16 @@
 <body>
 
 <header>
-  <a href="./index.html" class="back-link">← กลับหน้าวิชา</a>
-  <h1>🔀 จำนวนสมาชิกของเซตจำกัด</h1>
-  <p>Inclusion-Exclusion Principle • สื่อการสอนแบบโต้ตอบ</p>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าวิชา" data-en="← Back to Subject">← กลับหน้าวิชา</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🔀 จำนวนสมาชิกของเซตจำกัด" data-en="🔀 Cardinality of Finite Sets">🔀 จำนวนสมาชิกของเซตจำกัด</h1>
+  <p data-th="Inclusion-Exclusion Principle • สื่อการสอนแบบโต้ตอบ" data-en="Inclusion-Exclusion Principle • Interactive Teaching Aid">Inclusion-Exclusion Principle • สื่อการสอนแบบโต้ตอบ</p>
 </header>
 
 <nav>
-  <button class="tab-btn active" onclick="showTab('intro')">🎬 ขั้นนำ: โจทย์ปัญหา</button>
-  <button class="tab-btn" onclick="showTab('concept')">📖 หลักการ</button>
-  <button class="tab-btn" onclick="showTab('venn')">🎯 แผนภาพเวนน์เชิงโต้ตอบ</button>
+  <button class="tab-btn active" onclick="showTab('intro')" data-th="🎬 ขั้นนำ: โจทย์ปัญหา" data-en="🎬 Warm-up: Scenario">🎬 ขั้นนำ: โจทย์ปัญหา</button>
+  <button class="tab-btn" onclick="showTab('venn')" data-th="🎯 แผนภาพเวนน์เชิงโต้ตอบ" data-en="🎯 Interactive Venn Diagram">🎯 แผนภาพเวนน์เชิงโต้ตอบ</button>
+  <button class="tab-btn" onclick="showTab('concept')" data-th="📖 หลักการ" data-en="📖 Concept">📖 หลักการ</button>
 </nav>
 
 <main>
@@ -290,145 +324,102 @@
 <section id="tab-intro" class="tab-panel active">
 
   <div class="card">
-    <div class="card-title"><span class="icon">⚽</span>สถานการณ์: จัดทีมรวมดาวพรีเมียร์ลีก</div>
-    <p style="font-size:1.05rem; line-height:1.8;">
-      วันนี้ครูได้รับบทเป็นผู้จัดการทีมฟุตบอล กำลังจะจัดทีมรวมดาวพรีเมียร์ลีก
-      ครูมีรายชื่อนักเตะในมือ โดยแบ่งความถนัดของนักเตะออกเป็น 3 ส่วน ดังนี้
+    <div class="card-title"><span class="icon">🍩</span><span data-th="สถานการณ์: จัดหมวดหมู่ของกินยอดฮิต" data-en="Scenario: Categorize Popular Foods">สถานการณ์: จัดหมวดหมู่ของกินยอดฮิต</span></div>
+    <p style="font-size:1.05rem; line-height:1.8;" data-th="วันนี้ครูรวบรวมรายการของกินยอดฮิต แล้วแบ่งตามประเภทของกินออกเป็น 2 กลุ่ม ดังนี้" data-en="Today the teacher gathered a list of popular foods and divided them into 2 groups by category, as follows:">
+      วันนี้ครูรวบรวมรายการของกินยอดฮิต แล้วแบ่งตามประเภทของกินออกเป็น 2 กลุ่ม ดังนี้
     </p>
   </div>
 
-  <div class="groups-grid">
-    <div class="card">
-      <div class="card-title"><span class="icon">🛡️</span>กลุ่ม A : กองหลัง (5 คน)</div>
-      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
-        <li>จอห์น สโตนส์</li>
-        <li>ติอาโก้ ซิลวา</li>
-        <li>รูเบน ดิอาส</li>
-        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
-        <li>เอ็นโกโล่ ก็องเต้</li>
-      </ol>
+  <div class="intro-layout">
+    <div class="intro-left">
+      <div class="groups-grid">
+        <div class="card">
+          <div class="card-title"><span class="icon">🍟</span><span id="groupTitleA">กลุ่ม A : ของทอด (8 อย่าง)</span></div>
+          <ol id="groupListA" class="click-list" style="padding-left:1.4rem; line-height:1.9; font-size:1rem;"></ol>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="icon">🍰</span><span id="groupTitleB">กลุ่ม B : ของหวาน (7 อย่าง)</span></div>
+          <ol id="groupListB" class="click-list" style="padding-left:1.4rem; line-height:1.9; font-size:1rem;"></ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🔍</span><span data-th="สังเกตหน่อย: อันไหนซ้ำกันในสองรายการบ้าง?" data-en="Take a look: which items appear in both lists?">สังเกตหน่อย: อันไหนซ้ำกันในสองรายการบ้าง?</span></div>
+        <p class="i18n-th" style="font-size:.95rem; line-height:1.7; color:var(--muted);">คลิกเลือกชื่อในรายการกลุ่ม A และกลุ่ม B ด้านบนที่คิดว่า<strong>ซ้ำกัน</strong> (ปรากฏอยู่ทั้งสองกลุ่ม) แล้วกดตรวจคำตอบ ก่อนไปลองลากใส่วงเวนน์ด้านขวา</p>
+        <p class="i18n-en" hidden style="font-size:.95rem; line-height:1.7; color:var(--muted);">Click the names in the Group A and Group B lists above that you think are <strong>duplicated</strong> (appear in both groups), then check your answer — before trying the drag-and-drop on the right.</p>
+        <button class="mode-btn active" onclick="checkDuplicates()" data-th="✅ ตรวจคำตอบ" data-en="✅ Check Answer">✅ ตรวจคำตอบ</button>
+        <div id="dupResult" style="margin-top:10px;"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-title"><span class="icon">🎯</span>กลุ่ม B : กองกลาง (6 คน)</div>
-      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
-        <li>เควิน เดอ บรอยน์</li>
-        <li>เอ็นโกโล่ ก็องเต้</li>
-        <li>จอห์น สโตนส์</li>
-        <li>ฟิล โฟเด้น</li>
-        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
-        <li>โคล พาลเมอร์</li>
-      </ol>
-    </div>
+    <div class="intro-right">
+      <div class="card">
+        <div class="card-title"><span class="icon">🖐️</span><span data-th="ลากชื่อของกินไปวางในกลุ่มให้ถูกต้อง" data-en="Drag each food name into the correct group">ลากชื่อของกินไปวางในกลุ่มให้ถูกต้อง</span></div>
+        <div class="total-row">
+          <div><span data-th="จัดถูกแล้ว" data-en="Placed">จัดถูกแล้ว</span> <strong id="introProgress">0</strong> / <strong id="introTotal">12</strong> <span data-th="อย่าง" data-en="items">อย่าง</span></div>
+        </div>
+        <div id="introPool" class="chip-pool"></div>
 
-    <div class="card" style="grid-column: 1 / -1;">
-      <div class="card-title"><span class="icon">🔁</span>กลุ่ม C : เล่นได้ 2 ตำแหน่ง (กองกลาง และ กองหลัง) (3 คน)</div>
-      <ol style="padding-left:1.4rem; line-height:1.9; font-size:1rem;">
-        <li>จอห์น สโตนส์</li>
-        <li>เทรนต์ อเล็กซานเดอร์-อาร์โนลด์</li>
-        <li>เอ็นโกโล่ ก็องเต้</li>
-      </ol>
+        <div class="intro-venn-wrap">
+          <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+            <circle cx="250" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
+            <text id="introLabelASvg" x="90" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">ของทอด</text>
+            <text id="introLabelBSvg" x="310" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">ของหวาน</text>
+          </svg>
+          <div class="drop-zone" id="introZoneAonly" data-zone="Aonly" style="left:10%; width:25%;"></div>
+          <div class="drop-zone" id="introZoneAB" data-zone="AB" style="left:35%; width:30%;"></div>
+          <div class="drop-zone" id="introZoneBonly" data-zone="Bonly" style="left:65%; width:25%;"></div>
+        </div>
+        <div id="introMatch"></div>
+      </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🖐️</span>ลากชื่อนักเตะไปวางในกลุ่มให้ถูกต้อง</div>
-    <div class="total-row">
-      <div>จัดถูกแล้ว <strong id="introProgress">0</strong> / <strong id="introTotal">8</strong> คน</div>
-    </div>
-    <div id="introPool" class="chip-pool"></div>
-
-    <div class="intro-venn-wrap">
-      <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
-        <circle cx="250" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
-        <text id="introLabelASvg" x="90" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">กองหลัง</text>
-        <text id="introLabelBSvg" x="310" y="28" text-anchor="middle" font-size="22" font-weight="800" fill="var(--primary)">กองกลาง</text>
-      </svg>
-      <div class="drop-zone" id="introZoneAonly" data-zone="Aonly" style="left:10%; width:25%;"></div>
-      <div class="drop-zone" id="introZoneAB" data-zone="AB" style="left:35%; width:30%;"></div>
-      <div class="drop-zone" id="introZoneBonly" data-zone="Bonly" style="left:65%; width:25%;"></div>
-    </div>
-    <div id="introMatch"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon">✏️</span>กำหนดโจทย์เอง (เปลี่ยนชื่อเซต/รายชื่อได้)</div>
+    <div class="card-title"><span class="icon">✏️</span><span data-th="กำหนดโจทย์เอง (เปลี่ยนชื่อเซต/รายชื่อได้)" data-en="Customize the Scenario (change set names/items)">กำหนดโจทย์เอง (เปลี่ยนชื่อเซต/รายชื่อได้)</span></div>
     <div class="num-row" style="align-items:flex-start;">
       <div style="flex:1; min-width:220px;">
-        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;">ชื่อเซต A</label>
-        <input type="text" id="introLabelA" class="text-box" value="กองหลัง" oninput="renderIntroLabels()">
-        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;">รายชื่อสมาชิกเซต A (บรรทัดละ 1 ชื่อ)</label>
-        <textarea id="introMembersA" class="text-area" rows="5">จอห์น สโตนส์
-ติอาโก้ ซิลวา
-รูเบน ดิอาส
-เทรนต์ อเล็กซานเดอร์-อาร์โนลด์
-เอ็นโกโล่ ก็องเต้</textarea>
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;" data-th="ชื่อเซต A" data-en="Set A name">ชื่อเซต A</label>
+        <input type="text" id="introLabelA" class="text-box" value="ของทอด" oninput="renderIntroLabels()">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;" data-th="รายชื่อสมาชิกเซต A (บรรทัดละ 1 ชื่อ)" data-en="Set A members (one per line)">รายชื่อสมาชิกเซต A (บรรทัดละ 1 ชื่อ)</label>
+        <textarea id="introMembersA" class="text-area" rows="8">ไก่ทอด
+เฟรนช์ฟรายส์
+นักเก็ตไก่
+เกี๊ยวทอด
+ปอเปี๊ยะ
+กล้วยทอด
+ปาท่องโก๋ทอดจิ้มนมข้นหวาน
+ไอศกรีมทอด</textarea>
       </div>
       <div style="flex:1; min-width:220px;">
-        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;">ชื่อเซต B</label>
-        <input type="text" id="introLabelB" class="text-box" value="กองกลาง" oninput="renderIntroLabels()">
-        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;">รายชื่อสมาชิกเซต B (บรรทัดละ 1 ชื่อ)</label>
-        <textarea id="introMembersB" class="text-area" rows="6">เควิน เดอ บรอยน์
-เอ็นโกโล่ ก็องเต้
-จอห์น สโตนส์
-ฟิล โฟเด้น
-เทรนต์ อเล็กซานเดอร์-อาร์โนลด์
-โคล พาลเมอร์</textarea>
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin-bottom:4px;" data-th="ชื่อเซต B" data-en="Set B name">ชื่อเซต B</label>
+        <input type="text" id="introLabelB" class="text-box" value="ของหวาน" oninput="renderIntroLabels()">
+        <label style="display:block; font-weight:700; font-size:.85rem; color:var(--muted); margin:8px 0 4px;" data-th="รายชื่อสมาชิกเซต B (บรรทัดละ 1 ชื่อ)" data-en="Set B members (one per line)">รายชื่อสมาชิกเซต B (บรรทัดละ 1 ชื่อ)</label>
+        <textarea id="introMembersB" class="text-area" rows="7">โดนัท
+เครปเย็น
+วาฟเฟิล
+บราวนี่
+กล้วยทอด
+ปาท่องโก๋ทอดจิ้มนมข้นหวาน
+ไอศกรีมทอด</textarea>
       </div>
     </div>
-    <button class="mode-btn active" style="margin-top:12px;" onclick="generateIntroPuzzle()">🔄 สร้างโจทย์ / เริ่มใหม่</button>
+    <button class="mode-btn active" style="margin-top:12px;" onclick="generateIntroPuzzle()" data-th="🔄 สร้างโจทย์ / เริ่มใหม่" data-en="🔄 Generate / Restart">🔄 สร้างโจทย์ / เริ่มใหม่</button>
   </div>
 
 </section>
 
-<!-- ══════════════ TAB 1: หลักการ ══════════════ -->
-<section id="tab-concept" class="tab-panel">
-
-  <div class="card">
-    <div class="card-title"><span class="icon">❓</span>ปัญหา: การนับซ้ำ</div>
-    <p style="font-size:1.05rem; line-height:1.8;">
-      ถ้าเราอยากรู้ว่า A กับ B รวมกันมีสมาชิกกี่ตัว แล้วลองเอา <strong>n(A) + n(B)</strong> ตรงๆ
-      สมาชิกที่อยู่ใน <strong>ทั้ง A และ B</strong> (คือ A∩B) จะถูกนับไป <strong>2 ครั้ง</strong> —
-      ครั้งหนึ่งตอนนับ A อีกครั้งตอนนับ B จึงต้อง <strong>ลบส่วนที่นับซ้ำออก 1 ครั้ง</strong>
-    </p>
-    <div class="formula">n(A∪B) = n(A) + n(B) − n(A∩B)</div>
-  </div>
-
-  <div class="card">
-    <div class="card-title"><span class="icon">🧩</span>เมื่อมี 3 เซต ยิ่งซับซ้อนขึ้น</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">บวก <strong>n(A) + n(B) + n(C)</strong> ก่อน — แต่สมาชิกที่อยู่ในคู่ที่ซ้อนกัน (A∩B, A∩C, B∩C) จะถูกนับ 2 ครั้ง</div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">ลบ <strong>n(A∩B) + n(A∩C) + n(B∩C)</strong> ออก เพื่อแก้การนับซ้ำของคู่ — แต่สมาชิกที่อยู่ใน <strong>ทั้งสามเซตพร้อมกัน</strong> (A∩B∩C) ถูกบวกไป 3 ครั้ง (ตอนนับ A, B, C) แล้วถูกลบไป 3 ครั้ง (ตอนลบ A∩B, A∩C, B∩C) จึงกลายเป็น <strong>0 ครั้ง</strong> — หายไปเลย!</div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">จึงต้อง <strong>บวก n(A∩B∩C) กลับเข้ามา 1 ครั้ง</strong> เพื่อให้สมาชิกกลุ่มนี้ถูกนับพอดี 1 ครั้ง</div>
-      </div>
-    </div>
-    <div class="formula">n(A∪B∪C) = n(A)+n(B)+n(C) − n(A∩B) − n(A∩C) − n(B∩C) + n(A∩B∩C)</div>
-    <div class="box-info">
-      <strong>💡 ลองด้วยตัวเอง:</strong> ไปที่แท็บ "แผนภาพเวนน์เชิงโต้ตอบ" แล้วลองกดปุ่มแต่ละพจน์ของสูตรตามลำดับใดก็ได้
-      สังเกตตัวเลขกำกับกลางแต่ละชิ้นส่วนของวงกลม — มันจะขึ้นๆ ลงๆ ตามพจน์ที่กด และจะ<strong>นิ่งที่ 1 ทุกชิ้นส่วน</strong> ก็ต่อเมื่อกดครบสูตรที่ถูกต้องเท่านั้น
-    </div>
-  </div>
-
-</section>
-
-<!-- ══════════════ TAB 2: แผนภาพเวนน์เชิงโต้ตอบ ══════════════ -->
+<!-- ══════════════ TAB 1: แผนภาพเวนน์เชิงโต้ตอบ ══════════════ -->
 <section id="tab-venn" class="tab-panel">
 
   <div class="card">
-    <div class="card-title"><span class="icon">🔀</span>เลือกโหมด</div>
+    <div class="card-title"><span class="icon">🔀</span><span data-th="เลือกโหมด" data-en="Select Mode">เลือกโหมด</span></div>
     <div class="mode-toggle">
-      <button class="mode-btn active" id="modeBtn2" onclick="showVennMode(2)">2 เซต (A, B)</button>
-      <button class="mode-btn" id="modeBtn3" onclick="showVennMode(3)">3 เซต (A, B, C)</button>
-      <button class="mode-btn" id="modeBtnD" onclick="showVennMode('D')">✏️ กรอกจำนวนเอง</button>
+      <button class="mode-btn active" id="modeBtn2" onclick="showVennMode(2)" data-th="2 เซต (A, B)" data-en="2 Sets (A, B)">2 เซต (A, B)</button>
+      <button class="mode-btn" id="modeBtn3" onclick="showVennMode(3)" data-th="3 เซต (A, B, C)" data-en="3 Sets (A, B, C)">3 เซต (A, B, C)</button>
+      <button class="mode-btn" id="modeBtnD" onclick="showVennMode('D')" data-th="✏️ กรอกจำนวนเอง" data-en="✏️ Enter Numbers Manually">✏️ กรอกจำนวนเอง</button>
     </div>
   </div>
 
@@ -437,16 +428,7 @@
   <div class="venn-layout">
 
     <div class="card">
-      <div class="card-title"><span class="icon">🔢</span>จำนวนสมาชิกที่กำหนดให้</div>
-      <div class="num-row">
-        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="in2-A" value="30" oninput="updateNum(2,'A',this.value)"></div>
-        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="in2-B" value="25" oninput="updateNum(2,'B',this.value)"></div>
-        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="in2-AB" value="10" oninput="updateNum(2,'AB',this.value)"></div>
-      </div>
-
-      <div class="mini-divider"></div>
-
-      <div class="subhead"><span class="icon">🎛️</span>กดปุ่มตามพจน์ของสูตร (กดลำดับใดก็ได้)</div>
+      <div class="card-title"><span class="icon">🎛️</span><span data-th="ที่มาของสูตร — กดปุ่มตามพจน์ (กดลำดับใดก็ได้)" data-en="Where the Formula Comes From — Click Each Term (any order)">ที่มาของสูตร — กดปุ่มตามพจน์ (กดลำดับใดก็ได้)</span></div>
       <div class="term-row">
         <button class="term-btn plus"  id="term2-A"  onclick="toggleTerm(2,'A')">+ |A|</button>
         <button class="term-btn plus"  id="term2-B"  onclick="toggleTerm(2,'B')">+ |B|</button>
@@ -460,15 +442,11 @@
         <span class="term-disp minus inactive" id="disp2-AB">|A∩B|</span>
       </div>
 
-      <div class="total-row">
-        <div>ผลรวมจากพจน์ที่เลือก (running total) = <strong id="running2">0</strong></div>
-        <div>n(A∪B) ตามสูตรมาตรฐาน = <strong id="correct2">0</strong></div>
-      </div>
       <div id="match2"></div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="card-title"><span class="icon">⭕</span><span data-th="แผนภาพเวนน์" data-en="Venn Diagram">แผนภาพเวนน์</span></div>
       <div class="venn-wrap">
         <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -520,20 +498,7 @@
   <div class="venn-layout">
 
     <div class="card">
-      <div class="card-title"><span class="icon">🔢</span>จำนวนสมาชิกที่กำหนดให้</div>
-      <div class="num-row">
-        <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="in3-A" value="40" oninput="updateNum(3,'A',this.value)"></div>
-        <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="in3-B" value="35" oninput="updateNum(3,'B',this.value)"></div>
-        <div class="num-field"><label>n(C)</label><input type="number" class="num-box" id="in3-C" value="30" oninput="updateNum(3,'C',this.value)"></div>
-        <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="in3-AB" value="15" oninput="updateNum(3,'AB',this.value)"></div>
-        <div class="num-field"><label>n(A∩C)</label><input type="number" class="num-box" id="in3-AC" value="12" oninput="updateNum(3,'AC',this.value)"></div>
-        <div class="num-field"><label>n(B∩C)</label><input type="number" class="num-box" id="in3-BC" value="10" oninput="updateNum(3,'BC',this.value)"></div>
-        <div class="num-field"><label>n(A∩B∩C)</label><input type="number" class="num-box" id="in3-ABC" value="5" oninput="updateNum(3,'ABC',this.value)"></div>
-      </div>
-
-      <div class="mini-divider"></div>
-
-      <div class="subhead"><span class="icon">🎛️</span>กดปุ่มตามพจน์ของสูตร (กดลำดับใดก็ได้)</div>
+      <div class="card-title"><span class="icon">🎛️</span><span data-th="ที่มาของสูตร — กดปุ่มตามพจน์ (กดลำดับใดก็ได้)" data-en="Where the Formula Comes From — Click Each Term (any order)">ที่มาของสูตร — กดปุ่มตามพจน์ (กดลำดับใดก็ได้)</span></div>
       <div class="term-row">
         <button class="term-btn plus"  id="term3-A"   onclick="toggleTerm(3,'A')">+ |A|</button>
         <button class="term-btn plus"  id="term3-B"   onclick="toggleTerm(3,'B')">+ |B|</button>
@@ -555,15 +520,11 @@
         <span class="term-disp plus inactive"  id="disp3-ABC">|A∩B∩C|</span>
       </div>
 
-      <div class="total-row">
-        <div>ผลรวมจากพจน์ที่เลือก (running total) = <strong id="running3">0</strong></div>
-        <div>n(A∪B∪C) ตามสูตรมาตรฐาน = <strong id="correct3">0</strong></div>
-      </div>
       <div id="match3"></div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="card-title"><span class="icon">⭕</span><span data-th="แผนภาพเวนน์" data-en="Venn Diagram">แผนภาพเวนน์</span></div>
       <div class="venn-wrap">
         <svg viewBox="0 0 400 345" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -657,10 +618,10 @@
   <div id="vennD" style="display:none;">
 
   <div class="card">
-    <div class="card-title"><span class="icon">🔀</span>เลือกจำนวนเซต</div>
+    <div class="card-title"><span class="icon">🔀</span><span data-th="เลือกจำนวนเซต" data-en="Select Number of Sets">เลือกจำนวนเซต</span></div>
     <div class="mode-toggle">
-      <button class="mode-btn active" id="modeBtnD2" onclick="showDirectMode(2)">2 เซต (A, B)</button>
-      <button class="mode-btn" id="modeBtnD3" onclick="showDirectMode(3)">3 เซต (A, B, C)</button>
+      <button class="mode-btn active" id="modeBtnD2" onclick="showDirectMode(2)" data-th="2 เซต (A, B)" data-en="2 Sets (A, B)">2 เซต (A, B)</button>
+      <button class="mode-btn" id="modeBtnD3" onclick="showDirectMode(3)" data-th="3 เซต (A, B, C)" data-en="3 Sets (A, B, C)">3 เซต (A, B, C)</button>
     </div>
   </div>
 
@@ -669,23 +630,23 @@
   <div class="venn-layout">
 
     <div class="card">
-      <div class="card-title"><span class="icon">🔢</span>กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</div>
+      <div class="card-title"><span class="icon">🔢</span><span data-th="กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที" data-en="Enter Member Counts — See the Diagram Update Instantly">กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</span></div>
       <div class="num-row">
         <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="inD2-A" value="30" oninput="renderDirect2()"></div>
         <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="inD2-B" value="25" oninput="renderDirect2()"></div>
         <div class="num-field"><label>n(A∩B)</label><input type="number" class="num-box" id="inD2-AB" value="10" oninput="renderDirect2()"></div>
       </div>
       <div class="mini-divider"></div>
-      <div class="subhead"><span class="icon">👁️</span>เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</div>
+      <div class="subhead"><span class="icon">👁️</span><span data-th="เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ" data-en="Choose Which Numbers to Show on the Diagram">เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</span></div>
       <div class="term-row">
-        <button class="term-btn plus active" id="visD2-Aonly" onclick="toggleVisD2('Aonly')">เฉพาะ A</button>
+        <button class="term-btn plus active" id="visD2-Aonly" onclick="toggleVisD2('Aonly')" data-th="เฉพาะ A" data-en="A only">เฉพาะ A</button>
         <button class="term-btn plus active" id="visD2-AB" onclick="toggleVisD2('AB')">A∩B</button>
-        <button class="term-btn plus active" id="visD2-Bonly" onclick="toggleVisD2('Bonly')">เฉพาะ B</button>
+        <button class="term-btn plus active" id="visD2-Bonly" onclick="toggleVisD2('Bonly')" data-th="เฉพาะ B" data-en="B only">เฉพาะ B</button>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="card-title"><span class="icon">⭕</span><span data-th="แผนภาพเวนน์" data-en="Venn Diagram">แผนภาพเวนน์</span></div>
       <div class="venn-wrap">
         <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
           <circle cx="150" cy="160" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
@@ -721,7 +682,7 @@
   <div class="venn-layout">
 
     <div class="card">
-      <div class="card-title"><span class="icon">🔢</span>กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</div>
+      <div class="card-title"><span class="icon">🔢</span><span data-th="กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที" data-en="Enter Member Counts — See the Diagram Update Instantly">กรอกจำนวนสมาชิก แล้วดูตัวเลขในแผนภาพทันที</span></div>
       <div class="num-row">
         <div class="num-field"><label>n(A)</label><input type="number" class="num-box" id="inD3-A" value="40" oninput="renderDirect3()"></div>
         <div class="num-field"><label>n(B)</label><input type="number" class="num-box" id="inD3-B" value="35" oninput="renderDirect3()"></div>
@@ -732,20 +693,20 @@
         <div class="num-field"><label>n(A∩B∩C)</label><input type="number" class="num-box" id="inD3-ABC" value="5" oninput="renderDirect3()"></div>
       </div>
       <div class="mini-divider"></div>
-      <div class="subhead"><span class="icon">👁️</span>เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</div>
+      <div class="subhead"><span class="icon">👁️</span><span data-th="เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ" data-en="Choose Which Numbers to Show on the Diagram">เลือกว่าจะโชว์ตัวเลขส่วนไหนในแผนภาพ</span></div>
       <div class="term-row">
-        <button class="term-btn plus active" id="visD3-Aonly" onclick="toggleVisD3('Aonly')">เฉพาะ A</button>
-        <button class="term-btn plus active" id="visD3-Bonly" onclick="toggleVisD3('Bonly')">เฉพาะ B</button>
-        <button class="term-btn plus active" id="visD3-Conly" onclick="toggleVisD3('Conly')">เฉพาะ C</button>
-        <button class="term-btn plus active" id="visD3-ABonly" onclick="toggleVisD3('ABonly')">A∩B เท่านั้น</button>
-        <button class="term-btn plus active" id="visD3-AConly" onclick="toggleVisD3('AConly')">A∩C เท่านั้น</button>
-        <button class="term-btn plus active" id="visD3-BConly" onclick="toggleVisD3('BConly')">B∩C เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-Aonly" onclick="toggleVisD3('Aonly')" data-th="เฉพาะ A" data-en="A only">เฉพาะ A</button>
+        <button class="term-btn plus active" id="visD3-Bonly" onclick="toggleVisD3('Bonly')" data-th="เฉพาะ B" data-en="B only">เฉพาะ B</button>
+        <button class="term-btn plus active" id="visD3-Conly" onclick="toggleVisD3('Conly')" data-th="เฉพาะ C" data-en="C only">เฉพาะ C</button>
+        <button class="term-btn plus active" id="visD3-ABonly" onclick="toggleVisD3('ABonly')" data-th="A∩B เท่านั้น" data-en="A∩B only">A∩B เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-AConly" onclick="toggleVisD3('AConly')" data-th="A∩C เท่านั้น" data-en="A∩C only">A∩C เท่านั้น</button>
+        <button class="term-btn plus active" id="visD3-BConly" onclick="toggleVisD3('BConly')" data-th="B∩C เท่านั้น" data-en="B∩C only">B∩C เท่านั้น</button>
         <button class="term-btn plus active" id="visD3-ABC" onclick="toggleVisD3('ABC')">A∩B∩C</button>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">⭕</span>แผนภาพเวนน์</div>
+      <div class="card-title"><span class="icon">⭕</span><span data-th="แผนภาพเวนน์" data-en="Venn Diagram">แผนภาพเวนน์</span></div>
       <div class="venn-wrap">
         <svg viewBox="0 0 400 345" xmlns="http://www.w3.org/2000/svg">
           <circle cx="200" cy="132" r="110" fill="none" stroke="var(--primary)" stroke-width="2.5"/>
@@ -798,9 +759,126 @@
 
 </section>
 
+<!-- ══════════════ TAB 2: หลักการ ══════════════ -->
+<section id="tab-concept" class="tab-panel">
+
+  <div class="card">
+    <div class="card-title"><span class="icon">❓</span><span data-th="ปัญหา: การนับซ้ำ" data-en="The Problem: Double-Counting">ปัญหา: การนับซ้ำ</span></div>
+    <p class="i18n-th" style="font-size:1.05rem; line-height:1.8;">
+      ถ้าเราอยากรู้ว่า A กับ B รวมกันมีสมาชิกกี่ตัว แล้วลองเอา <strong>n(A) + n(B)</strong> ตรงๆ
+      สมาชิกที่อยู่ใน <strong>ทั้ง A และ B</strong> (คือ A∩B) จะถูกนับไป <strong>2 ครั้ง</strong> —
+      ครั้งหนึ่งตอนนับ A อีกครั้งตอนนับ B จึงต้อง <strong>ลบส่วนที่นับซ้ำออก 1 ครั้ง</strong>
+    </p>
+    <p class="i18n-en" hidden style="font-size:1.05rem; line-height:1.8;">
+      If we want to know how many elements A and B have together, and simply add <strong>n(A) + n(B)</strong> directly —
+      elements that are in <strong>both A and B</strong> (that is, A∩B) get counted <strong>twice</strong> —
+      once when counting A, again when counting B — so we must <strong>subtract the double-counted part once</strong>
+    </p>
+    <div class="formula">n(A∪B) = n(A) + n(B) − n(A∩B)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧩</span><span data-th="เมื่อมี 3 เซต ยิ่งซับซ้อนขึ้น" data-en="With 3 Sets, It Gets More Complex">เมื่อมี 3 เซต ยิ่งซับซ้อนขึ้น</span></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body i18n-th">บวก <strong>n(A) + n(B) + n(C)</strong> ก่อน — แต่สมาชิกที่อยู่ในคู่ที่ซ้อนกัน (A∩B, A∩C, B∩C) จะถูกนับ 2 ครั้ง</div>
+        <div class="step-body i18n-en" hidden>First add <strong>n(A) + n(B) + n(C)</strong> — but elements in an overlapping pair (A∩B, A∩C, B∩C) get counted twice</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body i18n-th">ลบ <strong>n(A∩B) + n(A∩C) + n(B∩C)</strong> ออก เพื่อแก้การนับซ้ำของคู่ — แต่สมาชิกที่อยู่ใน <strong>ทั้งสามเซตพร้อมกัน</strong> (A∩B∩C) ถูกบวกไป 3 ครั้ง (ตอนนับ A, B, C) แล้วถูกลบไป 3 ครั้ง (ตอนลบ A∩B, A∩C, B∩C) จึงกลายเป็น <strong>0 ครั้ง</strong> — หายไปเลย!</div>
+        <div class="step-body i18n-en" hidden>Subtract <strong>n(A∩B) + n(A∩C) + n(B∩C)</strong> to fix the pairwise double-counting — but elements in <strong>all three sets at once</strong> (A∩B∩C) were added 3 times (while counting A, B, C) then subtracted 3 times (while subtracting A∩B, A∩C, B∩C), leaving <strong>0 times</strong> — they vanish!</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body i18n-th">จึงต้อง <strong>บวก n(A∩B∩C) กลับเข้ามา 1 ครั้ง</strong> เพื่อให้สมาชิกกลุ่มนี้ถูกนับพอดี 1 ครั้ง</div>
+        <div class="step-body i18n-en" hidden>So we must <strong>add n(A∩B∩C) back once</strong> so this group of elements ends up counted exactly once</div>
+      </div>
+    </div>
+    <div class="formula">n(A∪B∪C) = n(A)+n(B)+n(C) − n(A∩B) − n(A∩C) − n(B∩C) + n(A∩B∩C)</div>
+    <div class="box-info i18n-th">
+      <strong>💡 ย้อนทวนสิ่งที่เพิ่งลอง:</strong> ตอนอยู่แท็บ "แผนภาพเวนน์เชิงโต้ตอบ" ที่กดปุ่มแต่ละพจน์ของสูตรเมื่อครู่นี้
+      สังเกตตัวเลขกำกับกลางแต่ละชิ้นส่วนของวงกลม — มันขึ้นๆ ลงๆ ตามพจน์ที่กด และจะ<strong>นิ่งที่ 1 ทุกชิ้นส่วน</strong> ก็ต่อเมื่อกดครบสูตรที่ถูกต้องเท่านั้น — นั่นแหละคือที่มาของสูตรด้านบน
+    </div>
+    <div class="box-info i18n-en" hidden>
+      <strong>💡 Recall what you just tried:</strong> back on the "Interactive Venn Diagram" tab, when you clicked each term of the formula —
+      notice the number in the middle of each piece of the circles — it goes up and down as you click terms, and it <strong>settles at 1 in every piece</strong> only once you've clicked the complete, correct formula — that's exactly where the formula above comes from.
+    </div>
+  </div>
+
+</section>
+
 </main>
 
 <script>
+// ══════════════ ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) ══════════════
+const PAGE_TITLE = { th: 'สื่อการสอน : จำนวนสมาชิกของเซตจำกัด (Inclusion-Exclusion)', en: 'Teaching Aid: Cardinality of Finite Sets (Inclusion-Exclusion)' };
+
+let langMemory = 'th'; // fallback เมื่อ localStorage ใช้ไม่ได้ (เช่น private mode / sandbox บางประเภท)
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  document.querySelectorAll('.i18n-th').forEach(el => { el.hidden = lang !== 'th'; });
+  document.querySelectorAll('.i18n-en').forEach(el => { el.hidden = lang !== 'en'; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+
+function onLangChange(lang) {
+  // รีเฟรชส่วนที่ข้อความถูกสร้างจาก JS ให้ตรงภาษาปัจจุบันทันที (ไม่แตะ introLabelA/B หรือ textarea ที่ครูพิมพ์เอง)
+  buildLegend('legend');
+  buildLegend('legend3');
+  render(2);
+  render(3);
+  updateGroupTitles();
+}
+
+// ── ข้อความที่ JS สร้างขึ้นเอง (สองภาษา) ──
+const I18N = {
+  th: {
+    matchAllTerms: '✅ กดครบทุกพจน์ของสูตรแล้ว — ทุกชิ้นส่วนถูกนับพอดี 1 ครั้ง!',
+    legend0: '0 = ยังไม่ถูกนับ',
+    legend1: '1 = นับถูกต้อง ✓',
+    legend2: '2 = นับซ้ำ ⚠',
+    legend3plus: '≥3 = นับซ้ำมาก ⚠',
+    legendNeg: 'ติดลบ = ลบเกิน ▼ (ขอบตัวเลขกำกับเป็นสีชมพู)',
+    dupAllCaught: n => `✅ เก่งมาก! เจอของที่ซ้ำกันครบทั้ง ${n} อย่าง — ลองไปลากใส่วงเวนน์ด้านขวาต่อได้เลย`,
+    dupPartial: (caught, total) => `เจอถูก ${caught} / ${total} อย่าง — สีส้ม = ของที่ซ้ำแต่ยังไม่ได้เลือก, สีชมพู = เลือกผิด ลองแก้แล้วกด "ตรวจคำตอบ" ใหม่ได้`,
+    introDone: '✅ เก่งมาก! จัดของกินครบทุกอย่างถูกตำแหน่งแล้ว',
+    groupTitle: (letter, label, count) => `กลุ่ม ${letter} : ${label} (${count} อย่าง)`
+  },
+  en: {
+    matchAllTerms: '✅ All terms clicked — every piece is counted exactly once!',
+    legend0: '0 = not counted yet',
+    legend1: '1 = counted correctly ✓',
+    legend2: '2 = double-counted ⚠',
+    legend3plus: '≥3 = heavily double-counted ⚠',
+    legendNeg: 'Negative = subtracted too much ▼ (number badge outlined in pink)',
+    dupAllCaught: n => `✅ Great job! You found all ${n} duplicated items — try dragging them into the Venn diagram on the right`,
+    dupPartial: (caught, total) => `Found ${caught} / ${total} — orange = duplicated but not yet selected, pink = wrong pick. Adjust and click "Check Answer" again`,
+    introDone: '✅ Great job! Every item is placed correctly.',
+    groupTitle: (letter, label, count) => `Group ${letter}: ${label} (${count} items)`
+  }
+};
+function t(key) { return I18N[getLang()][key]; }
+
 // ══════════════ Tab switching ══════════════
 function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -900,9 +978,7 @@ const regions3 = ['Aonly', 'Bonly', 'Conly', 'ABonly', 'AConly', 'BConly', 'ABC'
 
 const state = {
   active2: { A: false, B: false, AB: false },
-  active3: { A: false, B: false, C: false, AB: false, AC: false, BC: false, ABC: false },
-  nums2:  { A: 30, B: 25, AB: 10 },
-  nums3:  { A: 40, B: 35, C: 30, AB: 15, AC: 12, BC: 10, ABC: 5 }
+  active3: { A: false, B: false, C: false, AB: false, AC: false, BC: false, ABC: false }
 };
 
 const REGION_HUE = '#6C63FF';
@@ -927,12 +1003,6 @@ function toggleTerm(modeNum, key) {
   render(modeNum);
 }
 
-function updateNum(modeNum, key, val) {
-  const nums = modeNum === 2 ? state.nums2 : state.nums3;
-  nums[key] = Number(val) || 0;
-  render(modeNum);
-}
-
 function computeBadges(modeNum) {
   const cov = modeNum === 2 ? coverage2 : coverage3;
   const active = modeNum === 2 ? state.active2 : state.active3;
@@ -945,20 +1015,6 @@ function computeBadges(modeNum) {
     regions.forEach(r => badges[r] += sign);
   });
   return badges;
-}
-
-function computeTotals(modeNum) {
-  const cov = modeNum === 2 ? coverage2 : coverage3;
-  const active = modeNum === 2 ? state.active2 : state.active3;
-  const nums = modeNum === 2 ? state.nums2 : state.nums3;
-  let running = 0;
-  Object.keys(cov).forEach(termKey => {
-    if (active[termKey]) running += cov[termKey].sign * (nums[termKey] || 0);
-  });
-  const correct = modeNum === 2
-    ? nums.A + nums.B - nums.AB
-    : nums.A + nums.B + nums.C - nums.AB - nums.AC - nums.BC + nums.ABC;
-  return { running, correct };
 }
 
 function allTermsActive(modeNum) {
@@ -995,14 +1051,10 @@ function render(modeNum) {
     if (disp) disp.classList.toggle('inactive', !active[k]);
   });
 
-  const { running, correct } = computeTotals(modeNum);
-  document.getElementById(`running${modeNum}`).textContent = running;
-  document.getElementById(`correct${modeNum}`).textContent = correct;
-
   const matchEl = document.getElementById(`match${modeNum}`);
   if (allTermsActive(modeNum)) {
     matchEl.className = 'box-ok';
-    matchEl.textContent = '✅ กดครบทุกพจน์ของสูตรแล้ว — ทุกชิ้นส่วนถูกนับพอดี 1 ครั้ง!';
+    matchEl.textContent = t('matchAllTerms');
   } else {
     matchEl.className = '';
     matchEl.textContent = '';
@@ -1011,16 +1063,16 @@ function render(modeNum) {
 
 function buildLegend(elId) {
   const items = [
-    { opacity: 0.06, label: '0 = ยังไม่ถูกนับ' },
-    { opacity: 0.30, label: '1 = นับถูกต้อง ✓' },
-    { opacity: 0.55, label: '2 = นับซ้ำ ⚠' },
-    { opacity: 0.85, label: '≥3 = นับซ้ำมาก ⚠' }
+    { opacity: 0.06, label: t('legend0') },
+    { opacity: 0.30, label: t('legend1') },
+    { opacity: 0.55, label: t('legend2') },
+    { opacity: 0.85, label: t('legend3plus') }
   ];
   const wrap = document.getElementById(elId);
   wrap.innerHTML = items.map(it =>
     `<div class="legend-item"><span class="legend-swatch" style="background:rgba(108,99,255,${it.opacity})"></span>${it.label}</div>`
   ).join('') +
-  `<div class="legend-item"><span class="legend-swatch" style="background:#6C63FF; border-color:#FF6584; border-width:2px;"></span>ติดลบ = ลบเกิน ▼ (ขอบตัวเลขกำกับเป็นสีชมพู)</div>`;
+  `<div class="legend-item"><span class="legend-swatch" style="background:#6C63FF; border-color:#FF6584; border-width:2px;"></span>${t('legendNeg')}</div>`;
 }
 
 window.addEventListener('load', () => {
@@ -1031,9 +1083,10 @@ window.addEventListener('load', () => {
   renderDirect2();
   renderDirect3();
   generateIntroPuzzle();
+  applyLang(getLang());
 });
 
-// ══════════════ ขั้นนำ: โจทย์ปัญหา (ลาก-วางชื่อนักเตะ) ══════════════
+// ══════════════ ขั้นนำ: โจทย์ปัญหา (ลาก-วางชื่อเพื่อน) ══════════════
 let introData = {};      // ชื่อ -> โซนที่ถูกต้อง ('Aonly' | 'Bonly' | 'AB')
 let introPlacedCount = 0;
 let dragState = null;
@@ -1058,6 +1111,65 @@ function renderIntroLabels() {
   document.getElementById('introLabelBSvg').textContent = labelB;
 }
 
+function fillGroupList(elId, list) {
+  const ol = document.getElementById(elId);
+  ol.innerHTML = '';
+  list.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.dataset.name = name;
+    li.addEventListener('click', () => toggleDup(li));
+    ol.appendChild(li);
+  });
+}
+
+function updateGroupTitles() {
+  const labelA = document.getElementById('introLabelA').value.trim() || 'A';
+  const labelB = document.getElementById('introLabelB').value.trim() || 'B';
+  const countA = document.querySelectorAll('#groupListA li').length;
+  const countB = document.querySelectorAll('#groupListB li').length;
+  document.getElementById('groupTitleA').textContent = t('groupTitle')('A', labelA, countA);
+  document.getElementById('groupTitleB').textContent = t('groupTitle')('B', labelB, countB);
+}
+
+function renderGroupLists(listA, listB) {
+  fillGroupList('groupListA', listA);
+  fillGroupList('groupListB', listB);
+  updateGroupTitles();
+  document.getElementById('dupResult').className = '';
+  document.getElementById('dupResult').textContent = '';
+}
+
+function toggleDup(li) {
+  li.classList.remove('dup-correct', 'dup-wrong', 'dup-missed');
+  li.classList.toggle('dup-selected');
+}
+
+function checkDuplicates() {
+  const items = document.querySelectorAll('#groupListA li, #groupListB li');
+  const totalDup = Object.values(introData).filter(z => z === 'AB').length;
+  const caughtNames = new Set();
+  let anyWrong = false;
+  items.forEach(li => {
+    li.classList.remove('dup-correct', 'dup-wrong', 'dup-missed');
+    const name = li.dataset.name;
+    const isDup = introData[name] === 'AB';
+    const selected = li.classList.contains('dup-selected');
+    if (isDup && selected) { li.classList.add('dup-correct'); caughtNames.add(name); }
+    else if (!isDup && selected) { li.classList.add('dup-wrong'); anyWrong = true; }
+    else if (isDup && !selected) { li.classList.add('dup-missed'); }
+  });
+  const caught = caughtNames.size;
+  const resultEl = document.getElementById('dupResult');
+  if (caught === totalDup && !anyWrong) {
+    resultEl.className = 'box-ok';
+    resultEl.textContent = t('dupAllCaught')(totalDup);
+  } else {
+    resultEl.className = 'box-warn';
+    resultEl.textContent = t('dupPartial')(caught, totalDup);
+  }
+}
+
 function generateIntroPuzzle() {
   const listA = parseLines(document.getElementById('introMembersA').value);
   const listB = parseLines(document.getElementById('introMembersB').value);
@@ -1073,6 +1185,7 @@ function generateIntroPuzzle() {
   });
 
   renderIntroLabels();
+  renderGroupLists(listA, listB);
 
   ['Aonly', 'AB', 'Bonly'].forEach(z => {
     document.getElementById('introZone' + z).innerHTML = '';
@@ -1158,7 +1271,7 @@ function onChipPointerUp(e) {
     if (introPlacedCount === Object.keys(introData).length) {
       const matchEl = document.getElementById('introMatch');
       matchEl.className = 'box-ok';
-      matchEl.textContent = '✅ เก่งมาก! จัดนักเตะครบทุกคนถูกตำแหน่งแล้ว';
+      matchEl.textContent = t('introDone');
     }
   } else {
     document.getElementById('introPool').appendChild(chip);

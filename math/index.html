@@ -34,10 +34,26 @@ header {
   color: white;
   padding: 32px 24px 28px;
   text-align: center;
+  position: relative;
 }
 
 header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
 header p { font-size: 0.95rem; opacity: 0.9; }
+.lang-toggle {
+  position: absolute;
+  top: 12px; right: 20px;
+  background: rgba(255,255,255,.15);
+  color: white;
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 2;
+}
+.lang-toggle:hover { background: rgba(255,255,255,.28); }
 
 .crumb {
   max-width: 1000px;
@@ -107,38 +123,71 @@ main {
 <body>
 
 <header>
-  <h1>📐 คณิตศาสตร์</h1>
-  <p>สื่อการสอนวิชาคณิตศาสตร์</p>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📐 คณิตศาสตร์" data-en="📐 Mathematics">📐 คณิตศาสตร์</h1>
+  <p data-th="สื่อการสอนวิชาคณิตศาสตร์" data-en="Mathematics Teaching Materials">สื่อการสอนวิชาคณิตศาสตร์</p>
 </header>
 
-<div class="crumb"><a href="../index.html">← กลับหน้าแรก</a></div>
+<div class="crumb"><a href="../index.html" data-th="← กลับหน้าแรก" data-en="← Back to Home">← กลับหน้าแรก</a></div>
 
 <main>
   <div id="topicGrid" class="grid"></div>
-  <p id="emptyNote" class="empty-note" style="display:none;">ยังไม่มีหัวข้อ</p>
+  <p id="emptyNote" class="empty-note" style="display:none;" data-th="ยังไม่มีหัวข้อ" data-en="No topics yet">ยังไม่มีหัวข้อ</p>
 </main>
 
 <script>
-// เพิ่มหัวข้อใหม่: copy ไฟล์ html เข้าโฟลเดอร์นี้ แล้วเพิ่ม object ในนี้
+// ── ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) ──
+const PAGE_TITLE = { th: "คณิตศาสตร์ — รวมสื่อการสอน by P'Earth", en: "Mathematics — Teaching Materials by P'Earth" };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) { renderTopics(); }
+
+// เพิ่มหัวข้อใหม่: copy ไฟล์ html เข้าโฟลเดอร์นี้ แล้วเพิ่ม object ในนี้ (ใส่ทั้ง _th และ _en)
 const TOPICS = [
-  { file: "inclusion-exclusion.html", title: "จำนวนสมาชิกของเซตจำกัด (Inclusion-Exclusion)", desc: "หลักการนับสมาชิกของเซตจำกัดด้วยหลัก Inclusion-Exclusion", icon: "🔢", tags: ["เซต"] },
-  { file: "fractions.html", title: "เศษส่วน", desc: "สื่อการสอนเรื่องเศษส่วน", icon: "➗", tags: ["เศษส่วน"] },
-  { file: "arithmetic-mean.html", title: "ค่าเฉลี่ยเลขคณิต (The Meaning of MEAN)", desc: "ลากกล่องข้อมูลไปรวมแล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ พร้อมตัดเศษเมื่อหารไม่ลงตัว", icon: "⚖️", tags: ["สถิติ"] }
+  { file: "inclusion-exclusion.html", title_th: "จำนวนสมาชิกของเซตจำกัด (Inclusion-Exclusion)", title_en: "Cardinality of Finite Sets (Inclusion-Exclusion)", desc_th: "หลักการนับสมาชิกของเซตจำกัดด้วยหลัก Inclusion-Exclusion", desc_en: "Counting elements of finite sets using the Inclusion-Exclusion principle", icon: "🔢", tags_th: ["เซต"], tags_en: ["Sets"] },
+  { file: "fractions.html", title_th: "เศษส่วน", title_en: "Fractions", desc_th: "สื่อการสอนเรื่องเศษส่วน", desc_en: "Teaching material on fractions", icon: "➗", tags_th: ["เศษส่วน"], tags_en: ["Fractions"] },
+  { file: "arithmetic-mean.html", title_th: "ค่าเฉลี่ยเลขคณิต (The Meaning of MEAN)", title_en: "Arithmetic Mean (The Meaning of MEAN)", desc_th: "ลากกล่องข้อมูลไปรวมแล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ พร้อมตัดเศษเมื่อหารไม่ลงตัว", desc_en: "Drag data blocks together then redistribute them evenly across columns, including remainders when division isn't exact", icon: "⚖️", tags_th: ["สถิติ"], tags_en: ["Statistics"] }
 ];
 
-const grid = document.getElementById("topicGrid");
-if (TOPICS.length === 0) {
-  document.getElementById("emptyNote").style.display = "block";
-} else {
-  grid.innerHTML = TOPICS.map(t => `
-    <a class="card" href="./${t.file}">
-      <div class="icon">${t.icon}</div>
-      <div class="title">${t.title}</div>
-      <div class="desc">${t.desc}</div>
-      <div class="tags">${t.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
-    </a>
-  `).join("");
+function renderTopics() {
+  const lang = getLang();
+  const grid = document.getElementById("topicGrid");
+  if (TOPICS.length === 0) {
+    document.getElementById("emptyNote").style.display = "block";
+  } else {
+    grid.innerHTML = TOPICS.map(t => `
+      <a class="card" href="./${t.file}">
+        <div class="icon">${t.icon}</div>
+        <div class="title">${lang === 'en' ? t.title_en : t.title_th}</div>
+        <div class="desc">${lang === 'en' ? t.desc_en : t.desc_th}</div>
+        <div class="tags">${(lang === 'en' ? t.tags_en : t.tags_th).map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+      </a>
+    `).join("");
+  }
 }
+
+renderTopics();
+applyLang(getLang());
 </script>
 
 </body>

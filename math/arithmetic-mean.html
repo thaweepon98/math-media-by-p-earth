@@ -80,6 +80,15 @@ body{
 .crumb a{ color:var(--primary); text-decoration:none; font-weight:600; font-size:.9rem; }
 .crumb a:hover{ text-decoration:underline; }
 
+.lang-toggle{
+  position:fixed; top:14px; right:14px; z-index:50;
+  background:var(--card); color:var(--primary);
+  border:1.5px solid var(--border); border-radius:20px;
+  padding:6px 14px; font-family:'Sarabun',sans-serif;
+  font-size:.8rem; font-weight:700; cursor:pointer; box-shadow:var(--shadow);
+}
+.lang-toggle:hover{ border-color:var(--primary); }
+
 header{ text-align:center; margin-bottom:18px; }
 header h1{
   font-size:1.5rem; font-weight:800; margin:0 0 4px;
@@ -317,12 +326,14 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
 </head>
 <body>
 
+<button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+
 <div class="wrap">
-  <div class="crumb"><a href="./index.html">← กลับหน้าวิชา</a></div>
+  <div class="crumb"><a href="./index.html" data-th="← กลับหน้าวิชา" data-en="← Back to Subject">← กลับหน้าวิชา</a></div>
 
   <header>
     <h1>⚖️ The Meaning of MEAN</h1>
-    <p>รวมข้อมูลทุกตัวเข้ากอง แล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ — นั่นคือค่าเฉลี่ยเลขคณิต</p>
+    <p data-th="รวมข้อมูลทุกตัวเข้ากอง แล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ — นั่นคือค่าเฉลี่ยเลขคณิต" data-en="Pool every data point together, then redistribute it evenly across every column — that's the arithmetic mean">รวมข้อมูลทุกตัวเข้ากอง แล้วเกลี่ยคืนให้เท่ากันทุกคอลัมน์ — นั่นคือค่าเฉลี่ยเลขคณิต</p>
   </header>
 
   <div class="stats" id="stats"></div>
@@ -332,16 +343,82 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   <div class="board-scroll">
     <div class="board" id="board"></div>
   </div>
-  <p class="axis-note">เส้นทึบ = เส้นจำนวน · แต่ละคอลัมน์คือข้อมูล 1 ตัว · กล่อง 1 ใบ = 1 หน่วย</p>
+  <p class="axis-note" data-th="เส้นทึบ = เส้นจำนวน · แต่ละคอลัมน์คือข้อมูล 1 ตัว · กล่อง 1 ใบ = 1 หน่วย" data-en="Solid line = number line · each column is 1 data point · 1 box = 1 unit">เส้นทึบ = เส้นจำนวน · แต่ละคอลัมน์คือข้อมูล 1 ตัว · กล่อง 1 ใบ = 1 หน่วย</p>
 
   <p class="status" id="status"></p>
 
-  <div class="hint">
-    <b>วิธีเล่น:</b> ปรับจำนวนกล่องแต่ละคอลัมน์ด้วยปุ่ม +/- หรือคลิกตัวเลขเพื่อพิมพ์ค่าตรงๆ <b>ลากกล่อง (จับที่กล่องบนสุดของแต่ละกอง) ไปวางที่คอลัมน์ไหนหรือกอง “รวม” ก็ได้ด้วยมือเองได้ตลอดเวลา</b> — ลากไปแค่ไหนกล่องก็ไปวางอยู่ตรงนั้นเฉยๆ ยังไม่ถูกตัดหรือทำอะไรทั้งนั้น จะเล่นเองทั้งหมดโดยไม่ต้องกดปุ่มอัตโนมัติเลยก็ได้ หรือจะกด <b>“รวมอัตโนมัติ”</b> ให้กล่องบินไปกองที่ “รวม” เอง แล้วกด <b>“เกลี่ยอัตโนมัติ”</b> ให้แจกกลับคืนแต่ละคอลัมน์ให้เท่ากันก็ได้ — พอมีกล่องเต็มอยู่ในกอง “รวม” (ลากไปเองหรือกดรวมอัตโนมัติก็ได้) ให้พิมพ์ตัวเลขในช่อง <b>“แบ่ง 1 กล่องเป็น ___ ส่วน”</b> ที่แถบด้านบนแล้วกด <b>“แบ่ง 1 กล่อง”</b> เพื่อตัดกล่องนั้นเป็นเศษส่วน (ถ้ากอง “รวม” ยังไม่มีกล่องเลย จะหยิบจากคอลัมน์ที่สูงสุดให้แทน) จากนั้นกด <b>“เอาชิ้นที่แบ่งไปใส่”</b> เพื่อแจกชิ้นเศษที่ตัดไว้ (หรือจะลากไปวางเองก็ได้เช่นกัน) ทำซ้ำได้ทีละกล่องจนกองรวมหมด
+  <div class="hint i18n-th">
+    <b>วิธีเล่น:</b> ปรับจำนวนกล่องแต่ละคอลัมน์ด้วยปุ่ม +/- หรือคลิกตัวเลขเพื่อพิมพ์ค่าตรงๆ <b>ลากกล่อง (จับที่กล่องบนสุดของแต่ละกอง) ไปวางที่คอลัมน์ไหนหรือกอง "รวม" ก็ได้ด้วยมือเองได้ตลอดเวลา</b> — ลากไปแค่ไหนกล่องก็ไปวางอยู่ตรงนั้นเฉยๆ ยังไม่ถูกตัดหรือทำอะไรทั้งนั้น จะเล่นเองทั้งหมดโดยไม่ต้องกดปุ่มอัตโนมัติเลยก็ได้ หรือจะกด <b>"รวมอัตโนมัติ"</b> ให้กล่องบินไปกองที่ "รวม" เอง แล้วกด <b>"เกลี่ยอัตโนมัติ"</b> ให้แจกกลับคืนแต่ละคอลัมน์ให้เท่ากันก็ได้ — พอมีกล่องเต็มอยู่ในกอง "รวม" (ลากไปเองหรือกดรวมอัตโนมัติก็ได้) ให้พิมพ์ตัวเลขในช่อง <b>"แบ่ง 1 กล่องเป็น ___ ส่วน"</b> ที่แถบด้านบนแล้วกด <b>"แบ่ง 1 กล่อง"</b> เพื่อตัดกล่องนั้นเป็นเศษส่วน (ถ้ากอง "รวม" ยังไม่มีกล่องเลย จะหยิบจากคอลัมน์ที่สูงสุดให้แทน) จากนั้นกด <b>"เอาชิ้นที่แบ่งไปใส่"</b> เพื่อแจกชิ้นเศษที่ตัดไว้ (หรือจะลากไปวางเองก็ได้เช่นกัน) ทำซ้ำได้ทีละกล่องจนกองรวมหมด
+  </div>
+  <div class="hint i18n-en" hidden>
+    <b>How to play:</b> adjust each column's box count with the +/- buttons, or click the number to type a value directly. <b>Drag a box (grab the topmost box of any stack) onto any column or the "Total" pile any time, by hand</b> — wherever you drag it, it just sits there; nothing gets split or altered automatically. You can play the whole thing by hand with no auto buttons at all, or click <b>"Auto-Combine"</b> to have the boxes fly into the "Total" pile on their own, then click <b>"Auto-Distribute"</b> to hand them back out evenly to every column. Once there are whole boxes sitting in "Total" (dragged there by hand or via Auto-Combine), type a number into the <b>"Split 1 box into ___ parts"</b> field in the toolbar and click <b>"Split 1 Box"</b> to cut that box into fractions (if "Total" has no boxes yet, it takes one from the highest column instead). Then click <b>"Place Cut Pieces"</b> to hand out the cut fragments (or drag them out yourself). Repeat one box at a time until the Total pile is empty.
   </div>
 </div>
 
 <div id="dragLayer"></div>
+
+<script>
+// ── ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) — ต้องมาก่อน IIFE ด้านล่าง เพราะ render() เรียก t() ตั้งแต่ตอนโหลดหน้าแรก ──
+const PAGE_TITLE = { th: 'สื่อการสอน : ค่าเฉลี่ยเลขคณิต (The Meaning of MEAN)', en: 'Teaching Aid: Arithmetic Mean (The Meaning of MEAN)' };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  document.querySelectorAll('.i18n-th').forEach(el => { el.hidden = lang !== 'th'; });
+  document.querySelectorAll('.i18n-en').forEach(el => { el.hidden = lang !== 'en'; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) {
+  if (typeof window.__meanRerender === 'function') window.__meanRerender();
+}
+
+// ── ข้อความที่ JS สร้างขึ้นเอง (สองภาษา) ──
+const I18N = {
+  th: {
+    statSigma: 'ผลรวม Σx', statN: 'จำนวนข้อมูล N', statXbar: 'ค่าเฉลี่ย x̄ = Σx / N',
+    btnCombine: 'รวมอัตโนมัติ', btnDistribute: 'เกลี่ยอัตโนมัติ',
+    splitLabel: 'แบ่ง 1 กล่องเป็น', splitUnit: 'ส่วน', btnSplit: 'แบ่ง 1 กล่อง',
+    btnPlace: n => `เอาชิ้นที่แบ่งไปใส่ (${n})`, btnReset: 'เริ่มใหม่',
+    unitSlice: den => `1/${den} หน่วย`, unitWhole: '1 หน่วย',
+    removeCol: 'ลบคอลัมน์นี้', addCol: 'เพิ่มข้อมูล',
+    colLabel: i => `ข้อมูล ${i}`, totalLabel: 'รวม',
+    statusDone: v => `เกลี่ยเสร็จแล้ว! ทุกคอลัมน์เท่ากันที่ ${v} หน่วย นั่นคือค่าเฉลี่ยเลขคณิต`,
+    statusSliceWaiting: n => `แบ่งไว้แล้ว ${n} ชิ้น — กด "เอาชิ้นที่แบ่งไปใส่" เพื่อแจกให้แต่ละคอลัมน์`,
+    statusNotEnough: (w, n) => `เหลือกล่องเต็ม ${w} ใบ ไม่พอแจกครบ ${n} คอลัมน์ — พิมพ์จำนวนส่วนแล้วกด "แบ่ง 1 กล่อง"`,
+    statusDistributing: v => `กำลังเกลี่ยคืน... เหลือในกองรวม ${v} หน่วย`
+  },
+  en: {
+    statSigma: 'Sum Σx', statN: 'Data Count N', statXbar: 'Mean x̄ = Σx / N',
+    btnCombine: 'Auto-Combine', btnDistribute: 'Auto-Distribute',
+    splitLabel: 'Split 1 box into', splitUnit: 'parts', btnSplit: 'Split 1 Box',
+    btnPlace: n => `Place Cut Pieces (${n})`, btnReset: 'Restart',
+    unitSlice: den => `1/${den} unit`, unitWhole: '1 unit',
+    removeCol: 'Remove this column', addCol: 'Add data point',
+    colLabel: i => `Data ${i}`, totalLabel: 'Total',
+    statusDone: v => `Done! Every column is equal at ${v} units — that's the arithmetic mean`,
+    statusSliceWaiting: n => `${n} piece(s) cut and waiting — click "Place Cut Pieces" to hand them out`,
+    statusNotEnough: (w, n) => `${w} whole box(es) left, not enough for all ${n} columns — enter a part count and click "Split 1 Box"`,
+    statusDistributing: v => `Distributing... ${v} units left in the Total pile`
+  }
+};
+function t(key) { return I18N[getLang()][key]; }
+</script>
 
 <script>
 (function(){
@@ -374,10 +451,12 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   function makeColumn(index, value) {
     return {
       id: 'c' + index,
-      label: 'ข้อมูล ' + index,
       units: Array.from({ length: value }, whole),
     };
   }
+  // label is derived from id (not stored) so it re-renders in the current language;
+  // removeColumn keeps ids sequential 1..N, so the index is always right there in the id
+  function columnLabel(col) { return t('colLabel')(parseInt(col.id.slice(1), 10)); }
 
   let rawSnapshot = [5, 8, 6, 10];
   let state = freshState();
@@ -449,7 +528,7 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   function removeColumn(id) {
     if (!canEdit() || getN() <= MIN_COLUMNS) return;
     state.columns = state.columns.filter(c => c.id !== id);
-    state.columns.forEach((c, i) => { c.label = 'ข้อมูล ' + (i + 1); c.id = 'c' + (i + 1); });
+    state.columns.forEach((c, i) => { c.id = 'c' + (i + 1); });
     syncSnapshot();
     render();
   }
@@ -715,9 +794,9 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   function renderStats() {
     const N = getN(), sigma = getSigma(), xbar = sigma / N;
     document.getElementById('stats').innerHTML = `
-      <div class="stat"><div class="k">ผลรวม Σx</div><div class="v mono">${fmt(sigma)}</div></div>
-      <div class="stat"><div class="k">จำนวนข้อมูล N</div><div class="v mono">${N}</div></div>
-      <div class="stat"><div class="k">ค่าเฉลี่ย x̄ = Σx / N</div><div class="v mono">${fmt(xbar)}</div></div>
+      <div class="stat"><div class="k">${t('statSigma')}</div><div class="v mono">${fmt(sigma)}</div></div>
+      <div class="stat"><div class="k">${t('statN')}</div><div class="v mono">${N}</div></div>
+      <div class="stat"><div class="k">${t('statXbar')}</div><div class="v mono">${fmt(xbar)}</div></div>
     `;
   }
   function fmt(n) {
@@ -734,16 +813,16 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     const splitEnabled = !state.animating && canOfferSplit();
     const placeEnabled = !state.animating && sliceWaiting > 0;
     document.getElementById('toolbar').innerHTML = `
-      <button class="btn btn-combine" id="btnCombine" ${combineEnabled ? '' : 'disabled'}>📦 รวมอัตโนมัติ</button>
-      <button class="btn btn-distribute" id="btnDistribute" ${distributeEnabled ? '' : 'disabled'}>🤲 เกลี่ยอัตโนมัติ</button>
+      <button class="btn btn-combine" id="btnCombine" ${combineEnabled ? '' : 'disabled'}>📦 ${t('btnCombine')}</button>
+      <button class="btn btn-distribute" id="btnDistribute" ${distributeEnabled ? '' : 'disabled'}>🤲 ${t('btnDistribute')}</button>
       <div class="split-control ${splitEnabled ? '' : 'is-disabled'}" id="splitControl">
-        <span>แบ่ง 1 กล่องเป็น</span>
+        <span>${t('splitLabel')}</span>
         <input type="number" id="splitCountInput" min="2" max="${SPLIT_PARTS_MAX}" value="${lastSplitCount}" placeholder="?">
-        <span>ส่วน</span>
-        <button id="btnSplit">✂️ แบ่ง 1 กล่อง</button>
+        <span>${t('splitUnit')}</span>
+        <button id="btnSplit">✂️ ${t('btnSplit')}</button>
       </div>
-      <button class="btn btn-place" id="btnPlace" ${placeEnabled ? '' : 'disabled'}>📥 เอาชิ้นที่แบ่งไปใส่ (${sliceWaiting})</button>
-      <button class="btn btn-reset" id="btnReset">↺ เริ่มใหม่</button>
+      <button class="btn btn-place" id="btnPlace" ${placeEnabled ? '' : 'disabled'}>📥 ${t('btnPlace')(sliceWaiting)}</button>
+      <button class="btn btn-reset" id="btnReset">↺ ${t('btnReset')}</button>
     `;
     document.getElementById('btnCombine').onclick = autoCombine;
     document.getElementById('btnDistribute').onclick = autoDistribute;
@@ -784,7 +863,7 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     return `<div class="unit-box ${u.kind === 'slice' ? 'slice' : ''} ${isTop ? 'top-unit' : ''}"
                  style="height:${h}px;width:${BOX_W}px"
                  data-unit-id="${u.id}" data-pile-id="${pileId}"
-                 title="${u.kind === 'slice' ? '1/' + u.den + ' หน่วย' : '1 หน่วย'}">${inner}</div>`;
+                 title="${u.kind === 'slice' ? t('unitSlice')(u.den) : t('unitWhole')}">${inner}</div>`;
   }
 
   function renderColumn(col, boxUnit) {
@@ -795,14 +874,14 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     const unitsHtml = col.units.map((u, i) => renderUnit(u, col.id, i === col.units.length - 1, boxUnit, sliceH)).join('');
     return `
       <div class="col-wrap ${removable ? 'can-remove' : ''}">
-        <button class="col-remove" title="ลบคอลัมน์นี้" onclick="__meanTool.removeColumn('${col.id}')">✕</button>
+        <button class="col-remove" title="${t('removeCol')}" onclick="__meanTool.removeColumn('${col.id}')">✕</button>
         <div class="stack-area" data-pile-id="${col.id}" style="--stack-max-h:${STACK_AREA_MAX}px">${unitsHtml}</div>
         <div class="col-controls">
           <button class="stepper" ${locked ? 'disabled' : ''} onclick="__meanTool.incUnit('${col.id}',-1)">−</button>
           ${renderEditableValue(col.id, val, locked)}
           <button class="stepper" ${locked ? 'disabled' : ''} onclick="__meanTool.incUnit('${col.id}',1)">+</button>
         </div>
-        <div class="col-label">${col.label}</div>
+        <div class="col-label">${columnLabel(col)}</div>
       </div>
     `;
   }
@@ -841,7 +920,7 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
         <span class="col-remove"></span>
         <div class="sum-stacks">${stacksHtml}</div>
         <div class="col-controls"><span class="col-value mono">${fmt(pileValue(state.sum))}</span></div>
-        <div class="col-label">รวม</div>
+        <div class="col-label">${t('totalLabel')}</div>
       </div>
     `;
   }
@@ -850,7 +929,7 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
     const boxUnit = computeBoxUnit();
     const colsHtml = state.columns.map(c => renderColumn(c, boxUnit)).join('');
     const addDisabled = !canEdit() || getN() >= MAX_COLUMNS;
-    const addBtn = `<button class="add-col-btn" ${addDisabled ? 'disabled' : ''} onclick="__meanTool.addColumn()" title="เพิ่มข้อมูล">+</button>`;
+    const addBtn = `<button class="add-col-btn" ${addDisabled ? 'disabled' : ''} onclick="__meanTool.addColumn()" title="${t('addCol')}">+</button>`;
     const board = document.getElementById('board');
     board.innerHTML = `${colsHtml}${addBtn}${renderSumColumn(boxUnit)}`;
 
@@ -879,17 +958,17 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   function renderStatus() {
     const el = document.getElementById('status');
     if (isDone()) {
-      el.textContent = `เกลี่ยเสร็จแล้ว! ทุกคอลัมน์เท่ากันที่ ${fmt(getSigma() / getN())} หน่วย นั่นคือค่าเฉลี่ยเลขคณิต`;
+      el.textContent = t('statusDone')(fmt(getSigma() / getN()));
       return;
     }
     const w = wholeCountIn(state.sum), n = getN();
     const sliceWaiting = state.sum.filter(u => u.kind === 'slice').length;
     if (sliceWaiting > 0) {
-      el.textContent = `แบ่งไว้แล้ว ${sliceWaiting} ชิ้น — กด "เอาชิ้นที่แบ่งไปใส่" เพื่อแจกให้แต่ละคอลัมน์`;
+      el.textContent = t('statusSliceWaiting')(sliceWaiting);
     } else if (w > 0 && w < n) {
-      el.textContent = `เหลือกล่องเต็ม ${w} ใบ ไม่พอแจกครบ ${n} คอลัมน์ — พิมพ์จำนวนส่วนแล้วกด "แบ่ง 1 กล่อง"`;
+      el.textContent = t('statusNotEnough')(w, n);
     } else {
-      el.textContent = state.sum.length ? `กำลังเกลี่ยคืน... เหลือในกองรวม ${fmt(pileValue(state.sum))} หน่วย` : '';
+      el.textContent = state.sum.length ? t('statusDistributing')(fmt(pileValue(state.sum))) : '';
     }
   }
 
@@ -901,7 +980,9 @@ header p{ margin:0; color:var(--muted); font-size:.92rem; }
   }
 
   window.__meanTool = { addColumn, removeColumn, incUnit, editValue };
+  window.__meanRerender = render;
   render();
+  applyLang(getLang());
 })();
 </script>
 </body>

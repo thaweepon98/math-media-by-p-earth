@@ -34,10 +34,26 @@ header {
   color: white;
   padding: 32px 24px 28px;
   text-align: center;
+  position: relative;
 }
 
 header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
 header p { font-size: 0.95rem; opacity: 0.9; }
+.lang-toggle {
+  position: absolute;
+  top: 12px; right: 20px;
+  background: rgba(255,255,255,.15);
+  color: white;
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 2;
+}
+.lang-toggle:hover { background: rgba(255,255,255,.28); }
 
 .crumb {
   max-width: 1000px;
@@ -107,33 +123,66 @@ main {
 <body>
 
 <header>
-  <h1>📚 รวมสื่อการสอน by P'Earth</h1>
-  <p>เลือกรายวิชาเพื่อดูสื่อการสอนทั้งหมด</p>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📚 รวมสื่อการสอน by P'Earth" data-en="📚 Teaching Materials by P'Earth">📚 รวมสื่อการสอน by P'Earth</h1>
+  <p data-th="เลือกรายวิชาเพื่อดูสื่อการสอนทั้งหมด" data-en="Choose a subject to see all its teaching materials">เลือกรายวิชาเพื่อดูสื่อการสอนทั้งหมด</p>
 </header>
 
 <main>
   <div id="subjectGrid" class="grid"></div>
-  <p id="emptyNote" class="empty-note" style="display:none;">ยังไม่มีรายวิชา</p>
+  <p id="emptyNote" class="empty-note" style="display:none;" data-th="ยังไม่มีรายวิชา" data-en="No subjects yet">ยังไม่มีรายวิชา</p>
 </main>
 
 <script>
-// เพิ่มวิชาใหม่: เพิ่ม object ในนี้ (slug ต้องตรงกับชื่อโฟลเดอร์)
+// ── ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) ──
+const PAGE_TITLE = { th: "รวมสื่อการสอน by P'Earth", en: "Teaching Materials by P'Earth" };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) { renderSubjects(); }
+
+// เพิ่มวิชาใหม่: เพิ่ม object ในนี้ (slug ต้องตรงกับชื่อโฟลเดอร์ ใส่ทั้ง _th และ _en)
 const SUBJECTS = [
-  { slug: "math", title: "คณิตศาสตร์", desc: "สื่อการสอนวิชาคณิตศาสตร์", icon: "📐" }
+  { slug: "math", title_th: "คณิตศาสตร์", title_en: "Mathematics", desc_th: "สื่อการสอนวิชาคณิตศาสตร์", desc_en: "Mathematics teaching materials", icon: "📐" }
 ];
 
-const grid = document.getElementById("subjectGrid");
-if (SUBJECTS.length === 0) {
-  document.getElementById("emptyNote").style.display = "block";
-} else {
-  grid.innerHTML = SUBJECTS.map(s => `
-    <a class="card" href="./${s.slug}/index.html">
-      <div class="icon">${s.icon}</div>
-      <div class="title">${s.title}</div>
-      <div class="desc">${s.desc}</div>
-    </a>
-  `).join("");
+function renderSubjects() {
+  const lang = getLang();
+  const grid = document.getElementById("subjectGrid");
+  if (SUBJECTS.length === 0) {
+    document.getElementById("emptyNote").style.display = "block";
+  } else {
+    grid.innerHTML = SUBJECTS.map(s => `
+      <a class="card" href="./${s.slug}/index.html">
+        <div class="icon">${s.icon}</div>
+        <div class="title">${lang === 'en' ? s.title_en : s.title_th}</div>
+        <div class="desc">${lang === 'en' ? s.desc_en : s.desc_th}</div>
+      </a>
+    `).join("");
+  }
 }
+
+renderSubjects();
+applyLang(getLang());
 </script>
 
 </body>
