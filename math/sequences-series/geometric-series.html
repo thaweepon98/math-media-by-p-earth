@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : อนุกรมเรขาคณิต (Geometric Series)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #1B3B6F;
+    --secondary: #FF6584;
+    --accent: #43D9AD;
+    --warning: #FFB347;
+    --bg: #F0F4FF;
+    --card: #FFFFFF;
+    --text: #2D3748;
+    --muted: #718096;
+    --border: #E2E8F0;
+    --shadow: 0 4px 24px rgba(27,59,111,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%);
+    color: white;
+    padding: 16px 40px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; }
+  header p  { font-size: .9rem; opacity: .85; margin-top: 2px; }
+  .back-link {
+    position: absolute;
+    top: 12px; left: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    opacity: .9;
+    z-index: 2;
+  }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle {
+    position: absolute;
+    top: 12px; right: 20px;
+    background: rgba(255,255,255,.15);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,.5);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+
+  /* ── Tab Nav ── */
+  nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 24px 0;
+    background: white;
+    border-bottom: 3px solid var(--border);
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 10px 10px 0 0;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .25s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+
+  /* ── Main ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon { font-size: 1.5rem; }
+
+  .desc-text { font-size: 1rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+
+  /* ── Highlight box (disclaimer / notes) ── */
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+
+  /* ── Formula ── */
+  .formula {
+    background: linear-gradient(135deg,#1B3B6F,#2C5F8A);
+    color: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 16px 0;
+    letter-spacing: .5px;
+  }
+  .formula.small { font-size: 1.05rem; padding: 12px 18px; }
+
+  /* ── Step-by-step derivation ── */
+  .steps { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .step { display: flex; gap: 14px; align-items: baseline; font-size: 1.02rem; flex-wrap: wrap; }
+  .step-tag { font-size: .72rem; font-weight: 700; color: var(--muted); min-width: 5.5em; text-transform: uppercase; letter-spacing: .04em; }
+  .step.result { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: #fff; padding: 14px 20px; border-radius: 12px; font-weight: 700; margin-top: 4px; }
+  .step.result .step-tag { color: rgba(255,255,255,.75); }
+
+  /* ── Mode toggle (r selector) ── */
+  .mode-toggle { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .mode-label { font-size: .88rem; font-weight: 600; color: var(--muted); margin-right: 4px; }
+  .mode-btn {
+    padding: 10px 22px;
+    border: 2px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    background: white;
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .mode-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+
+  /* ── Stepper (choose a1) ── */
+  .stepper { display: flex; align-items: center; gap: .6rem; }
+  .stepper .btn { width: 2.1rem; height: 2.1rem; font-weight: 800; font-size: 1.15rem; }
+  .stepper .stepper-val { font-size: 1.05rem; font-weight: 800; color: var(--primary); min-width: 1.6em; text-align: center; }
+
+  /* ── Sequence recap: arrows between terms ── */
+  .arrow-col { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 0 0 auto; color: var(--secondary); }
+  .arrow-col .op { font-size: .82rem; font-weight: 800; white-space: nowrap; }
+  .arrow-col svg { width: 22px; height: 22px; }
+
+  /* ── Series: label above the term bars / the stacked sum bar ── */
+  .stack-label { font-size: .8rem; color: var(--muted); font-weight: 600; margin-bottom: .3rem; }
+
+  /* ── Horizontal stacked bar (series Sₙ build-up) ── */
+  .rect-row { display: flex; align-items: center; gap: .8rem; margin-top: .6rem; }
+  .rect-bar { position: relative; height: 64px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); overflow: hidden; display: flex; flex: 1; }
+  .rect-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: .76rem; font-weight: 700; flex: 0 0 auto; }
+
+  /* ── Convergent (square-halving spiral) / divergent (whirling squares) diagrams ── */
+  .diagram-panel { display: flex; justify-content: center; align-items: flex-end; }
+  .diagram-panel svg { display: block; max-width: 100%; height: auto; }
+
+  /* ── Buttons (transport controls) ── */
+  .btn {
+    font-family: 'Sarabun', sans-serif;
+    border: none; cursor: pointer;
+    border-radius: 999px;
+    width: 2.5rem; height: 2.5rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--card); color: var(--text); border: 1px solid var(--border);
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-play { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-play:hover:not(:disabled) { border-color: var(--primary); color: #fff; opacity: .9; }
+
+  .sim-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 1.6rem; justify-content: space-between; }
+  .transport { display: flex; align-items: center; gap: .5rem; }
+  .round-indicator { font-size: .9rem; color: var(--muted); font-weight: 600; min-width: 6.5em; text-align: center; }
+
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 8rem; height: 5px; border-radius: 3px;
+    background: var(--border); outline: none; cursor: pointer;
+  }
+  .round-limit input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--primary); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--primary);
+  }
+  .round-limit input[type="range"]::-moz-range-thumb {
+    width: 15px; height: 15px; border-radius: 50%; border: 2px solid #fff;
+    background: var(--primary); box-shadow: 0 0 0 1px var(--primary);
+  }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 1.6em; text-align: right; }
+
+  /* ── Transmission tree ── */
+  .legend-row { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 0 12px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: .82rem; font-weight: 600; color: var(--muted); }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  .tree-panel {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: .8rem;
+    overflow: auto;
+  }
+  .tree-panel svg { display: block; }
+  .node-new { animation: nodePop .4s ease both; transform-box: fill-box; transform-origin: center; }
+  @keyframes nodePop { from { opacity:0; transform: scale(.25);} to { opacity:1; transform: scale(1);} }
+
+  .beyond-note { font-size: .88rem; color: var(--muted); margin-top: .8rem; line-height: 1.7; }
+  .beyond-note b { color: var(--primary); }
+  .beyond-chart { display: flex; align-items: flex-end; gap: 5px; height: 90px; margin-top: .7rem; overflow-x: auto; padding-bottom: 2px; }
+  .beyond-chart .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: .3rem; min-width: 32px; }
+  .beyond-chart .fill { width: 100%; max-width: 20px; background: var(--muted); opacity: .4; border-radius: 3px 3px 0 0; }
+  .beyond-chart .fill.active { background: var(--secondary); opacity: 1; }
+  .beyond-chart .v { font-size: .64rem; color: var(--muted); white-space: nowrap; }
+
+  /* ── Stat numbers ── */
+  .stat-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: .2rem; }
+  .stat .n { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+  .stat .l { font-size: .8rem; color: var(--muted); }
+
+  /* ── Bar charts (shared by sequence example & Sn-by-round) ── */
+  .bar-row { display: flex; align-items: flex-end; gap: clamp(.5rem,2vw,1.1rem); height: 170px; margin-top: .8rem; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; gap: .4rem; flex: 1; height: 100%; justify-content: flex-end; }
+  .bar-col .bar { width: 100%; max-width: 50px; background: linear-gradient(180deg, var(--accent), var(--primary)); border-radius: 6px 6px 0 0; }
+  .bar-col .val { font-size: .8rem; color: var(--muted); font-weight: 600; }
+  .bar-col .idx { font-size: .78rem; color: var(--muted); }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: .5rem; height: 130px; margin-top: .6rem; }
+  .bar-chart .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: .35rem; }
+  .bar-chart .fill { width: 100%; max-width: 34px; background: var(--accent); border-radius: 4px 4px 0 0; transition: height .4s ease; }
+  .bar-chart .fill.active { background: var(--secondary); }
+  .bar-chart .v { font-size: .7rem; color: var(--muted); }
+
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background: #FFE3E9; color: var(--secondary); padding: .05em .4em; border-radius: 6px; font-weight: 800; }
+
+  /* ── History table ── */
+  .history-wrap { max-height: 260px; overflow-y: auto; margin-top: .6rem; }
+  table.history { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  table.history th, table.history td { text-align: right; padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+  table.history th:first-child, table.history td:first-child { text-align: left; }
+  table.history th { color: var(--muted); font-weight: 600; font-size: .76rem; text-transform: uppercase; letter-spacing: .03em; position: sticky; top: 0; background: var(--card); }
+  table.history tr:last-child td { color: var(--secondary); font-weight: 700; }
+
+  /* ── Summary grid ── */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .card { padding: 16px 14px; }
+    .tab-btn { font-size: .85rem; padding: 8px 12px; }
+    .mode-btn { padding: 10px 16px; font-size: .95rem; }
+    .formula { font-size: 1.05rem; padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าวิชา" data-en="← Back to Subject">← กลับหน้าวิชา</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📈 อนุกรมเรขาคณิต" data-en="📈 Geometric Series">📈 อนุกรมเรขาคณิต</h1>
+  <p data-th="จากลำดับเรขาคณิตสู่ผลรวม พร้อมตัวอย่างการแพร่ระบาดของไวรัส • สื่อการสอนแบบโต้ตอบ" data-en="From geometric sequences to their sum, with a virus-spread example • Interactive Teaching Aid">จากลำดับเรขาคณิตสู่ผลรวม พร้อมตัวอย่างการแพร่ระบาดของไวรัส • สื่อการสอนแบบโต้ตอบ</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="recap" onclick="showTab('recap', this)" data-th="🔁 ทบทวนลำดับ" data-en="🔁 Sequence Recap">🔁 ทบทวนลำดับ</button>
+  <button class="tab-btn" data-tab="series" onclick="showTab('series', this)" data-th="➕ อนุกรมเรขาคณิต" data-en="➕ The Series">➕ อนุกรมเรขาคณิต</button>
+  <button class="tab-btn" data-tab="virus" onclick="showTab('virus', this)" data-th="🦠 ตัวอย่างไวรัส" data-en="🦠 Virus Example">🦠 ตัวอย่างไวรัส</button>
+  <button class="tab-btn" data-tab="convergent" onclick="showTab('convergent', this)" data-th="🌀 อนุกรมลู่เข้า-ลู่ออก" data-en="🌀 Convergent & Divergent">🌀 อนุกรมลู่เข้า-ลู่ออก</button>
+  <button class="tab-btn" data-tab="summary" onclick="showTab('summary', this)" data-th="🎯 สรุปสูตร" data-en="🎯 Summary">🎯 สรุปสูตร</button>
+</nav>
+
+<main>
+
+<!-- ══════════════ TAB: ทบทวนลำดับ ══════════════ -->
+<section id="tab-recap" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon" id="recapIcon">✖️</span><span id="recapTitle" data-th="ลำดับเรขาคณิต (Geometric Sequence)" data-en="Geometric Sequence">ลำดับเรขาคณิต (Geometric Sequence)</span></div>
+    <p class="desc-text" id="recapDesc" data-th="ลำดับที่พจน์ถัดไปเกิดจากการนำพจน์ก่อนหน้าไปคูณด้วยจำนวนคงที่จำนวนหนึ่งเสมอ เรียกจำนวนคงที่นี้ว่า อัตราส่วนร่วม (common ratio) แทนด้วย r" data-en="A sequence where every next term comes from multiplying the previous term by the same constant. That constant is called the common ratio, written r.">ลำดับที่พจน์ถัดไปเกิดจากการนำพจน์ก่อนหน้าไปคูณด้วยจำนวนคงที่จำนวนหนึ่งเสมอ เรียกจำนวนคงที่นี้ว่า อัตราส่วนร่วม (common ratio) แทนด้วย r</p>
+    <div class="formula" id="recapFormula">a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup></div>
+  </div>
+
+  <div class="card">
+    <div class="sim-controls">
+      <div class="mode-toggle">
+        <span class="mode-label" data-th="ชนิดลำดับ" data-en="Sequence type">ชนิดลำดับ</span>
+        <button class="mode-btn" id="seqModeArith" data-th="เลขคณิต (+d)" data-en="Arithmetic (+d)">เลขคณิต (+d)</button>
+        <button class="mode-btn active" id="seqModeGeo" data-th="เรขาคณิต (×r)" data-en="Geometric (×r)">เรขาคณิต (×r)</button>
+      </div>
+      <div class="stepper">
+        <span class="mode-label" data-th="เลือก a₁" data-en="Choose a₁">เลือก a₁</span>
+        <button class="btn" id="a1Minus" aria-label="a1 -1">−</button>
+        <span class="stepper-val" id="a1Val">3</span>
+        <button class="btn" id="a1Plus" aria-label="a1 +1">+</button>
+      </div>
+      <div class="stepper">
+        <span class="mode-label" id="paramLabel">เลือก r</span>
+        <button class="btn" id="paramMinus" aria-label="param -1">−</button>
+        <span class="stepper-val" id="paramVal">2</span>
+        <button class="btn" id="paramPlus" aria-label="param +1">+</button>
+      </div>
+    </div>
+    <div class="bar-row" id="seqBars" style="margin-top:1.2rem;"></div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('series', document.querySelector('.tab-btn[data-tab=series]'))" data-th="ต่อไป: อนุกรมเรขาคณิต →" data-en="Next: The Series →">ต่อไป: อนุกรมเรขาคณิต →</button>
+</section>
+
+<!-- ══════════════ TAB: อนุกรมเรขาคณิต ══════════════ -->
+<section id="tab-series" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">➕</span><span data-th="อนุกรมเรขาคณิต (Geometric Series)" data-en="Geometric Series">อนุกรมเรขาคณิต (Geometric Series)</span></div>
+    <p class="desc-text" data-th="เมื่อนำ n พจน์แรกของลำดับเรขาคณิตมาบวกกัน ผลบวกนั้นเรียกว่า อนุกรมเรขาคณิต แทนด้วย Sₙ — สูตรผลรวมหาได้จากกลวิธีง่าย ๆ คือคูณทั้งสองข้างด้วย r แล้วลบกัน:" data-en="Adding up the first n terms of a geometric sequence gives the geometric series, written Sₙ. The sum formula comes from a simple trick: multiply both sides by r, then subtract:">เมื่อนำ n พจน์แรกของลำดับเรขาคณิตมาบวกกัน ผลบวกนั้นเรียกว่า อนุกรมเรขาคณิต แทนด้วย Sₙ — สูตรผลรวมหาได้จากกลวิธีง่าย ๆ คือคูณทั้งสองข้างด้วย r แล้วลบกัน:</p>
+
+    <div class="steps">
+      <div class="step"><span class="step-tag" data-th="ตั้งต้น" data-en="Start">ตั้งต้น</span><span>S<sub>n</sub> = a₁ + a₁r + a₁r² + ⋯ + a₁r<sup>n−1</sup></span></div>
+      <div class="step"><span class="step-tag" data-th="คูณด้วย r" data-en="Multiply by r">คูณด้วย r</span><span>rS<sub>n</sub> = a₁r + a₁r² + ⋯ + a₁r<sup>n</sup></span></div>
+      <div class="step"><span class="step-tag" data-th="ลบกัน" data-en="Subtract">ลบกัน</span><span>S<sub>n</sub> − rS<sub>n</sub> = a₁ − a₁r<sup>n</sup></span></div>
+      <div class="step"><span class="step-tag" data-th="จัดรูป" data-en="Rearrange">จัดรูป</span><span>S<sub>n</sub>(1 − r) = a₁(1 − r<sup>n</sup>)</span></div>
+      <div class="step result"><span class="step-tag" data-th="สูตร" data-en="Formula">สูตร</span><span>S<sub>n</sub> = a₁(1 − r<sup>n</sup>) / (1 − r) , &nbsp; r ≠ 1</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧱</span><span data-th="อนุกรมคือผลรวมของลำดับ" data-en="A Series Is a Sequence, Added Up">อนุกรมคือผลรวมของลำดับ</span></div>
+    <p class="desc-text" data-th="แต่ละแท่งด้านซ้ายคือพจน์หนึ่งของลำดับ นำมาวางซ้อนกันทีละพจน์ทางขวา ความสูงรวมทั้งแท่งคือผลรวม Sₙ" data-en="Each bar on the left is one term of the sequence. Stack them on top of each other on the right, and the total height is the sum Sₙ.">แต่ละแท่งด้านซ้ายคือพจน์หนึ่งของลำดับ นำมาวางซ้อนกันทีละพจน์ทางขวา ความสูงรวมทั้งแท่งคือผลรวม Sₙ</p>
+
+    <div class="sim-controls">
+      <div class="stepper">
+        <span class="mode-label" data-th="เลือก a₁" data-en="Choose a₁">เลือก a₁</span>
+        <button class="btn" id="sA1Minus" aria-label="a1 -1">−</button>
+        <span class="stepper-val" id="sA1Val">3</span>
+        <button class="btn" id="sA1Plus" aria-label="a1 +1">+</button>
+      </div>
+      <div class="stepper">
+        <span class="mode-label" data-th="อัตราส่วนร่วม r" data-en="Common ratio r">อัตราส่วนร่วม r</span>
+        <button class="btn" id="sRMinus" aria-label="r -1">−</button>
+        <span class="stepper-val" id="sRVal">2</span>
+        <button class="btn" id="sRPlus" aria-label="r +1">+</button>
+      </div>
+    </div>
+
+    <div class="stack-label" style="margin-top:1.2rem;" data-th="พจน์แต่ละตัว aᵢ" data-en="Each term aᵢ">พจน์แต่ละตัว aᵢ</div>
+    <div class="bar-row" id="seriesBars" style="height:280px;"></div>
+
+    <div class="stack-label" style="margin-top:1.4rem;" data-th="ซ้อนกันตามแนวนอน = Sₙ" data-en="Stacked horizontally = Sₙ">ซ้อนกันตามแนวนอน = Sₙ</div>
+    <div class="rect-row">
+      <div class="rect-bar" id="seriesSumBar"></div>
+    </div>
+
+    <div class="formula-live" id="seriesFormulaLive"></div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('virus', document.querySelector('.tab-btn[data-tab=virus]'))" data-th="ต่อไป: ตัวอย่างไวรัส →" data-en="Next: Virus Example →">ต่อไป: ตัวอย่างไวรัส →</button>
+</section>
+
+<!-- ══════════════ TAB: ตัวอย่างไวรัส ══════════════ -->
+<section id="tab-virus" class="tab-panel">
+  <div class="box-info">
+    <b data-th="⚠️ หมายเหตุ:" data-en="⚠️ Note:">⚠️ หมายเหตุ:</b>
+    <span data-th="แบบจำลองอย่างง่ายเพื่อประกอบการเรียนเรื่องอนุกรมเรขาคณิตเท่านั้น ไม่ใช่การพยากรณ์ทางระบาดวิทยาจริง — สมมติว่าผู้ติดเชื้อ 1 คนแพร่ต่อให้คนใหม่จำนวน r คนในแต่ละรอบ" data-en="A simplified model for teaching geometric series only — not a real epidemiological forecast. Assume each infected person passes it to r new people every round.">แบบจำลองอย่างง่ายเพื่อประกอบการเรียนเรื่องอนุกรมเรขาคณิตเท่านั้น ไม่ใช่การพยากรณ์ทางระบาดวิทยาจริง — สมมติว่าผู้ติดเชื้อ 1 คนแพร่ต่อให้คนใหม่จำนวน r คนในแต่ละรอบ</span>
+  </div>
+
+  <div class="card">
+    <div class="sim-controls">
+      <div class="mode-toggle">
+        <span class="mode-label" data-th="อัตราส่วนร่วม r" data-en="Common ratio r">อัตราส่วนร่วม r</span>
+        <button class="mode-btn" id="rBtn2">r = 2</button>
+        <button class="mode-btn" id="rBtn3">r = 3</button>
+      </div>
+      <div class="transport">
+        <button class="btn" id="prevRound" data-th-title="รอบก่อนหน้า" data-en-title="Previous round" aria-label="Previous round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="btn btn-play" id="playRound" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause">
+          <svg id="playIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn" id="nextRound" data-th-title="รอบถัดไป" data-en-title="Next round" aria-label="Next round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <span class="round-indicator" id="roundIndicator">รอบที่ 1 / 8</span>
+        <button class="btn" id="resetRound" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg>
+        </button>
+      </div>
+      <div class="round-limit">
+        <span class="mode-label" data-th="จำนวนรอบสูงสุด" data-en="Max rounds">จำนวนรอบสูงสุด</span>
+        <input type="range" id="maxRoundSlider" min="3" max="16" step="1" value="8">
+        <span class="val" id="maxRoundValue">8</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🌳</span><span data-th="แผนภาพการแพร่เชื้อสะสม" data-en="Cumulative Transmission Tree">แผนภาพการแพร่เชื้อสะสม</span></div>
+    <div class="legend-row">
+      <span class="legend-item"><i class="legend-swatch" style="background:var(--primary)"></i><span data-th="ผู้ป่วยรายแรก" data-en="Patient zero">ผู้ป่วยรายแรก</span></span>
+      <span class="legend-item"><i class="legend-swatch" style="background:var(--secondary)"></i><span data-th="ผู้ติดเชื้อใหม่รอบนี้" data-en="New cases this round">ผู้ติดเชื้อใหม่รอบนี้</span></span>
+      <span class="legend-item"><i class="legend-swatch" style="background:var(--muted)"></i><span data-th="ติดเชื้อไปแล้วก่อนหน้า" data-en="Infected in an earlier round">ติดเชื้อไปแล้วก่อนหน้า</span></span>
+    </div>
+    <div class="tree-panel" id="treePanel"></div>
+    <div id="beyondBlock" hidden>
+      <p class="beyond-note" id="beyondNote"></p>
+      <div class="beyond-chart" id="beyondChart"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stat-row">
+      <div class="stat"><span class="n" id="statNew">1</span><span class="l" data-th="ผู้ติดเชื้อใหม่รอบนี้" data-en="New cases this round">ผู้ติดเชื้อใหม่รอบนี้</span></div>
+      <div class="stat"><span class="n" id="statTotal">1</span><span class="l" data-th="สะสมทั้งหมด" data-en="Total so far">สะสมทั้งหมด</span></div>
+    </div>
+    <div class="card-title" style="margin-top:16px;"><span class="icon">📶</span><span data-th="ยอดสะสม Sₙ ตามรอบ" data-en="Cumulative Sₙ by round">ยอดสะสม Sₙ ตามรอบ</span></div>
+    <div class="bar-chart" id="barChart"></div>
+    <div class="formula-live" id="formulaLive"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span><span data-th="ตารางย้อนหลัง" data-en="Round-by-round table">ตารางย้อนหลัง</span></div>
+    <div class="history-wrap">
+      <table class="history">
+        <thead><tr>
+          <th data-th="รอบ (n)" data-en="Round (n)">รอบ (n)</th>
+          <th data-th="ผู้ติดเชื้อใหม่ aₙ" data-en="New cases aₙ">ผู้ติดเชื้อใหม่ aₙ</th>
+          <th data-th="สะสม Sₙ" data-en="Cumulative Sₙ">สะสม Sₙ</th>
+        </tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('convergent', document.querySelector('.tab-btn[data-tab=convergent]'))" data-th="ต่อไป: อนุกรมลู่เข้า-ลู่ออก →" data-en="Next: Convergent & Divergent →">ต่อไป: อนุกรมลู่เข้า-ลู่ออก →</button>
+</section>
+
+<!-- ══════════════ TAB: อนุกรมลู่เข้า-ลู่ออก ══════════════ -->
+<section id="tab-convergent" class="tab-panel">
+  <div class="box-info">
+    <span data-th="อนุกรมเรขาคณิตจะ ลู่เข้า (ผลรวมเข้าใกล้ค่าคงที่ค่าหนึ่งเสมอ) เมื่อ |r| < 1 หรือ ลู่ออก (ผลรวมโตไม่หยุด) เมื่อ r ≥ 1 — ลองสลับดูสองแบบด้านล่าง" data-en="A geometric series converges (the sum keeps getting closer to one fixed value) when |r| < 1, or diverges (the sum grows without bound) when r ≥ 1 — switch between the two below.">อนุกรมเรขาคณิตจะ ลู่เข้า (ผลรวมเข้าใกล้ค่าคงที่ค่าหนึ่งเสมอ) เมื่อ |r| &lt; 1 หรือ ลู่ออก (ผลรวมโตไม่หยุด) เมื่อ r ≥ 1 — ลองสลับดูสองแบบด้านล่าง</span>
+  </div>
+
+  <div class="mode-toggle" style="margin-bottom:1rem;">
+    <span class="mode-label" data-th="ประเภทอนุกรม" data-en="Series type">ประเภทอนุกรม</span>
+    <button class="mode-btn active" id="csModeConv" data-th="ลู่เข้า (|r| &lt; 1)" data-en="Convergent (|r| &lt; 1)">ลู่เข้า (|r| &lt; 1)</button>
+    <button class="mode-btn" id="csModeDiv" data-th="ลู่ออก (r ≥ 1)" data-en="Divergent (r ≥ 1)">ลู่ออก (r ≥ 1)</button>
+  </div>
+
+  <div id="convBlock">
+    <div class="card">
+      <div class="card-title"><span class="icon">🌀</span><span data-th="ลู่เข้า: สี่เหลี่ยมจัตุรัสแสดงผลรวม 1/2 + 1/4 + 1/8 + ⋯" data-en="Convergent: A Square Showing 1/2 + 1/4 + 1/8 + ⋯">ลู่เข้า: สี่เหลี่ยมจัตุรัสแสดงผลรวม 1/2 + 1/4 + 1/8 + ⋯</span></div>
+      <p class="desc-text" data-th="อนุกรมเรขาคณิตที่ a₁ = r = 1/2 — สี่เหลี่ยมจัตุรัสทั้งรูปแทนค่า 1 พอดี แต่ละพจน์คือครึ่งหนึ่งของพื้นที่ที่ยังไม่ได้แรเงา สลับตัดแนวตั้ง-แนวนอนไปเรื่อยๆ — ยิ่งบวกหลายพจน์ ยิ่งใกล้ 1 แต่ไม่มีวันถึง 1 พอดี" data-en="A geometric series with a₁ = r = 1/2. The whole square represents exactly 1. Each term shades half of whatever area is still unshaded, alternating a vertical and a horizontal cut — the more terms you add, the closer the shaded area gets to 1, without ever quite reaching it.">อนุกรมเรขาคณิตที่ a₁ = r = 1/2 — สี่เหลี่ยมจัตุรัสทั้งรูปแทนค่า 1 พอดี แต่ละพจน์คือครึ่งหนึ่งของพื้นที่ที่ยังไม่ได้แรเงา สลับตัดแนวตั้ง-แนวนอนไปเรื่อยๆ — ยิ่งบวกหลายพจน์ ยิ่งใกล้ 1 แต่ไม่มีวันถึง 1 พอดี</p>
+
+      <div class="sim-controls">
+        <div class="transport">
+          <button class="btn" id="cPrev" data-th-title="พจน์ก่อนหน้า" data-en-title="Previous term" aria-label="Previous term">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn-play" id="cPlay" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause">
+            <svg id="cPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="btn" id="cNext" data-th-title="พจน์ถัดไป" data-en-title="Next term" aria-label="Next term">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <span class="round-indicator" id="cIndicator">n = 1</span>
+          <button class="btn" id="cReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="tree-panel diagram-panel" id="convPanel"></div>
+
+      <div class="stat-row" style="margin-top:1rem;">
+        <div class="stat"><span class="n" id="cStatSn">0.5</span><span class="l" data-th="ผลรวม Sₙ" data-en="Sum Sₙ">ผลรวม Sₙ</span></div>
+        <div class="stat"><span class="n" id="cStatGap">0.5</span><span class="l" data-th="ระยะห่างจาก 1" data-en="Distance from 1">ระยะห่างจาก 1</span></div>
+      </div>
+      <div class="formula-live" id="cFormulaLive"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span><span data-th="ตารางย้อนหลัง" data-en="Round-by-round table">ตารางย้อนหลัง</span></div>
+      <div class="history-wrap">
+        <table class="history">
+          <thead><tr>
+            <th data-th="พจน์ที่ (n)" data-en="Term (n)">พจน์ที่ (n)</th>
+            <th data-th="พจน์ aₙ" data-en="Term aₙ">พจน์ aₙ</th>
+            <th data-th="สะสม Sₙ" data-en="Cumulative Sₙ">สะสม Sₙ</th>
+          </tr></thead>
+          <tbody id="cHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="divBlock" hidden>
+    <div class="card">
+      <div class="card-title"><span class="icon">📈</span><span data-th="ลู่ออก: สี่เหลี่ยมที่หมุนขยายออกไม่มีที่สิ้นสุด" data-en="Divergent: Whirling Squares That Never Stop Growing">ลู่ออก: สี่เหลี่ยมที่หมุนขยายออกไม่มีที่สิ้นสุด</span></div>
+      <p class="desc-text" data-th="อนุกรมเรขาคณิตที่ a₁ = 1, r = 2 — คราวนี้ไม่มีกรอบตายตัวแทนค่า 1 อีกแล้ว แต่ละพจน์คือสี่เหลี่ยมจัตุรัสพื้นที่เท่ากับค่าพจน์นั้น ต่อกันเป็นก้นหอยขยายออกทีละด้าน (ขวา-บน สลับกัน) ยิ่งเพิ่มพจน์ยิ่งขยายใหญ่ขึ้นไม่มีที่สิ้นสุด" data-en="A geometric series with a₁ = 1, r = 2. This time there's no fixed frame representing 1 — each term is a square whose area equals that term's value, added on alternating sides (right, then above) so the whole shape whirls outward, getting bigger without any limit.">อนุกรมเรขาคณิตที่ a₁ = 1, r = 2 — คราวนี้ไม่มีกรอบตายตัวแทนค่า 1 อีกแล้ว แต่ละพจน์คือสี่เหลี่ยมจัตุรัสพื้นที่เท่ากับค่าพจน์นั้น ต่อกันเป็นก้นหอยขยายออกทีละด้าน (ขวา-บน สลับกัน) ยิ่งเพิ่มพจน์ยิ่งขยายใหญ่ขึ้นไม่มีที่สิ้นสุด</p>
+
+      <div class="sim-controls">
+        <div class="transport">
+          <button class="btn" id="dPrev" data-th-title="พจน์ก่อนหน้า" data-en-title="Previous term" aria-label="Previous term">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn-play" id="dPlay" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause">
+            <svg id="dPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="btn" id="dNext" data-th-title="พจน์ถัดไป" data-en-title="Next term" aria-label="Next term">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <span class="round-indicator" id="dIndicator">n = 1</span>
+          <button class="btn" id="dReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="tree-panel diagram-panel" id="divPanel"></div>
+
+      <div class="stat-row" style="margin-top:1rem;">
+        <div class="stat"><span class="n" id="dStatSn">1</span><span class="l" data-th="ผลรวม Sₙ" data-en="Sum Sₙ">ผลรวม Sₙ</span></div>
+        <div class="stat"><span class="n" id="dStatNew">1</span><span class="l" data-th="พจน์ล่าสุด aₙ" data-en="Latest term aₙ">พจน์ล่าสุด aₙ</span></div>
+      </div>
+      <div class="formula-live" id="dFormulaLive"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span><span data-th="ตารางย้อนหลัง" data-en="Round-by-round table">ตารางย้อนหลัง</span></div>
+      <div class="history-wrap">
+        <table class="history">
+          <thead><tr>
+            <th data-th="พจน์ที่ (n)" data-en="Term (n)">พจน์ที่ (n)</th>
+            <th data-th="พจน์ aₙ" data-en="Term aₙ">พจน์ aₙ</th>
+            <th data-th="สะสม Sₙ" data-en="Cumulative Sₙ">สะสม Sₙ</th>
+          </tr></thead>
+          <tbody id="dHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('summary', document.querySelector('.tab-btn[data-tab=summary]'))" data-th="ต่อไป: สรุปสูตร →" data-en="Next: Summary →">ต่อไป: สรุปสูตร →</button>
+</section>
+
+<!-- ══════════════ TAB: สรุปสูตร ══════════════ -->
+<section id="tab-summary" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span><span data-th="สูตรที่ต้องจำ" data-en="Formulas to Remember">สูตรที่ต้องจำ</span></div>
+
+    <div class="card-title" style="font-size:1rem;margin-top:.5rem;"><span class="icon">🔢</span><span data-th="ลำดับ" data-en="Sequences">ลำดับ</span></div>
+    <div class="concept-grid">
+      <div>
+        <div class="formula small">a<sub>n</sub> = a₁ + (n − 1)d</div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="ลำดับเลขคณิต — พจน์ถัดไปเกิดจากบวกด้วยผลต่างร่วม d คงที่" data-en="Arithmetic sequence — each next term adds a fixed common difference d.">ลำดับเลขคณิต — พจน์ถัดไปเกิดจากบวกด้วยผลต่างร่วม d คงที่</p>
+      </div>
+      <div>
+        <div class="formula small">a<sub>n</sub> = a₁ · r<sup>n − 1</sup></div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="ลำดับเรขาคณิต — พจน์ถัดไปเกิดจากคูณด้วยอัตราส่วนร่วม r คงที่" data-en="Geometric sequence — each next term multiplies by a fixed common ratio r.">ลำดับเรขาคณิต — พจน์ถัดไปเกิดจากคูณด้วยอัตราส่วนร่วม r คงที่</p>
+      </div>
+    </div>
+
+    <div class="card-title" style="font-size:1rem;margin-top:1.2rem;"><span class="icon">➕</span><span data-th="อนุกรม" data-en="Series">อนุกรม</span></div>
+    <div class="concept-grid">
+      <div>
+        <div class="formula small">S<sub>n</sub> = n/2 [2a₁ + (n − 1)d]</div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="อนุกรมเลขคณิต — ผลรวม n พจน์แรกของลำดับเลขคณิต" data-en="Arithmetic series — the sum of the first n terms of an arithmetic sequence.">อนุกรมเลขคณิต — ผลรวม n พจน์แรกของลำดับเลขคณิต</p>
+      </div>
+      <div>
+        <div class="formula small">S<sub>n</sub> = a₁(1 − r<sup>n</sup>) / (1 − r)</div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="อนุกรมเรขาคณิต — ใช้ได้เมื่อ r ≠ 1 เช่นตัวอย่างไวรัสที่ r = 2 หรือ 3" data-en="Geometric series — valid when r ≠ 1, like the virus example where r = 2 or 3.">อนุกรมเรขาคณิต — ใช้ได้เมื่อ r ≠ 1 เช่นตัวอย่างไวรัสที่ r = 2 หรือ 3</p>
+      </div>
+    </div>
+
+    <div class="box-info" style="margin-top:18px;">
+      <b data-th="เมื่อ n → ∞:" data-en="As n → ∞:">เมื่อ n → ∞:</b>
+      <span data-th="ถ้า |r| < 1 อนุกรมเรขาคณิตจะลู่เข้าสู่ S∞ = a₁ / (1 − r) — ลองดูตัวอย่างในแท็บ 🌀 อนุกรมลู่เข้า-ลู่ออก ที่ a₁ = r = 1/2 ผลรวมลู่เข้าสู่ 1 พอดี ตรงข้ามกับกรณี r ≥ 1 (เช่นตัวอย่างไวรัส) ที่ผลรวมโตไม่หยุด" data-en="If |r| < 1, a geometric series converges to S∞ = a₁ / (1 − r) — see the 🌀 Convergent & Divergent tab, where a₁ = r = 1/2 and the sum converges to exactly 1. That's the opposite of r ≥ 1 (like the virus example), where the total grows forever.">ถ้า |r| &lt; 1 อนุกรมเรขาคณิตจะลู่เข้าสู่ S<sub>∞</sub> = a₁ / (1 − r) — ลองดูตัวอย่างในแท็บ 🌀 อนุกรมลู่เข้า-ลู่ออก ที่ a₁ = r = 1/2 ผลรวมลู่เข้าสู่ 1 พอดี ตรงข้ามกับกรณี r ≥ 1 (เช่นตัวอย่างไวรัส) ที่ผลรวมโตไม่หยุด</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ══════════════ ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) ══════════════
+const PAGE_TITLE = { th: 'สื่อการสอน : อนุกรมเรขาคณิต (Geometric Series)', en: 'Teaching Aid: Geometric Series' };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  document.querySelectorAll('[data-th-title]').forEach(el => {
+    el.title = (lang === 'en' && el.dataset.enTitle) ? el.dataset.enTitle : el.dataset.thTitle;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+
+function onLangChange(lang) {
+  if (typeof renderSim === 'function') renderSim();
+  if (typeof renderRecap === 'function') renderRecap();
+  if (typeof renderSeries === 'function') renderSeries();
+  if (typeof renderConvergent === 'function') renderConvergent();
+}
+
+// ══════════════ Tab switching ══════════════
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="' + id + '"]');
+  if (btn) btn.classList.add('active');
+}
+
+// ══════════════ ทบทวนลำดับ: สลับเลขคณิต/เรขาคณิต + ลูกศรโยง + เลือก a₁ ══════════════
+var renderRecap;
+(function(){
+  var n = 5;
+  var state = { mode: 'geo', a1: 3, d: 3, r: 2 }; // a1, d and r are all adjustable; mode picks which of d/r is in play
+
+  var wrap = document.getElementById('seqBars');
+  var titleEl = document.getElementById('recapTitle');
+  var descEl = document.getElementById('recapDesc');
+  var formulaEl = document.getElementById('recapFormula');
+  var iconEl = document.getElementById('recapIcon');
+  var a1ValEl = document.getElementById('a1Val');
+  var modeArithBtn = document.getElementById('seqModeArith');
+  var modeGeoBtn = document.getElementById('seqModeGeo');
+  var minusBtn = document.getElementById('a1Minus');
+  var plusBtn = document.getElementById('a1Plus');
+  var paramLabelEl = document.getElementById('paramLabel');
+  var paramValEl = document.getElementById('paramVal');
+  var paramMinusBtn = document.getElementById('paramMinus');
+  var paramPlusBtn = document.getElementById('paramPlus');
+
+  var TXT = {
+    th: {
+      arithTitle: 'ลำดับเลขคณิต (Arithmetic Sequence)',
+      geoTitle: 'ลำดับเรขาคณิต (Geometric Sequence)',
+      arithDesc: 'ลำดับที่พจน์ถัดไปเกิดจากการนำพจน์ก่อนหน้าไปบวกด้วยจำนวนคงที่จำนวนหนึ่งเสมอ เรียกจำนวนคงที่นี้ว่า ผลต่างร่วม (common difference) แทนด้วย d',
+      geoDesc: 'ลำดับที่พจน์ถัดไปเกิดจากการนำพจน์ก่อนหน้าไปคูณด้วยจำนวนคงที่จำนวนหนึ่งเสมอ เรียกจำนวนคงที่นี้ว่า อัตราส่วนร่วม (common ratio) แทนด้วย r'
+    },
+    en: {
+      arithTitle: 'Arithmetic Sequence',
+      geoTitle: 'Geometric Sequence',
+      arithDesc: 'A sequence where every next term comes from adding the same constant to the previous term. That constant is called the common difference, written d.',
+      geoDesc: 'A sequence where every next term comes from multiplying the previous term by the same constant. That constant is called the common ratio, written r.'
+    }
+  };
+
+  function term(i){ return state.mode === 'arith' ? state.a1 + (i - 1) * state.d : state.a1 * Math.pow(state.r, i - 1); }
+  function arrowSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h13M13 6l6 6-6 6"/></svg>'; }
+
+  renderRecap = function render(){
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var isArith = state.mode === 'arith';
+
+    titleEl.textContent = isArith ? TXT[lang].arithTitle : TXT[lang].geoTitle;
+    descEl.textContent = isArith ? TXT[lang].arithDesc : TXT[lang].geoDesc;
+    iconEl.textContent = isArith ? '➕' : '✖️';
+    formulaEl.innerHTML = isArith ? 'a<sub>n</sub> = a<sub>1</sub> + (n−1)d' : 'a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup>';
+    a1ValEl.textContent = state.a1;
+    minusBtn.disabled = state.a1 <= 1;
+    plusBtn.disabled = state.a1 >= 9;
+
+    paramLabelEl.textContent = isArith ? (lang === 'en' ? 'Choose d' : 'เลือก d') : (lang === 'en' ? 'Choose r' : 'เลือก r');
+    paramValEl.textContent = isArith ? state.d : state.r;
+    paramMinusBtn.disabled = isArith ? state.d <= 1 : state.r <= 2;
+    paramPlusBtn.disabled = isArith ? state.d >= 9 : state.r >= 5;
+
+    var values = [];
+    for (var i = 1; i <= n; i++) values.push(term(i));
+    var max = Math.max.apply(null, values);
+
+    wrap.innerHTML = '';
+    for (var k = 0; k < n; k++) {
+      var col = document.createElement('div'); col.className = 'bar-col';
+      var v = document.createElement('div'); v.className = 'val'; v.textContent = values[k].toLocaleString('en-US');
+      var bar = document.createElement('div'); bar.className = 'bar'; bar.style.height = Math.max(4, values[k] / max * 100) + '%';
+      var idx = document.createElement('div'); idx.className = 'idx'; idx.textContent = 'a' + (k + 1);
+      col.appendChild(v); col.appendChild(bar); col.appendChild(idx);
+      wrap.appendChild(col);
+
+      if (k < n - 1) {
+        var arrow = document.createElement('div'); arrow.className = 'arrow-col';
+        var op = document.createElement('div'); op.className = 'op'; op.textContent = isArith ? ('+' + state.d) : ('×' + state.r);
+        var svgWrap = document.createElement('div'); svgWrap.innerHTML = arrowSVG();
+        arrow.appendChild(op); arrow.appendChild(svgWrap.firstChild);
+        wrap.appendChild(arrow);
+      }
+    }
+  };
+
+  modeArithBtn.addEventListener('click', function(){
+    state.mode = 'arith';
+    modeArithBtn.classList.add('active'); modeGeoBtn.classList.remove('active');
+    renderRecap();
+  });
+  modeGeoBtn.addEventListener('click', function(){
+    state.mode = 'geo';
+    modeGeoBtn.classList.add('active'); modeArithBtn.classList.remove('active');
+    renderRecap();
+  });
+  minusBtn.addEventListener('click', function(){ if (state.a1 > 1) { state.a1--; renderRecap(); } });
+  plusBtn.addEventListener('click', function(){ if (state.a1 < 9) { state.a1++; renderRecap(); } });
+  paramMinusBtn.addEventListener('click', function(){
+    if (state.mode === 'arith') { if (state.d > 1) state.d--; }
+    else { if (state.r > 2) state.r--; }
+    renderRecap();
+  });
+  paramPlusBtn.addEventListener('click', function(){
+    if (state.mode === 'arith') { if (state.d < 9) state.d++; }
+    else { if (state.r < 5) state.r++; }
+    renderRecap();
+  });
+
+  renderRecap();
+})();
+
+// ══════════════ อนุกรมเรขาคณิต: ภาพซ้อนพจน์ = Sₙ (เลือก a₁, r ได้) ══════════════
+var renderSeries;
+(function(){
+  var n = 5;
+  var state = { a1: 3, r: 2 };
+
+  var a1ValEl = document.getElementById('sA1Val');
+  var minusBtn = document.getElementById('sA1Minus');
+  var plusBtn = document.getElementById('sA1Plus');
+  var rValEl = document.getElementById('sRVal');
+  var rMinusBtn = document.getElementById('sRMinus');
+  var rPlusBtn = document.getElementById('sRPlus');
+  var barsWrap = document.getElementById('seriesBars');
+  var sumBar = document.getElementById('seriesSumBar');
+  var formulaLive = document.getElementById('seriesFormulaLive');
+
+  // reuses the site's own accessible text-on-color pairings (accent/warning need dark text)
+  var SWATCH = [
+    { bg: 'var(--primary)', fg: '#fff' },
+    { bg: 'var(--secondary)', fg: '#fff' },
+    { bg: 'var(--accent)', fg: '#093B2E' },
+    { bg: 'var(--warning)', fg: '#4A2E00' }
+  ];
+
+  renderSeries = function render(){
+    var a1 = state.a1, r = state.r;
+    var values = [];
+    for (var i = 1; i <= n; i++) values.push(a1 * Math.pow(r, i - 1));
+    var sn = values.reduce(function(a, b){ return a + b; }, 0);
+    var max = Math.max.apply(null, values);
+
+    a1ValEl.textContent = a1;
+    minusBtn.disabled = a1 <= 1;
+    plusBtn.disabled = a1 >= 9;
+    rValEl.textContent = r;
+    rMinusBtn.disabled = r <= 2;
+    rPlusBtn.disabled = r >= 5;
+
+    barsWrap.innerHTML = '';
+    values.forEach(function(v, i){
+      var sw = SWATCH[i % SWATCH.length];
+      var col = document.createElement('div'); col.className = 'bar-col';
+      var val = document.createElement('div'); val.className = 'val'; val.textContent = v.toLocaleString('en-US');
+      var bar = document.createElement('div'); bar.className = 'bar';
+      bar.style.height = Math.max(4, v / max * 100) + '%';
+      bar.style.background = sw.bg;
+      var idx = document.createElement('div'); idx.className = 'idx'; idx.textContent = 'a' + (i + 1);
+      col.appendChild(val); col.appendChild(bar); col.appendChild(idx);
+      barsWrap.appendChild(col);
+    });
+
+    // Sₙ shown as the same terms stacked horizontally, each segment's width its share of the total
+    sumBar.innerHTML = '';
+    values.forEach(function(v, i){
+      var sw = SWATCH[i % SWATCH.length];
+      var pct = v / sn * 100;
+      var seg = document.createElement('div'); seg.className = 'rect-seg';
+      seg.style.width = pct + '%';
+      seg.style.background = sw.bg;
+      seg.style.color = sw.fg;
+      if (pct > 8) seg.textContent = v.toLocaleString('en-US');
+      sumBar.appendChild(seg);
+    });
+
+    formulaLive.innerHTML =
+      'S<sub>5</sub> = ' + values.map(function(v){ return v.toLocaleString('en-US'); }).join(' + ') +
+      ' = <span class="hl">' + sn.toLocaleString('en-US') + '</span>';
+  };
+
+  minusBtn.addEventListener('click', function(){ if (state.a1 > 1) { state.a1--; renderSeries(); } });
+  plusBtn.addEventListener('click', function(){ if (state.a1 < 9) { state.a1++; renderSeries(); } });
+  rMinusBtn.addEventListener('click', function(){ if (state.r > 2) { state.r--; renderSeries(); } });
+  rPlusBtn.addEventListener('click', function(){ if (state.r < 5) { state.r++; renderSeries(); } });
+
+  renderSeries();
+})();
+
+// ══════════════ อนุกรมลู่เข้า-ลู่ออก ══════════════
+// ลู่เข้า: สี่เหลี่ยมจัตุรัส a₁=1/2, r=1/2 — สลับตัดครึ่งแนวตั้ง/แนวนอน (exact tiling, ไม่มีช่องว่าง)
+// ลู่ออก: สี่เหลี่ยมจัตุรัสหมุนขยาย a₁=1, r=2 (พื้นที่ = ค่าพจน์ ต่อกันสลับขวา/บน ไม่มีที่สิ้นสุด)
+var renderConvergent;
+(function(){
+  var modeConvBtn = document.getElementById('csModeConv');
+  var modeDivBtn = document.getElementById('csModeDiv');
+  var convBlock = document.getElementById('convBlock');
+  var divBlock = document.getElementById('divBlock');
+
+  var SWATCH = [
+    { bg: 'var(--primary)', fg: '#fff' },
+    { bg: 'var(--secondary)', fg: '#fff' },
+    { bg: 'var(--accent)', fg: '#093B2E' },
+    { bg: 'var(--warning)', fg: '#4A2E00' }
+  ];
+
+  // ---------- ลู่เข้า (convergent): a1 = 1/2, r = 1/2 ----------
+  var renderConv = (function(){
+    var MAX_N = 10;
+    var cState = { n: 1, playing: false, timer: null };
+
+    var convPanel = document.getElementById('convPanel');
+    var indicator = document.getElementById('cIndicator');
+    var statSn = document.getElementById('cStatSn');
+    var statGap = document.getElementById('cStatGap');
+    var formulaLive = document.getElementById('cFormulaLive');
+    var historyBody = document.getElementById('cHistoryBody');
+    var prevBtn = document.getElementById('cPrev');
+    var nextBtn = document.getElementById('cNext');
+    var playBtn = document.getElementById('cPlay');
+    var playIcon = document.getElementById('cPlayIcon');
+    var resetBtn = document.getElementById('cReset');
+
+    var STR = {
+      th: {
+        indicator: function(n){ return 'n = ' + n; },
+        formulaLive: function(sn, gap){
+          return 'S<sub>n</sub> = 1 − (1/2)<sup>n</sup> = <span class="hl">' + sn.toFixed(4) + '</span> &nbsp; (เหลืออีก (1/2)<sup>n</sup> = ' + gap.toFixed(4) + ' ที่ยังไปไม่ถึง 1)';
+        }
+      },
+      en: {
+        indicator: function(n){ return 'n = ' + n; },
+        formulaLive: function(sn, gap){
+          return 'S<sub>n</sub> = 1 − (1/2)<sup>n</sup> = <span class="hl">' + sn.toFixed(4) + '</span> &nbsp; (still (1/2)<sup>n</sup> = ' + gap.toFixed(4) + ' short of 1)';
+        }
+      }
+    };
+    function t(){ return STR[getLang() === 'en' ? 'en' : 'th']; }
+
+    function sumTo(n){ return 1 - Math.pow(0.5, n); }
+
+    var SIZE = 300; // px — the whole square represents exactly 1
+
+    function render(){
+      var n = cState.n;
+      var sn = sumTo(n);
+      var gap = 1 - sn;
+
+      // Classic proof-without-words: term i shades HALF of whatever area is
+      // still unshaded, alternating a vertical cut (shade left) and a
+      // horizontal cut (shade top) — an exact tiling, no gaps, no overlaps.
+      var rem = { x: 0, y: 0, w: 1, h: 1 };
+      var svgParts = ['<rect x="0" y="0" width="' + SIZE + '" height="' + SIZE + '" fill="var(--card)"/>'];
+      for (var i = 1; i <= n; i++) {
+        var sw = SWATCH[(i - 1) % SWATCH.length];
+        var box;
+        if (i % 2 === 1) { // vertical cut, shade left half
+          var w2 = rem.w / 2;
+          box = { x: rem.x, y: rem.y, w: w2, h: rem.h };
+          rem = { x: rem.x + w2, y: rem.y, w: rem.w - w2, h: rem.h };
+        } else { // horizontal cut, shade top half
+          var h2 = rem.h / 2;
+          box = { x: rem.x, y: rem.y, w: rem.w, h: h2 };
+          rem = { x: rem.x, y: rem.y + h2, w: rem.w, h: rem.h - h2 };
+        }
+        var x = box.x * SIZE, y = box.y * SIZE, w = box.w * SIZE, h = box.h * SIZE;
+        svgParts.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + sw.bg + '" stroke="var(--card)" stroke-width="2"/>');
+        if (Math.min(w, h) > 22) {
+          svgParts.push(
+            '<text x="' + (x + w / 2) + '" y="' + (y + h / 2) + '" text-anchor="middle" dominant-baseline="central" ' +
+            'font-size="' + Math.min(16, Math.min(w, h) * 0.32) + '" font-weight="700" fill="' + sw.fg + '">1/' + Math.pow(2, i) + '</text>'
+          );
+        }
+      }
+      convPanel.innerHTML =
+        '<svg width="' + SIZE + '" height="' + SIZE + '" viewBox="0 0 ' + SIZE + ' ' + SIZE + '" xmlns="http://www.w3.org/2000/svg" style="border-radius:8px;">' +
+        svgParts.join('') + '</svg>';
+
+      indicator.textContent = t().indicator(n);
+      statSn.textContent = sn.toFixed(4);
+      statGap.textContent = gap.toFixed(4);
+      formulaLive.innerHTML = t().formulaLive(sn, gap);
+
+      historyBody.innerHTML = '';
+      for (var m = 1; m <= n; m++) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + m + '</td><td>1/' + Math.pow(2, m) + '</td><td>' + sumTo(m).toFixed(4) + '</td>';
+        historyBody.appendChild(tr);
+      }
+
+      prevBtn.disabled = n <= 1;
+      nextBtn.disabled = n >= MAX_N;
+      if (n >= MAX_N) stopPlaying();
+    }
+
+    function stopPlaying(){
+      cState.playing = false;
+      if (cState.timer) { clearInterval(cState.timer); cState.timer = null; }
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+    function startPlaying(){
+      cState.playing = true;
+      playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+      cState.timer = setInterval(function(){
+        if (cState.n >= MAX_N) { stopPlaying(); return; }
+        cState.n++;
+        render();
+      }, 900);
+    }
+
+    prevBtn.addEventListener('click', function(){ stopPlaying(); if (cState.n > 1) { cState.n--; render(); } });
+    nextBtn.addEventListener('click', function(){ stopPlaying(); if (cState.n < MAX_N) { cState.n++; render(); } });
+    resetBtn.addEventListener('click', function(){ stopPlaying(); cState.n = 1; render(); });
+    playBtn.addEventListener('click', function(){ if (cState.playing) stopPlaying(); else startPlaying(); });
+
+    render();
+    return function(){ stopPlaying(); render(); }; // exposed: re-render + stop autoplay (used when leaving this sub-tab / switching language)
+  })();
+
+  // ---------- ลู่ออก (divergent): a1 = 1, r = 2 — no fixed frame, the bar itself keeps growing ----------
+  var renderDiv = (function(){
+    var MAX_N = 8; // area 2^7=128 → side ≈11.3 units; already makes the point without the diagram getting unwieldy
+    var UNIT = 30; // px per unit of side length
+    var dState = { n: 1, playing: false, timer: null };
+
+    var divPanel = document.getElementById('divPanel');
+    var indicator = document.getElementById('dIndicator');
+    var statSn = document.getElementById('dStatSn');
+    var statNew = document.getElementById('dStatNew');
+    var formulaLive = document.getElementById('dFormulaLive');
+    var historyBody = document.getElementById('dHistoryBody');
+    var prevBtn = document.getElementById('dPrev');
+    var nextBtn = document.getElementById('dNext');
+    var playBtn = document.getElementById('dPlay');
+    var playIcon = document.getElementById('dPlayIcon');
+    var resetBtn = document.getElementById('dReset');
+
+    var STR = {
+      th: {
+        indicator: function(n){ return 'n = ' + n; },
+        formulaLive: function(n, sn){
+          return 'S<sub>n</sub> = 2<sup>n</sup> − 1 = <span class="hl">' + sn.toLocaleString('en-US') + '</span> &nbsp; — ไม่มีค่าคงที่ให้ลู่เข้าหา ยิ่งเพิ่ม n ยิ่งโตไม่มีสิ้นสุด';
+        }
+      },
+      en: {
+        indicator: function(n){ return 'n = ' + n; },
+        formulaLive: function(n, sn){
+          return 'S<sub>n</sub> = 2<sup>n</sup> − 1 = <span class="hl">' + sn.toLocaleString('en-US') + '</span> &nbsp; — no fixed value to converge to; it just keeps growing as n increases';
+        }
+      }
+    };
+    function t(){ return STR[getLang() === 'en' ? 'en' : 'th']; }
+
+    function term(i){ return Math.pow(2, i - 1); } // a1 = 1, r = 2
+    function sumTo(n){ return Math.pow(2, n) - 1; }
+
+    // "Whirling squares": square i has area = term(i) (side = √area), placed
+    // touching the current bounding box — alternating right, then above —
+    // so the whole shape spirals outward and visibly never stops growing.
+    function buildSpiral(n){
+      var boxes = [], W = 0, H = 0;
+      for (var i = 1; i <= n; i++) {
+        var side = Math.sqrt(term(i));
+        var mx, my;
+        if (i === 1) { mx = 0; my = 0; W = side; H = side; }
+        else if (i % 2 === 0) { mx = W; my = 0; W = W + side; H = Math.max(H, side); }
+        else { mx = 0; my = H; H = H + side; W = Math.max(W, side); }
+        boxes.push({ i: i, side: side, mx: mx, my: my });
+      }
+      return { boxes: boxes, W: W, H: H };
+    }
+
+    function render(){
+      var n = dState.n;
+      var sn = sumTo(n);
+      var an = term(n);
+      var spiral = buildSpiral(n);
+      var pad = 46;
+      var svgW = spiral.W * UNIT + pad;
+      var svgH = spiral.H * UNIT + pad;
+
+      var svgParts = [];
+      spiral.boxes.forEach(function(b){
+        var sw = SWATCH[(b.i - 1) % SWATCH.length];
+        var x = b.mx * UNIT;
+        var y = svgH - pad / 2 - (b.my + b.side) * UNIT;
+        var w = b.side * UNIT, h = b.side * UNIT;
+        svgParts.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + sw.bg + '" stroke="var(--card)" stroke-width="1.5"/>');
+        if (Math.min(w, h) > 20) {
+          svgParts.push(
+            '<text x="' + (x + w / 2) + '" y="' + (y + h / 2) + '" text-anchor="middle" dominant-baseline="central" ' +
+            'font-size="' + Math.min(15, Math.min(w, h) * 0.34) + '" font-weight="700" fill="' + sw.fg + '">' + term(b.i).toLocaleString('en-US') + '</text>'
+          );
+        }
+      });
+
+      var x0 = 4, y0 = svgH - pad / 2 + 2;
+      var x1 = spiral.W * UNIT + pad * 0.85, y1 = svgH - pad / 2 - spiral.H * UNIT - pad * 0.55;
+      svgParts.push(
+        '<defs><marker id="arrowHead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--secondary)"/></marker></defs>' +
+        '<line x1="' + x0 + '" y1="' + y0 + '" x2="' + x1 + '" y2="' + y1 + '" stroke="var(--secondary)" stroke-width="2.5" marker-end="url(#arrowHead)"/>' +
+        '<text x="' + (x1 + 6) + '" y="' + (y1 - 2) + '" font-size="13" font-weight="800" fill="var(--secondary)">' + (getLang() === 'en' ? 'Area → ∞' : 'พื้นที่ → ∞') + '</text>'
+      );
+
+      divPanel.innerHTML =
+        '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" xmlns="http://www.w3.org/2000/svg">' +
+        svgParts.join('') + '</svg>';
+
+      indicator.textContent = t().indicator(n);
+      statSn.textContent = sn.toLocaleString('en-US');
+      statNew.textContent = an.toLocaleString('en-US');
+      formulaLive.innerHTML = t().formulaLive(n, sn);
+
+      historyBody.innerHTML = '';
+      for (var m = 1; m <= n; m++) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + m + '</td><td>' + term(m).toLocaleString('en-US') + '</td><td>' + sumTo(m).toLocaleString('en-US') + '</td>';
+        historyBody.appendChild(tr);
+      }
+
+      prevBtn.disabled = n <= 1;
+      nextBtn.disabled = n >= MAX_N;
+      if (n >= MAX_N) stopPlaying();
+    }
+
+    function stopPlaying(){
+      dState.playing = false;
+      if (dState.timer) { clearInterval(dState.timer); dState.timer = null; }
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+    function startPlaying(){
+      dState.playing = true;
+      playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+      dState.timer = setInterval(function(){
+        if (dState.n >= MAX_N) { stopPlaying(); return; }
+        dState.n++;
+        render();
+      }, 900);
+    }
+
+    prevBtn.addEventListener('click', function(){ stopPlaying(); if (dState.n > 1) { dState.n--; render(); } });
+    nextBtn.addEventListener('click', function(){ stopPlaying(); if (dState.n < MAX_N) { dState.n++; render(); } });
+    resetBtn.addEventListener('click', function(){ stopPlaying(); dState.n = 1; render(); });
+    playBtn.addEventListener('click', function(){ if (dState.playing) stopPlaying(); else startPlaying(); });
+
+    render();
+    return function(){ stopPlaying(); render(); };
+  })();
+
+  modeConvBtn.addEventListener('click', function(){
+    modeConvBtn.classList.add('active'); modeDivBtn.classList.remove('active');
+    convBlock.hidden = false; divBlock.hidden = true;
+    renderDiv(); // stop any divergent autoplay running in the background
+  });
+  modeDivBtn.addEventListener('click', function(){
+    modeDivBtn.classList.add('active'); modeConvBtn.classList.remove('active');
+    divBlock.hidden = false; convBlock.hidden = true;
+    renderConv(); // stop any convergent autoplay running in the background
+  });
+
+  renderConvergent = function(){ renderConv(); renderDiv(); };
+})();
+
+// ══════════════ ตัวอย่างไวรัส: ผังต้นไม้การแพร่เชื้อ ══════════════
+var renderSim; // exposed so onLangChange can refresh dynamic labels
+(function(){
+  var CAP_LEAVES = 150; // beyond this many points on one row, drawing individual icons stops being readable
+  var state = { r: 2, round: 1, playing: false, timer: null, maxRound: 8 };
+
+  var treePanel = document.getElementById('treePanel');
+  var beyondBlock = document.getElementById('beyondBlock');
+  var beyondNote = document.getElementById('beyondNote');
+  var beyondChart = document.getElementById('beyondChart');
+  var statNew = document.getElementById('statNew');
+  var statTotal = document.getElementById('statTotal');
+  var barChart = document.getElementById('barChart');
+  var formulaLive = document.getElementById('formulaLive');
+  var historyBody = document.getElementById('historyBody');
+  var roundIndicator = document.getElementById('roundIndicator');
+  var prevBtn = document.getElementById('prevRound');
+  var nextBtn = document.getElementById('nextRound');
+  var playBtn = document.getElementById('playRound');
+  var playIcon = document.getElementById('playIcon');
+  var resetBtn = document.getElementById('resetRound');
+  var rBtn2 = document.getElementById('rBtn2');
+  var rBtn3 = document.getElementById('rBtn3');
+  var maxRoundSlider = document.getElementById('maxRoundSlider');
+  var maxRoundValue = document.getElementById('maxRoundValue');
+
+  // bilingual strings for JS-generated text (static labels use data-th/data-en instead)
+  var STR = {
+    th: {
+      roundIndicator: function(round, max){ return 'รอบที่ ' + round + ' / ' + max; },
+      formulaLive: function(r, round, an, sn){
+        return 'a<sub>n</sub> = 1 × ' + r + '<sup>' + (round - 1) + '</sup> = <span class="hl">' + an.toLocaleString('th-TH') + '</span> คน<br>' +
+          'S<sub>n</sub> = (1 × (1 − ' + r + '<sup>' + round + '</sup>)) / (1 − ' + r + ') = <span class="hl">' + sn.toLocaleString('th-TH') + '</span> คน';
+      },
+      beyondNote: function(cutoff, cap){
+        return 'ตั้งแต่รอบที่ ' + (cutoff + 1) + ' เป็นต้นไป จำนวนจุดเกิน ' + cap.toLocaleString('th-TH') +
+          ' จุด วาดทีละคนไม่ไหวแล้ว กราฟด้านล่างจึงแสดงผู้ติดเชื้อใหม่ต่อรอบแบบ <b>สเกลลอการิทึม</b> แทน — ตัวเลขยังคำนวณจากสูตรจริงเป๊ะทุกตัว';
+      },
+      roundTick: function(k){ return 'รอบ ' + k; }
+    },
+    en: {
+      roundIndicator: function(round, max){ return 'Round ' + round + ' / ' + max; },
+      formulaLive: function(r, round, an, sn){
+        return 'a<sub>n</sub> = 1 × ' + r + '<sup>' + (round - 1) + '</sup> = <span class="hl">' + an.toLocaleString('en-US') + '</span> people<br>' +
+          'S<sub>n</sub> = (1 × (1 − ' + r + '<sup>' + round + '</sup>)) / (1 − ' + r + ') = <span class="hl">' + sn.toLocaleString('en-US') + '</span> people';
+      },
+      beyondNote: function(cutoff, cap){
+        return 'From round ' + (cutoff + 1) + ' onward there are more than ' + cap.toLocaleString('en-US') +
+          ' points — too many to draw individually. The chart below switches to a <b>log scale</b> for new cases per round instead — every number still comes from the exact formula.';
+      },
+      roundTick: function(k){ return 'Round ' + k; }
+    }
+  };
+  function t(){ return STR[getLang() === 'en' ? 'en' : 'th']; }
+
+  function newInfected(n, r){ return Math.pow(r, n - 1); }
+  function cumulative(n, r){ return (Math.pow(r, n) - 1) / (r - 1); }
+
+  function cutoffDepth(r){
+    var d = 1;
+    while (Math.pow(r, d) <= CAP_LEAVES) { d++; }
+    return d;
+  }
+
+  var VIRUS_SYMBOL =
+    '<symbol id="virusIcon" viewBox="0 0 32 32">' +
+      '<circle cx="16" cy="16" r="7.5" fill="currentColor"/>' +
+      '<circle cx="16" cy="4" r="2.3" fill="currentColor"/>' +
+      '<circle cx="24.49" cy="7.51" r="2.3" fill="currentColor"/>' +
+      '<circle cx="28" cy="16" r="2.3" fill="currentColor"/>' +
+      '<circle cx="24.49" cy="24.49" r="2.3" fill="currentColor"/>' +
+      '<circle cx="16" cy="28" r="2.3" fill="currentColor"/>' +
+      '<circle cx="7.51" cy="24.49" r="2.3" fill="currentColor"/>' +
+      '<circle cx="4" cy="16" r="2.3" fill="currentColor"/>' +
+      '<circle cx="7.51" cy="7.51" r="2.3" fill="currentColor"/>' +
+    '</symbol>';
+
+  function renderTree(round, r, cutoff){
+    var drawDepth = Math.min(round, cutoff);
+    var showCurrent = round <= cutoff;
+    var rowH = 74, topPad = 24, sidePad = 22;
+    var leafCount = Math.pow(r, drawDepth - 1);
+    var innerWidth = Math.max(220, leafCount * 24);
+    var treeWidth = innerWidth + sidePad * 2;
+    var treeHeight = topPad * 2 + (drawDepth - 1) * rowH;
+
+    function pos(d, j){
+      var count = Math.pow(r, d - 1);
+      return { x: sidePad + (j + 0.5) / count * innerWidth, y: topPad + (d - 1) * rowH };
+    }
+
+    var lines = [];
+    for (var d = 2; d <= drawDepth; d++) {
+      var count = Math.pow(r, d - 1);
+      for (var j = 0; j < count; j++) {
+        var parent = pos(d - 1, Math.floor(j / r));
+        var child = pos(d, j);
+        var isNewest = d === drawDepth && showCurrent;
+        lines.push(
+          '<line x1="' + parent.x + '" y1="' + parent.y + '" x2="' + child.x + '" y2="' + child.y + '" ' +
+          'style="stroke:' + (isNewest ? 'var(--secondary)' : 'var(--border)') + ';stroke-width:' + (isNewest ? 1.6 : 1.2) +
+          ';opacity:' + (isNewest ? .8 : .9) + ';stroke-linecap:round"/>'
+        );
+      }
+    }
+
+    var nodes = [];
+    for (var dd = 1; dd <= drawDepth; dd++) {
+      var cnt = Math.pow(r, dd - 1);
+      var isNewestRow = dd === drawDepth && showCurrent;
+      for (var jj = 0; jj < cnt; jj++) {
+        var p = pos(dd, jj);
+        var size, color, cls = '', style;
+        if (dd === 1) { size = 20; color = 'var(--primary)'; }
+        else if (isNewestRow) { size = 18; color = 'var(--secondary)'; cls = 'node-new'; }
+        else { size = 13; color = 'var(--muted)'; }
+        style = 'color:' + color + (dd > 1 && !isNewestRow ? ';opacity:.55' : '') +
+          (cls ? ';animation-delay:' + (jj * 9) + 'ms' : '');
+        nodes.push(
+          '<use href="#virusIcon" class="' + cls + '" x="' + (p.x - size / 2) + '" y="' + (p.y - size / 2) +
+          '" width="' + size + '" height="' + size + '" style="' + style + '"/>'
+        );
+      }
+    }
+
+    treePanel.innerHTML =
+      '<svg width="' + treeWidth + '" height="' + treeHeight + '" viewBox="0 0 ' + treeWidth + ' ' + treeHeight + '" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' + VIRUS_SYMBOL + '</defs>' + lines.join('') + nodes.join('') + '</svg>';
+  }
+
+  function renderBeyond(round, r, cutoff){
+    if (round <= cutoff) { beyondBlock.hidden = true; return; }
+    beyondBlock.hidden = false;
+    beyondNote.innerHTML = t().beyondNote(cutoff, CAP_LEAVES);
+
+    var maxLog = Math.log10(newInfected(round, r));
+    beyondChart.innerHTML = '';
+    for (var k = cutoff + 1; k <= round; k++) {
+      var val = newInfected(k, r);
+      var h = Math.max(6, Math.log10(val) / maxLog * 100);
+      var col = document.createElement('div'); col.className = 'col';
+      var v = document.createElement('div'); v.className = 'v'; v.textContent = val.toLocaleString('en-US');
+      var fill = document.createElement('div'); fill.className = 'fill' + (k === round ? ' active' : '');
+      fill.style.height = h + '%';
+      col.appendChild(v); col.appendChild(fill);
+      col.appendChild(Object.assign(document.createElement('div'), { className: 'v', textContent: t().roundTick(k) }));
+      beyondChart.appendChild(col);
+    }
+  }
+
+  renderSim = function render(){
+    var r = state.r, round = state.round, maxRound = state.maxRound;
+    var an = newInfected(round, r);
+    var sn = cumulative(round, r);
+    var cutoff = cutoffDepth(r);
+
+    renderTree(round, r, cutoff);
+    renderBeyond(round, r, cutoff);
+
+    statNew.textContent = an.toLocaleString('en-US');
+    statTotal.textContent = sn.toLocaleString('en-US');
+    roundIndicator.textContent = t().roundIndicator(round, maxRound);
+
+    var maxTotal = cumulative(maxRound, r);
+    barChart.innerHTML = '';
+    for (var k = 1; k <= round; k++) {
+      var col = document.createElement('div'); col.className = 'col';
+      var v = document.createElement('div'); v.className = 'v'; v.textContent = cumulative(k, r).toLocaleString('en-US');
+      var fill = document.createElement('div'); fill.className = 'fill' + (k === round ? ' active' : '');
+      fill.style.height = (cumulative(k, r) / maxTotal * 100) + '%';
+      col.appendChild(v); col.appendChild(fill);
+      col.appendChild(Object.assign(document.createElement('div'), { className: 'v', textContent: k }));
+      barChart.appendChild(col);
+    }
+
+    formulaLive.innerHTML = t().formulaLive(r, round, an, sn);
+
+    historyBody.innerHTML = '';
+    for (var m = 1; m <= round; m++) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + m + '</td><td>' + newInfected(m, r).toLocaleString('en-US') + '</td><td>' + cumulative(m, r).toLocaleString('en-US') + '</td>';
+      historyBody.appendChild(tr);
+    }
+
+    prevBtn.disabled = round <= 1;
+    nextBtn.disabled = round >= maxRound;
+    if (round >= maxRound) stopPlaying();
+  };
+
+  function stopPlaying(){
+    state.playing = false;
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+  function startPlaying(){
+    state.playing = true;
+    playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    state.timer = setInterval(function(){
+      if (state.round >= state.maxRound) { stopPlaying(); return; }
+      state.round++;
+      renderSim();
+    }, 1400);
+  }
+
+  prevBtn.addEventListener('click', function(){ stopPlaying(); if (state.round > 1) { state.round--; renderSim(); } });
+  nextBtn.addEventListener('click', function(){ stopPlaying(); if (state.round < state.maxRound) { state.round++; renderSim(); } });
+  resetBtn.addEventListener('click', function(){ stopPlaying(); state.round = 1; renderSim(); });
+  playBtn.addEventListener('click', function(){ if (state.playing) stopPlaying(); else startPlaying(); });
+
+  maxRoundSlider.addEventListener('input', function(){
+    stopPlaying();
+    state.maxRound = parseInt(maxRoundSlider.value, 10);
+    maxRoundValue.textContent = state.maxRound;
+    if (state.round > state.maxRound) state.round = state.maxRound;
+    renderSim();
+  });
+
+  function setR(r){
+    stopPlaying();
+    state.r = r; state.round = 1;
+    rBtn2.classList.toggle('active', r === 2);
+    rBtn3.classList.toggle('active', r === 3);
+    renderSim();
+  }
+  rBtn2.addEventListener('click', function(){ setR(2); });
+  rBtn3.addEventListener('click', function(){ setR(3); });
+  setR(2);
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>
