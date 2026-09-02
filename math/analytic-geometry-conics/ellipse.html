@@ -140,6 +140,10 @@ main{ max-width:760px; margin:0 auto; padding:16px 18px 0; }
 }
 .btn-action:hover{ opacity:.9; }
 .btn-action:active{ transform:translateY(1px); }
+.btn-action.secondary{ background:var(--card); color:var(--primary); border:1px solid var(--border); }
+.rotate-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:8px; }
+.rotate-row .rotate-hint{ margin:0; }
+.rotate-row .btn-action{ padding:6px 16px; font-size:.78rem; }
 .quiz-q{
   font-size:.92rem; font-weight:700; text-align:center; padding:14px; background:var(--bg);
   border-radius:12px; margin-bottom:14px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace;
@@ -202,7 +206,10 @@ main{ max-width:760px; margin:0 auto; padding:16px 18px 0; }
     </div>
 
     <div class="cone3d-wrap"><svg id="svg3D" viewBox="0 0 600 600"></svg></div>
-    <p class="rotate-hint" data-th="ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ" data-en="Drag on the image to rotate the 3D view">ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ</p>
+    <div class="rotate-row">
+      <p class="rotate-hint" data-th="ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ" data-en="Drag on the image to rotate the 3D view">ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ</p>
+      <button class="btn-action secondary" onclick="resetView3D()" data-th="↺ ตั้งกรวยตรง" data-en="↺ Stand Upright">↺ ตั้งกรวยตรง</button>
+    </div>
   </div>
   <div class="next-row"><button class="btn-action" onclick="goTab('def')" data-th="ข้อต่อไป →" data-en="Next →">ข้อต่อไป →</button></div>
 </section>
@@ -412,7 +419,21 @@ function buildConeQuads(view, cx, cy, scale, ringsPerNappe, angularSteps) {
   }
   return quads;
 }
+// Single-headed arrow marker + a coordinate-axis line through the origin, GeoGebra-style
+// (red/green/blue x/y/z) — gives the scene a spatial reference frame to read the tilt against.
+function axisArrowDefs(id, color) {
+  return '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="' + color + '"/></marker></defs>';
+}
+function axisSVG(dir, len, color, label, view, cx, cy, scale, markerId) {
+  const pos = project3({ x: dir.x * len, y: dir.y * len, z: dir.z * len }, view, cx, cy, scale);
+  const neg = project3({ x: -dir.x * len, y: -dir.y * len, z: -dir.z * len }, view, cx, cy, scale);
+  const lbl = project3({ x: dir.x * (len + 0.6), y: dir.y * (len + 0.6), z: dir.z * (len + 0.6) }, view, cx, cy, scale);
+  return axisArrowDefs(markerId, color) +
+    '<line x1="' + neg.px + '" y1="' + neg.py + '" x2="' + pos.px + '" y2="' + pos.py + '" stroke="' + color + '" stroke-width="1.5" marker-end="url(#' + markerId + ')"/>' +
+    '<text x="' + lbl.px + '" y="' + lbl.py + '" font-size="14" font-weight="800" font-style="italic" fill="' + color + '" text-anchor="middle">' + label + '</text>';
+}
 function render3D(svgId, betaDeg, view) {
+  const lang = getLang();
   const svg = document.getElementById(svgId);
   const cx = 300, cy = 330, scale = 29;
   const quads = buildConeQuads(view, cx, cy, scale, 3, 20);
@@ -438,6 +459,12 @@ function render3D(svgId, betaDeg, view) {
     parts.push('<polygon points="' + pointsStr + '" fill="' + fill + '" stroke="none"/>');
   });
 
+  // Coordinate axes (x/y/z) for spatial reference — drawn on top of the translucent cone fill.
+  const AX_LEN = CONE_TMAX + 0.5;
+  parts.push(axisSVG({ x: 1, y: 0, z: 0 }, AX_LEN, '#E53935', 'x', view, cx, cy, scale, 'axisX'));
+  parts.push(axisSVG({ x: 0, y: 1, z: 0 }, AX_LEN, '#2E9E4F', 'y', view, cx, cy, scale, 'axisY'));
+  parts.push(axisSVG({ x: 0, y: 0, z: 1 }, AX_LEN, '#3949AB', 'z', view, cx, cy, scale, 'axisZ'));
+
   const genCount = 16;
   for (let gi = 0; gi < genCount; gi++) {
     const u = (gi / genCount) * 2 * Math.PI;
@@ -450,6 +477,22 @@ function render3D(svgId, betaDeg, view) {
   const axP1 = project3({ x: 0, y: 0, z: -CONE_TMAX }, view, cx, cy, scale);
   const axP2 = project3({ x: 0, y: 0, z: CONE_TMAX }, view, cx, cy, scale);
   parts.push('<line x1="' + axP1.px + '" y1="' + axP1.py + '" x2="' + axP2.px + '" y2="' + axP2.py + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4"/>');
+  const axLbl = project3({ x: 0.55, y: 0, z: CONE_TMAX * 0.4 }, view, cx, cy, scale);
+  parts.push('<text x="' + axLbl.px + '" y="' + axLbl.py + '" font-size="12" font-weight="700" fill="var(--muted)">' + (lang === 'en' ? 'Axis' : 'แกน') + '</text>');
+
+  // One highlighted generator line (a slant line through both nappes) — matches how the
+  // teacher's original GeoGebra file calls out a "generator" (ตัวก่อกำเนิด) of the cone.
+  const gd = coneDir(0);
+  const genP1 = project3({ x: -CONE_TMAX * gd.x, y: -CONE_TMAX * gd.y, z: -CONE_TMAX * gd.z }, view, cx, cy, scale);
+  const genP2 = project3({ x: CONE_TMAX * gd.x, y: CONE_TMAX * gd.y, z: CONE_TMAX * gd.z }, view, cx, cy, scale);
+  parts.push('<line x1="' + genP1.px + '" y1="' + genP1.py + '" x2="' + genP2.px + '" y2="' + genP2.py + '" stroke="#D81B60" stroke-width="2" stroke-dasharray="8 5"/>');
+  const genLbl = project3({ x: CONE_TMAX * 1.06 * gd.x, y: CONE_TMAX * 1.06 * gd.y, z: CONE_TMAX * 1.06 * gd.z }, view, cx, cy, scale);
+  parts.push('<text x="' + genLbl.px + '" y="' + genLbl.py + '" font-size="12" font-weight="700" fill="#D81B60" text-anchor="middle">' + (lang === 'en' ? 'Generator' : 'ตัวก่อกำเนิด') + '</text>');
+
+  // Vertex (apex) marker + label
+  const vPt = project3({ x: 0, y: 0, z: 0 }, view, cx, cy, scale);
+  parts.push('<circle cx="' + vPt.px + '" cy="' + vPt.py + '" r="4" fill="var(--text)" stroke="white" stroke-width="1.5"/>');
+  parts.push('<text x="' + (vPt.px + 8) + '" y="' + (vPt.py - 8) + '" font-size="13" font-weight="800" font-style="italic" fill="var(--text)">V</text>');
 
   const segments = coneIntersectionSegments(betaDeg);
   segments.forEach(function (seg) {
@@ -462,7 +505,7 @@ function render3D(svgId, betaDeg, view) {
 }
 function wireRotate3D(svgId, view, redraw) {
   const svg = document.getElementById(svgId);
-  let dragging = false, lastX = 0, lastY = 0;
+  let dragging = false, lastX = 0, lastY = 0, rafId = null;
   svg.style.touchAction = 'none';
   svg.addEventListener('pointerdown', function (e) {
     dragging = true; lastX = e.clientX; lastY = e.clientY;
@@ -472,16 +515,19 @@ function wireRotate3D(svgId, view, redraw) {
     if (!dragging) return;
     const dx = e.clientX - lastX, dy = e.clientY - lastY;
     lastX = e.clientX; lastY = e.clientY;
-    view.rotY += dx * 0.008;
-    view.rotX = Math.max(-1.3, Math.min(1.3, view.rotX - dy * 0.008));
-    redraw();
+    view.rotY += dx * 0.014;
+    view.rotX = Math.max(-1.3, Math.min(1.3, view.rotX - dy * 0.014));
+    // Coalesce bursts of pointermove events into one redraw per animation frame — the
+    // cone re-render (quad sort + innerHTML rebuild) is too heavy to run on every single
+    // move event, which is what made dragging feel laggy/hard to control.
+    if (rafId === null) rafId = requestAnimationFrame(function () { rafId = null; redraw(); });
   });
   function stop() { dragging = false; }
   svg.addEventListener('pointerup', stop);
   svg.addEventListener('pointercancel', stop);
 }
 
-const cone3D = { view: { rotX: -0.26, rotY: 0.55 }, betaDeg: 25 };
+const cone3D = { view: { rotX: -1.2, rotY: 0 }, betaDeg: 25 };
 function redraw3D() {
   render3D('svg3D', cone3D.betaDeg, cone3D.view);
   const kind = classifyBeta(cone3D.betaDeg);
@@ -490,6 +536,14 @@ function redraw3D() {
 }
 function onBetaInput() {
   cone3D.betaDeg = parseFloat(document.getElementById('betaSlider').value);
+  redraw3D();
+}
+// rotY=0 makes the cone's axis project perfectly vertical on screen for any rotX (the x
+// after rotateY is sin(rotY)*... which is exactly 0 there) — but dragging to EXACTLY 0 by
+// feel is nearly impossible, so give a one-click way to snap to the upright view.
+function resetView3D() {
+  cone3D.view.rotX = -1.2;
+  cone3D.view.rotY = 0;
   redraw3D();
 }
 wireRotate3D('svg3D', cone3D.view, redraw3D);
