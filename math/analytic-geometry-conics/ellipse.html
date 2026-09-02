@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : วงรี (Ellipse)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1B3B6F; --primary-2:#2C5F8A; --secondary:#FF6584;
+  --accent:#43D9AD; --accent-2:#2FBF95;
+  --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#DDE4F5;
+  --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --primary:#8FB3E8; --primary-2:#5A87C4; --secondary:#FF95AB;
+    --accent:#48E3C0; --accent-2:#2FBF95;
+    --bg:#0E1626; --card:#161F35; --text:#E7ECF7; --muted:#93A1C2; --border:#2A3654;
+    --shadow:0 4px 28px rgba(0,0,0,0.45);
+  }
+}
+:root[data-theme="dark"]{
+  --primary:#8FB3E8; --primary-2:#5A87C4; --secondary:#FF95AB;
+  --accent:#48E3C0; --accent-2:#2FBF95;
+  --bg:#0E1626; --card:#161F35; --text:#E7ECF7; --muted:#93A1C2; --border:#2A3654;
+  --shadow:0 4px 28px rgba(0,0,0,0.45);
+}
+
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:0 0 40px; }
+.mono{ font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+
+header{
+  background:linear-gradient(135deg,#1B3B6F 0%,#2C5F8A 100%);
+  color:white; padding:18px 40px 14px; text-align:center; position:relative; overflow:hidden;
+}
+header::before{ content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,.07); border-radius:50%; }
+header h1{ font-size:1.6rem; font-weight:800; letter-spacing:1px; }
+header p{ font-size:.92rem; opacity:.85; margin-top:4px; }
+.back-link{ position:absolute; top:12px; left:20px; color:white; text-decoration:none; font-size:.85rem; font-weight:600; opacity:.9; z-index:2; }
+.back-link:hover{ opacity:1; text-decoration:underline; }
+.lang-toggle{
+  position:absolute; top:12px; right:20px;
+  background:rgba(255,255,255,.15); color:white; border:1.5px solid rgba(255,255,255,.5);
+  border-radius:20px; padding:5px 14px; font-family:'Sarabun',sans-serif; font-size:.8rem; font-weight:700; cursor:pointer; z-index:2;
+}
+.lang-toggle:hover{ background:rgba(255,255,255,.28); }
+
+nav{
+  display:flex; justify-content:center; flex-wrap:wrap; gap:6px;
+  padding:10px 16px 0; background:var(--card); border-bottom:3px solid var(--border);
+  position:sticky; top:0; z-index:10;
+}
+.tab-btn{
+  padding:9px 15px; border:none; background:transparent; border-radius:10px 10px 0 0;
+  font-family:'Sarabun',sans-serif; font-size:.85rem; font-weight:700; color:var(--muted); cursor:pointer;
+  transition:all .2s; border-bottom:3px solid transparent; margin-bottom:-3px; white-space:nowrap;
+}
+.tab-btn:hover{ color:var(--primary); background:var(--bg); }
+.tab-btn.active{ color:var(--primary); border-bottom-color:var(--primary); background:var(--bg); }
+.tab-panel{ display:none; animation:fadeIn .3s ease; }
+.tab-panel.active{ display:block; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+main{ max-width:760px; margin:0 auto; padding:16px 18px 0; }
+.card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 22px; margin-bottom:14px; }
+.card-title{ font-size:1.1rem; font-weight:700; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:9px; }
+.card-title .icon{ font-size:1.4rem; }
+.desc-text{ font-size:.97rem; line-height:1.75; color:var(--text); }
+.desc-text + .desc-text{ margin-top:10px; }
+
+.formula{
+  background:linear-gradient(135deg,#1B3B6F,#2C5F8A); color:white; border-radius:12px;
+  padding:14px 20px; text-align:center; font-size:1.15rem; font-weight:700; margin:14px 0 4px; letter-spacing:.3px;
+}
+.formula sub, .formula sup{ font-size:.88em; }
+.formula.small{ font-size:.98rem; padding:11px 16px; }
+.formula-note{ text-align:center; font-size:.8rem; color:var(--muted); margin-top:6px; }
+
+.frac{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; text-align:center; margin:0 .22em; line-height:1.25; }
+.frac .num{ display:block; padding:0 .16em .1em; border-bottom:2px solid currentColor; }
+.frac .den{ display:block; padding:.1em .16em 0; }
+.sqrt{ display:inline-flex; align-items:flex-start; vertical-align:middle; margin:0 .08em; }
+.sqrt .radic{ font-size:1.3em; line-height:1; padding-right:1px; transform:translateY(-.1em); }
+.sqrt .radicand{ border-top:2px solid currentColor; padding:0 .14em; margin-top:.34em; }
+
+.stats{
+  display:flex; gap:0; flex-wrap:wrap;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-2) 100%);
+  border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:14px;
+}
+.stat{ flex:1 1 88px; padding:12px 10px; text-align:center; border-right:1px solid rgba(255,255,255,.18); }
+.stat:last-child{ border-right:none; }
+.stat .k{ font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; color:rgba(255,255,255,.75); margin-bottom:3px; }
+.stat .v{ font-size:1.05rem; font-weight:700; color:#fff; font-family:'JetBrains Mono',monospace; }
+
+.plane-wrap{ display:flex; justify-content:center; }
+.plane-wrap svg{ width:100%; max-width:460px; height:auto; touch-action:none; background:var(--bg); border-radius:12px; border:1px solid var(--border); }
+.drag-point{ cursor:grab; }
+.drag-point:active{ cursor:grabbing; }
+.drag-hint{ text-align:center; font-size:.83rem; color:var(--muted); margin-top:10px; }
+
+.coord-panel{ display:flex; flex-wrap:wrap; gap:10px 20px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); }
+.coord-row{ display:flex; align-items:center; gap:7px; font-size:.85rem; }
+.coord-label{ font-weight:800; min-width:1em; }
+.coord-field{ display:inline-flex; align-items:center; gap:4px; }
+.coord-field label{ color:var(--muted); font-size:.78rem; }
+.coord-input{
+  width:64px; font-family:'JetBrains Mono',monospace; font-size:.85rem; padding:5px 6px;
+  border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text);
+}
+.coord-input:focus{ outline:none; border-color:var(--primary); }
+
+.cone3d-wrap{ display:flex; justify-content:center; }
+.cone3d-wrap svg{
+  width:100%; max-width:520px; height:auto; touch-action:none; cursor:grab;
+  background:var(--bg); border-radius:12px; border:1px solid var(--border);
+}
+.cone3d-wrap svg:active{ cursor:grabbing; }
+.beta-row{ display:flex; align-items:center; gap:12px; margin:14px 0 4px; flex-wrap:wrap; }
+.beta-row label{ font-weight:700; color:var(--primary); font-size:.88rem; white-space:nowrap; }
+.beta-row input[type=range]{ flex:1; min-width:120px; accent-color:var(--primary); }
+.beta-row .val{ min-width:44px; text-align:right; font-weight:700; }
+.conic-badge{ display:inline-block; padding:5px 16px; border-radius:999px; font-weight:800; font-size:.9rem; background:#FF7F00; color:#3A1D00; margin-left:auto; }
+.rotate-hint{ text-align:center; font-size:.8rem; color:var(--muted); margin-top:8px; }
+
+.steps{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+.step{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:1rem; padding:2px 0; }
+.step-tag{ font-size:.7rem; font-weight:700; color:var(--muted); min-width:9em; text-transform:uppercase; letter-spacing:.03em; flex-shrink:0; }
+.step.result{ background:linear-gradient(135deg,#1B3B6F,#2C5F8A); color:#fff; padding:12px 18px; border-radius:12px; font-weight:700; }
+.step.result .step-tag{ color:rgba(255,255,255,.75); }
+
+.btn-action{
+  font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px;
+  padding:10px 22px; font-size:.88rem; font-weight:700; background:var(--primary); color:#fff;
+  transition:opacity .15s ease, transform .12s ease;
+}
+.btn-action:hover{ opacity:.9; }
+.btn-action:active{ transform:translateY(1px); }
+.quiz-q{
+  font-size:.92rem; font-weight:700; text-align:center; padding:14px; background:var(--bg);
+  border-radius:12px; margin-bottom:14px; border:1px solid var(--border); font-family:'JetBrains Mono',monospace;
+}
+.quiz-options{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (max-width:520px){ .quiz-options{ grid-template-columns:1fr; } }
+.quiz-opt{
+  padding:12px 14px; border-radius:12px; border:2px solid var(--border); background:var(--card);
+  cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:.78rem; text-align:center; color:var(--text);
+  transition:all .15s;
+}
+.quiz-opt:hover:not(.locked){ border-color:var(--primary); }
+.quiz-opt.locked{ cursor:default; }
+.quiz-opt.correct{ border-color:var(--accent-2); background:rgba(47,191,149,.15); color:var(--accent-2); font-weight:700; }
+.quiz-opt.wrong{ border-color:var(--secondary); background:rgba(255,101,132,.12); color:var(--secondary); font-weight:700; }
+.quiz-feedback{ text-align:center; margin-top:14px; font-weight:700; min-height:1.4em; }
+.quiz-feedback.correct{ color:var(--accent-2); }
+.quiz-feedback.wrong{ color:var(--secondary); }
+.quiz-next{ text-align:center; margin-top:14px; }
+.next-row{ text-align:center; margin-top:6px; }
+
+@media (max-width:600px){
+  header h1{ font-size:1.3rem; }
+  .card{ padding:14px 16px; }
+  .tab-btn{ font-size:.78rem; padding:7px 11px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าเรขาคณิตวิเคราะห์และภาคตัดกรวย" data-en="← Back to Analytic Geometry &amp; Conics">← กลับหน้าเรขาคณิตวิเคราะห์และภาคตัดกรวย</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🥚 วงรี" data-en="🥚 Ellipse">🥚 วงรี</h1>
+  <p data-th="ภาคตัดกรวยที่ระนาบเอียงตัดผ่านกรวยข้างเดียวทั้งวง" data-en="The conic section where a tilted plane cuts all the way around just one nappe">ภาคตัดกรวยที่ระนาบเอียงตัดผ่านกรวยข้างเดียวทั้งวง</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="what" onclick="goTab('what', this)" data-th="① ภาคตัดกรวยคืออะไร" data-en="① What Is a Conic Section?">① ภาคตัดกรวยคืออะไร</button>
+  <button class="tab-btn" data-tab="def" onclick="goTab('def', this)" data-th="② นิยาม" data-en="② Definition">② นิยาม</button>
+  <button class="tab-btn" data-tab="parts" onclick="goTab('parts', this)" data-th="③ องค์ประกอบ" data-en="③ Parts">③ องค์ประกอบ</button>
+  <button class="tab-btn" data-tab="proof" onclick="goTab('proof', this)" data-th="④ พิสูจน์" data-en="④ Proof">④ พิสูจน์</button>
+  <button class="tab-btn" data-tab="quiz" onclick="goTab('quiz', this)" data-th="⑤ แบบฝึกหัด" data-en="⑤ Practice">⑤ แบบฝึกหัด</button>
+</nav>
+
+<main>
+
+<!-- ══════════════ ① ภาคตัดกรวยคืออะไร ══════════════ -->
+<section id="tab-what" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔺</span><span data-th="ภาคตัดกรวยคืออะไร" data-en="What Is a Conic Section?">ภาคตัดกรวยคืออะไร</span></div>
+    <p class="desc-text" data-th="ภาคตัดกรวย (Conic Section) คือเส้นโค้งที่เกิดจากการใช้ระนาบตัดกรวยกลม 2 กรวยที่ต่อกันที่จุดยอด (กรวยคว่ำ-หงาย) รูปร่างของเส้นโค้งที่ได้ขึ้นอยู่กับมุมเอียงของระนาบเทียบกับแกนกรวยเพียงอย่างเดียว — ถ้าระนาบเอียงเล็กน้อยจนยังตัดผ่านกรวยข้างเดียวได้ครบทั้งวง จะได้ วงรี" data-en="A conic section is the curve formed where a plane slices through a double cone. The shape depends entirely on the plane's tilt relative to the axis — tilt it a little (but not enough to miss closing the loop on one nappe) and you get an ellipse.">ภาคตัดกรวย (Conic Section) คือเส้นโค้งที่เกิดจากการใช้ระนาบตัดกรวยกลม 2 กรวยที่ต่อกันที่จุดยอด (กรวยคว่ำ-หงาย) รูปร่างของเส้นโค้งที่ได้ขึ้นอยู่กับมุมเอียงของระนาบเทียบกับแกนกรวยเพียงอย่างเดียว — ถ้าระนาบเอียงเล็กน้อยจนยังตัดผ่านกรวยข้างเดียวได้ครบทั้งวง จะได้ วงรี</p>
+    <p class="desc-text" data-th="ลองลากแถบเลื่อนด้านล่างเพื่อปรับมุมเอียงของระนาบ (สีฟ้า) แล้วสังเกตว่าเส้นโค้งสีส้มที่ระนาบตัดผ่านกรวยเปลี่ยนรูปร่างไปอย่างไร — ลากบนภาพเพื่อหมุนมุมมองดูได้ด้วย" data-en="Try dragging the slider below to adjust the tilt of the plane (cyan) and watch how the orange curve changes shape. You can also drag on the image to rotate the view.">ลองลากแถบเลื่อนด้านล่างเพื่อปรับมุมเอียงของระนาบ (สีฟ้า) แล้วสังเกตว่าเส้นโค้งสีส้มที่ระนาบตัดผ่านกรวยเปลี่ยนรูปร่างไปอย่างไร — ลากบนภาพเพื่อหมุนมุมมองดูได้ด้วย</p>
+
+    <div class="beta-row">
+      <label data-th="มุมเอียงระนาบ β" data-en="Plane tilt β">มุมเอียงระนาบ β</label>
+      <input type="range" id="betaSlider" min="0" max="80" step="1" value="25" oninput="onBetaInput()">
+      <span class="val mono" id="betaVal">25°</span>
+      <span class="conic-badge" id="conicBadge">วงรี</span>
+    </div>
+
+    <div class="cone3d-wrap"><svg id="svg3D" viewBox="0 0 600 600"></svg></div>
+    <p class="rotate-hint" data-th="ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ" data-en="Drag on the image to rotate the 3D view">ลากบนภาพเพื่อหมุนมุมมอง 3 มิติ</p>
+  </div>
+  <div class="next-row"><button class="btn-action" onclick="goTab('def')" data-th="ข้อต่อไป →" data-en="Next →">ข้อต่อไป →</button></div>
+</section>
+
+<!-- ══════════════ ② นิยาม ══════════════ -->
+<section id="tab-def" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span><span data-th="นิยามวงรี" data-en="Definition of an Ellipse">นิยามวงรี</span></div>
+    <p class="desc-text" data-th="วงรี (Ellipse) คือเซตของจุดทุกจุดบนระนาบ ซึ่งผลบวกของระยะทางจากจุดนั้นไปยังจุดคงที่สองจุด (เรียกว่า โฟกัส, focus) มีค่าคงตัวเสมอ — ถ้า P เป็นจุดใดๆ บนวงรี และ F₁, F₂ เป็นโฟกัสทั้งสอง แล้ว PF₁ + PF₂ จะเท่ากันทุกจุด" data-en="An ellipse is the set of all points on a plane where the sum of the distances to two fixed points (called the foci) is always the same constant. If P is any point on the ellipse and F₁, F₂ are the two foci, then PF₁ + PF₂ is the same for every point P.">วงรี (Ellipse) คือเซตของจุดทุกจุดบนระนาบ ซึ่งผลบวกของระยะทางจากจุดนั้นไปยังจุดคงที่สองจุด (เรียกว่า โฟกัส, focus) มีค่าคงตัวเสมอ — ถ้า P เป็นจุดใดๆ บนวงรี และ F₁, F₂ เป็นโฟกัสทั้งสอง แล้ว PF₁ + PF₂ จะเท่ากันทุกจุด</p>
+    <p class="desc-text" data-th="ส่วนของเส้นตรงที่เชื่อมจุดยอดทั้งสองข้างที่ยาวกว่า เรียกว่า แกนเอก (major axis) ยาว 2a หน่วย ส่วนที่สั้นกว่าและตั้งฉากกับแกนเอกที่จุดศูนย์กลาง เรียกว่า แกนโท (minor axis) ยาว 2b หน่วย โดยที่ a &gt; b เสมอ" data-en="The longer segment joining the two vertices is the major axis, with length 2a. The shorter segment, perpendicular to it at the center, is the minor axis, with length 2b — and a is always greater than b.">ส่วนของเส้นตรงที่เชื่อมจุดยอดทั้งสองข้างที่ยาวกว่า เรียกว่า แกนเอก (major axis) ยาว 2a หน่วย ส่วนที่สั้นกว่าและตั้งฉากกับแกนเอกที่จุดศูนย์กลาง เรียกว่า แกนโท (minor axis) ยาว 2b หน่วย โดยที่ a &gt; b เสมอ</p>
+    <div class="formula">
+      <span class="frac"><span class="num">(x−h)²</span><span class="den">p²</span></span> +
+      <span class="frac"><span class="num">(y−k)²</span><span class="den">q²</span></span> = 1
+    </div>
+    <p class="formula-note" data-th="สมการรูปแบบมาตรฐาน เมื่อจุดศูนย์กลางอยู่ที่ (h,k) รัศมีตามแนวแกน x ยาว p หน่วย และรัศมีตามแนวแกน y ยาว q หน่วย (แกนที่ยาวกว่าคือแกนเอก)" data-en="Standard form, center at (h,k), semi-axis p along x and semi-axis q along y (whichever is longer is the major axis)">สมการรูปแบบมาตรฐาน เมื่อจุดศูนย์กลางอยู่ที่ (h,k) รัศมีตามแนวแกน x ยาว p หน่วย และรัศมีตามแนวแกน y ยาว q หน่วย (แกนที่ยาวกว่าคือแกนเอก)</p>
+    <div class="formula small">c = √(a² − b²) &nbsp; , &nbsp; e = c / a &nbsp; , &nbsp; 0 &lt; e &lt; 1</div>
+    <p class="formula-note" data-th="c คือระยะจากจุดศูนย์กลางถึงโฟกัส และ e คือความเยื้องศูนย์กลาง (eccentricity) — ยิ่ง e ใกล้ 0 วงรียิ่งกลม ยิ่ง e ใกล้ 1 วงรียิ่งแบน" data-en="c is the distance from center to focus, and e is the eccentricity — closer to 0 means more circular, closer to 1 means more flattened">c คือระยะจากจุดศูนย์กลางถึงโฟกัส และ e คือความเยื้องศูนย์กลาง (eccentricity) — ยิ่ง e ใกล้ 0 วงรียิ่งกลม ยิ่ง e ใกล้ 1 วงรียิ่งแบน</p>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span><span data-th="ลองเอง: ผลบวกระยะทางคงที่จริงไหม" data-en="Try It: Is the Sum of Distances Really Constant?">ลองเอง: ผลบวกระยะทางคงที่จริงไหม</span></div>
+    <p class="desc-text" data-th="ลากจุด P ไปรอบๆ วงรี แล้วสังเกตว่า PF₁ + PF₂ เปลี่ยนไปหรือไม่" data-en="Drag point P around the ellipse and watch whether PF₁ + PF₂ changes">ลากจุด P ไปรอบๆ วงรี แล้วสังเกตว่า PF₁ + PF₂ เปลี่ยนไปหรือไม่</p>
+    <div class="plane-wrap"><svg id="svgSumDemo" viewBox="0 0 600 600"></svg></div>
+    <div class="formula small mono" id="sumDemoLive">PF₁ + PF₂ = 3.00 + 7.00 = 10.00 = 2a</div>
+  </div>
+  <div class="next-row"><button class="btn-action" onclick="goTab('parts')" data-th="ข้อต่อไป →" data-en="Next →">ข้อต่อไป →</button></div>
+</section>
+
+<!-- ══════════════ ③ องค์ประกอบ ══════════════ -->
+<section id="tab-parts" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span><span data-th="องค์ประกอบของวงรี" data-en="Parts of an Ellipse">องค์ประกอบของวงรี</span></div>
+    <div class="formula small mono" id="ellipseEqLive">(x−0)²/5² + (y−0)²/3² = 1</div>
+    <div class="stats" id="statsEllipse"></div>
+    <div class="plane-wrap"><svg id="svgEllipse" viewBox="0 0 600 600"></svg></div>
+    <p class="drag-hint" data-th="ลากจุดศูนย์กลาง C หรือจุดปลายแกนเอก/แกนโท (Hx, Hy) — สลับกันเป็นแกนเอกได้เองถ้าลากให้ยาวกว่า หรือจะพิมพ์พิกัดด้านล่างก็ได้" data-en="Drag the center C, or the ends of the axes (Hx, Hy) — whichever gets longer automatically becomes the major axis, or type coordinates below">ลากจุดศูนย์กลาง C หรือจุดปลายแกนเอก/แกนโท (Hx, Hy) — สลับกันเป็นแกนเอกได้เองถ้าลากให้ยาวกว่า หรือจะพิมพ์พิกัดด้านล่างก็ได้</p>
+    <div class="coord-panel" id="coordsEllipse"></div>
+  </div>
+  <div class="next-row"><button class="btn-action" onclick="goTab('proof')" data-th="ข้อต่อไป →" data-en="Next →">ข้อต่อไป →</button></div>
+</section>
+
+<!-- ══════════════ ④ พิสูจน์ ══════════════ -->
+<section id="tab-proof" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">✍️</span><span data-th="พิสูจน์สมการวงรี" data-en="Deriving the Ellipse Equation">พิสูจน์สมการวงรี</span></div>
+    <p class="desc-text" data-th="ให้โฟกัสอยู่ที่ F₁(c,0) และ F₂(−c,0) และให้ P(x,y) เป็นจุดใดๆ บนวงรีที่ผลบวกระยะทางถึงโฟกัสทั้งสองเท่ากับ 2a หน่วยเสมอ (โดยที่ a &gt; c)" data-en="Let the foci be F₁(c,0) and F₂(−c,0), and let P(x,y) be any point on the ellipse where the sum of the distances to both foci is always 2a (with a > c).">ให้โฟกัสอยู่ที่ F₁(c,0) และ F₂(−c,0) และให้ P(x,y) เป็นจุดใดๆ บนวงรีที่ผลบวกระยะทางถึงโฟกัสทั้งสองเท่ากับ 2a หน่วยเสมอ (โดยที่ a &gt; c)</p>
+    <div class="steps">
+      <div class="step"><span class="step-tag" data-th="① นิยาม" data-en="① Definition">① นิยาม</span><span class="mono">PF₁ + PF₂ = 2a</span></div>
+      <div class="step"><span class="step-tag" data-th="② แทนสูตรระยะทาง" data-en="② Distance formula">② แทนสูตรระยะทาง</span><span class="mono"><span class="sqrt"><span class="radic">√</span><span class="radicand">(x−c)²+y²</span></span> + <span class="sqrt"><span class="radic">√</span><span class="radicand">(x+c)²+y²</span></span> = 2a</span></div>
+      <div class="step"><span class="step-tag" data-th="③ ย้ายข้าง ยกกำลังสอง" data-en="③ Isolate, square">③ ย้ายข้าง ยกกำลังสอง</span><span class="mono">4cx = 4a² − 4a<span class="sqrt"><span class="radic">√</span><span class="radicand">(x−c)²+y²</span></span></span></div>
+      <div class="step"><span class="step-tag" data-th="④ จัดรูป" data-en="④ Rearrange">④ จัดรูป</span><span class="mono">a<span class="sqrt"><span class="radic">√</span><span class="radicand">(x−c)²+y²</span></span> = a² − cx</span></div>
+      <div class="step"><span class="step-tag" data-th="⑤ ยกกำลังสองอีกครั้ง แทน b²=a²−c²" data-en="⑤ Square again, let b²=a²−c²">⑤ ยกกำลังสองอีกครั้ง แทน b²=a²−c²</span><span class="mono">b²x² + a²y² = a²b²</span></div>
+      <div class="step result"><span class="step-tag" data-th="⑥ หารด้วย a²b² → รูปมาตรฐาน" data-en="⑥ Divide by a²b² → standard form">⑥ หารด้วย a²b² → รูปมาตรฐาน</span><span class="mono">x²/a² + y²/b² = 1</span></div>
+    </div>
+  </div>
+  <div class="next-row"><button class="btn-action" onclick="goTab('quiz')" data-th="ข้อต่อไป →" data-en="Next →">ข้อต่อไป →</button></div>
+</section>
+
+<!-- ══════════════ ⑤ แบบฝึกหัด ══════════════ -->
+<section id="tab-quiz" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">📝</span><span data-th="แบบฝึกหัด: แปลงสมการทั่วไป → มาตรฐาน" data-en="Practice: General Form → Standard Form">แบบฝึกหัด: แปลงสมการทั่วไป → มาตรฐาน</span></div>
+    <p class="desc-text" data-th="โจทย์จะสุ่มให้สมการรูปแบบทั่วไป ให้เลือกสมการรูปแบบมาตรฐานที่ตรงกับวงรีวงเดียวกัน" data-en="You'll get a general-form equation — pick the standard-form equation that matches the same ellipse">โจทย์จะสุ่มให้สมการรูปแบบทั่วไป ให้เลือกสมการรูปแบบมาตรฐานที่ตรงกับวงรีวงเดียวกัน</p>
+    <div class="quiz-q" id="quizQ"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <p class="quiz-feedback" id="quizFeedback"></p>
+    <div class="quiz-next"><button class="btn-action" onclick="newQuiz()" data-th="โจทย์ใหม่ →" data-en="New Question →">โจทย์ใหม่ →</button></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: "สื่อการสอน : วงรี (Ellipse)", en: "Teaching Aid: Ellipse" };
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) { redraw3D(); renderEllipse(); renderSumDemo(); }
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const panel = document.getElementById('tab-' + id);
+  if (panel) panel.classList.add('active');
+}
+function goTab(id, btn) {
+  if (!btn) btn = document.querySelector('.tab-btn[data-tab="' + id + '"]');
+  showTab(id, btn);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fmt(n) {
+  const r = Math.round(n * 100) / 100;
+  return Number.isInteger(r) ? String(r) : r.toFixed(2);
+}
+function statHTML(k, v) { return '<div class="stat"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
+
+// ════════════════════════════════════════════════════════════
+// 3D module — double cone + tilted cutting plane (identical across the 4 conic pages)
+// ════════════════════════════════════════════════════════════
+const CONE_ALPHA_DEG = 34;
+const CONE_ALPHA = CONE_ALPHA_DEG * Math.PI / 180;
+const CONE_BETA_PARABOLA = 90 - CONE_ALPHA_DEG;
+const CONE_TMAX = 8;
+const CONE_PLANE_H = 3.4;
+const CONE_PLANE_R = 7.5;
+
+function coneDir(u) { return { x: Math.sin(CONE_ALPHA) * Math.cos(u), y: Math.sin(CONE_ALPHA) * Math.sin(u), z: Math.cos(CONE_ALPHA) }; }
+function rotateX3(p, a) { const c = Math.cos(a), s = Math.sin(a); return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c }; }
+function rotateY3(p, a) { const c = Math.cos(a), s = Math.sin(a); return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c }; }
+function project3(p, view, cx, cy, scale) {
+  let q = rotateY3(p, view.rotY);
+  q = rotateX3(q, view.rotX);
+  return { px: cx + q.x * scale, py: cy - q.y * scale, z: q.z };
+}
+function conePlaneBasis(betaDeg) {
+  const b = betaDeg * Math.PI / 180;
+  return {
+    n: { x: 0, y: -Math.sin(b), z: Math.cos(b) },
+    p0: { x: 0, y: 0, z: CONE_PLANE_H },
+    up: { x: 1, y: 0, z: 0 },
+    vp: { x: 0, y: Math.cos(b), z: Math.sin(b) },
+    betaRad: b
+  };
+}
+function coneIntersectionSegments(betaDeg, steps) {
+  steps = steps || 120;
+  const { n, p0 } = conePlaneBasis(betaDeg);
+  const numK = n.x * p0.x + n.y * p0.y + n.z * p0.z;
+  const segments = [];
+  let current = [];
+  let brokeAtStart = false;
+  for (let i = 0; i <= steps; i++) {
+    const u = (i / steps) * 2 * Math.PI;
+    const d = coneDir(u);
+    const denom = n.x * d.x + n.y * d.y + n.z * d.z;
+    let pt = null;
+    if (Math.abs(denom) >= 1e-4) {
+      const t = numK / denom;
+      if (Math.abs(t) <= CONE_TMAX) pt = { x: t * d.x, y: t * d.y, z: t * d.z };
+    }
+    if (!pt) {
+      if (i === 0) brokeAtStart = true;
+      if (current.length > 1) segments.push(current);
+      current = [];
+      continue;
+    }
+    current.push(pt);
+  }
+  const endedValid = current.length > 0;
+  if (current.length > 1) segments.push(current);
+  if (!brokeAtStart && endedValid && segments.length >= 2) {
+    const merged = segments[segments.length - 1].concat(segments[0]);
+    segments.splice(0, 1);
+    segments[segments.length - 1] = merged;
+  }
+  return segments;
+}
+function classifyBeta(betaDeg) {
+  if (betaDeg < 1) return 'circle';
+  if (betaDeg < CONE_BETA_PARABOLA - 1.5) return 'ellipse';
+  if (betaDeg < CONE_BETA_PARABOLA + 1.5) return 'parabola';
+  return 'hyperbola';
+}
+const CONIC_LABEL = {
+  th: { circle: 'วงกลม', ellipse: 'วงรี', parabola: 'พาราโบลา', hyperbola: 'ไฮเพอร์โบลา' },
+  en: { circle: 'Circle', ellipse: 'Ellipse', parabola: 'Parabola', hyperbola: 'Hyperbola' }
+};
+function buildConeQuads(view, cx, cy, scale, ringsPerNappe, angularSteps) {
+  const quads = [];
+  for (let nappe = -1; nappe <= 1; nappe += 2) {
+    for (let ri = 0; ri < ringsPerNappe; ri++) {
+      const t0 = nappe * (CONE_TMAX * ri / ringsPerNappe);
+      const t1 = nappe * (CONE_TMAX * (ri + 1) / ringsPerNappe);
+      for (let ai = 0; ai < angularSteps; ai++) {
+        const u0 = (ai / angularSteps) * 2 * Math.PI, u1 = ((ai + 1) / angularSteps) * 2 * Math.PI;
+        const d0 = coneDir(u0), d1 = coneDir(u1);
+        const pts3 = [
+          { x: t0 * d0.x, y: t0 * d0.y, z: t0 * d0.z },
+          { x: t0 * d1.x, y: t0 * d1.y, z: t0 * d1.z },
+          { x: t1 * d1.x, y: t1 * d1.y, z: t1 * d1.z },
+          { x: t1 * d0.x, y: t1 * d0.y, z: t1 * d0.z }
+        ];
+        const proj = pts3.map(function (p) { return project3(p, view, cx, cy, scale); });
+        const avgZ = (proj[0].z + proj[1].z + proj[2].z + proj[3].z) / 4;
+        quads.push({ pts: proj, z: avgZ, kind: 'cone' });
+      }
+    }
+  }
+  return quads;
+}
+function render3D(svgId, betaDeg, view) {
+  const svg = document.getElementById(svgId);
+  const cx = 300, cy = 330, scale = 29;
+  const quads = buildConeQuads(view, cx, cy, scale, 3, 20);
+
+  const plane = conePlaneBasis(betaDeg);
+  const R = CONE_PLANE_R;
+  const corners3 = [
+    { x: plane.p0.x + plane.up.x * R + plane.vp.x * R, y: plane.p0.y + plane.up.y * R + plane.vp.y * R, z: plane.p0.z + plane.up.z * R + plane.vp.z * R },
+    { x: plane.p0.x - plane.up.x * R + plane.vp.x * R, y: plane.p0.y - plane.up.y * R + plane.vp.y * R, z: plane.p0.z - plane.up.z * R + plane.vp.z * R },
+    { x: plane.p0.x - plane.up.x * R - plane.vp.x * R, y: plane.p0.y - plane.up.y * R - plane.vp.y * R, z: plane.p0.z - plane.up.z * R - plane.vp.z * R },
+    { x: plane.p0.x + plane.up.x * R - plane.vp.x * R, y: plane.p0.y + plane.up.y * R - plane.vp.y * R, z: plane.p0.z + plane.up.z * R - plane.vp.z * R }
+  ];
+  const planeProj = corners3.map(function (p) { return project3(p, view, cx, cy, scale); });
+  const planeZ = (planeProj[0].z + planeProj[1].z + planeProj[2].z + planeProj[3].z) / 4;
+  quads.push({ pts: planeProj, z: planeZ, kind: 'plane' });
+
+  quads.sort(function (a, b) { return a.z - b.z; });
+
+  const parts = [];
+  quads.forEach(function (q) {
+    const fill = q.kind === 'plane' ? 'rgba(99,219,219,0.28)' : 'rgba(153,51,0,0.22)';
+    const pointsStr = q.pts.map(function (p) { return p.px + ',' + p.py; }).join(' ');
+    parts.push('<polygon points="' + pointsStr + '" fill="' + fill + '" stroke="none"/>');
+  });
+
+  const genCount = 16;
+  for (let gi = 0; gi < genCount; gi++) {
+    const u = (gi / genCount) * 2 * Math.PI;
+    const d = coneDir(u);
+    const p1 = project3({ x: -CONE_TMAX * d.x, y: -CONE_TMAX * d.y, z: -CONE_TMAX * d.z }, view, cx, cy, scale);
+    const p2 = project3({ x: CONE_TMAX * d.x, y: CONE_TMAX * d.y, z: CONE_TMAX * d.z }, view, cx, cy, scale);
+    parts.push('<line x1="' + p1.px + '" y1="' + p1.py + '" x2="' + p2.px + '" y2="' + p2.py + '" stroke="rgba(153,51,0,0.35)" stroke-width="1"/>');
+  }
+
+  const axP1 = project3({ x: 0, y: 0, z: -CONE_TMAX }, view, cx, cy, scale);
+  const axP2 = project3({ x: 0, y: 0, z: CONE_TMAX }, view, cx, cy, scale);
+  parts.push('<line x1="' + axP1.px + '" y1="' + axP1.py + '" x2="' + axP2.px + '" y2="' + axP2.py + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4"/>');
+
+  const segments = coneIntersectionSegments(betaDeg);
+  segments.forEach(function (seg) {
+    const projPts = seg.map(function (p) { return project3(p, view, cx, cy, scale); });
+    const d = 'M' + projPts.map(function (p) { return p.px + ',' + p.py; }).join(' L');
+    parts.push('<path d="' + d + '" fill="none" stroke="#FF7F00" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>');
+  });
+
+  svg.innerHTML = parts.join('');
+}
+function wireRotate3D(svgId, view, redraw) {
+  const svg = document.getElementById(svgId);
+  let dragging = false, lastX = 0, lastY = 0;
+  svg.style.touchAction = 'none';
+  svg.addEventListener('pointerdown', function (e) {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    view.rotY += dx * 0.008;
+    view.rotX = Math.max(-1.3, Math.min(1.3, view.rotX - dy * 0.008));
+    redraw();
+  });
+  function stop() { dragging = false; }
+  svg.addEventListener('pointerup', stop);
+  svg.addEventListener('pointercancel', stop);
+}
+
+const cone3D = { view: { rotX: -0.26, rotY: 0.55 }, betaDeg: 25 };
+function redraw3D() {
+  render3D('svg3D', cone3D.betaDeg, cone3D.view);
+  const kind = classifyBeta(cone3D.betaDeg);
+  document.getElementById('conicBadge').textContent = CONIC_LABEL[getLang()][kind];
+  document.getElementById('betaVal').textContent = cone3D.betaDeg + '°';
+}
+function onBetaInput() {
+  cone3D.betaDeg = parseFloat(document.getElementById('betaSlider').value);
+  redraw3D();
+}
+wireRotate3D('svg3D', cone3D.view, redraw3D);
+
+// ════════════════════════════════════════════════════════════
+// 2D coordinate-plane module
+// ════════════════════════════════════════════════════════════
+function makePlane(opts) {
+  opts = opts || {};
+  const svgSize = opts.svgSize || 600, pad = opts.pad || 46;
+  const xMin = opts.xMin != null ? opts.xMin : -6, xMax = opts.xMax != null ? opts.xMax : 6;
+  const yMin = opts.yMin != null ? opts.yMin : -6, yMax = opts.yMax != null ? opts.yMax : 6;
+  const scale = Math.min((svgSize - 2 * pad) / (xMax - xMin), (svgSize - 2 * pad) / (yMax - yMin));
+  return {
+    svgSize: svgSize, pad: pad, xMin: xMin, xMax: xMax, yMin: yMin, yMax: yMax, scale: scale,
+    toPx: function (x, y) { return { px: pad + (x - xMin) * scale, py: svgSize - pad - (y - yMin) * scale }; },
+    toMath: function (px, py) { return { x: xMin + (px - pad) / scale, y: yMin + (svgSize - pad - py) / scale }; },
+    clamp: function (x, y) { return { x: Math.min(xMax - 0.2, Math.max(xMin + 0.2, x)), y: Math.min(yMax - 0.2, Math.max(yMin + 0.2, y)) }; }
+  };
+}
+function gridSVG(plane) {
+  const parts = [];
+  const origin = plane.toPx(0, 0);
+  for (let x = Math.ceil(plane.xMin); x <= Math.floor(plane.xMax); x++) {
+    const a = plane.toPx(x, plane.yMin), b = plane.toPx(x, plane.yMax);
+    parts.push('<line x1="' + a.px + '" y1="' + a.py + '" x2="' + b.px + '" y2="' + b.py + '" stroke="var(--border)" stroke-width="' + (x === 0 ? 2 : 1) + '"/>');
+    if (x !== 0) parts.push('<text x="' + a.px + '" y="' + (origin.py + 16) + '" font-size="11" fill="var(--muted)" text-anchor="middle">' + x + '</text>');
+  }
+  for (let y = Math.ceil(plane.yMin); y <= Math.floor(plane.yMax); y++) {
+    const a = plane.toPx(plane.xMin, y), b = plane.toPx(plane.xMax, y);
+    parts.push('<line x1="' + a.px + '" y1="' + a.py + '" x2="' + b.px + '" y2="' + b.py + '" stroke="var(--border)" stroke-width="' + (y === 0 ? 2 : 1) + '"/>');
+    if (y !== 0) parts.push('<text x="' + (origin.px - 8) + '" y="' + (a.py + 4) + '" font-size="11" fill="var(--muted)" text-anchor="end">' + y + '</text>');
+  }
+  return parts.join('');
+}
+function pointSVG(plane, id, pt, color, label) {
+  const p = plane.toPx(pt.x, pt.y);
+  return '<g data-point="' + id + '" class="drag-point">' +
+    '<circle cx="' + p.px + '" cy="' + p.py + '" r="16" fill="transparent"/>' +
+    '<circle cx="' + p.px + '" cy="' + p.py + '" r="6.5" fill="' + color + '" stroke="white" stroke-width="2"/>' +
+    '<text x="' + (p.px + 11) + '" y="' + (p.py - 9) + '" font-size="12.5" font-weight="800" fill="' + color + '">' + label + '</text>' +
+    '</g>';
+}
+function markerSVG(plane, pt, color, r) {
+  const p = plane.toPx(pt.x, pt.y);
+  return '<circle cx="' + p.px + '" cy="' + p.py + '" r="' + (r || 5) + '" fill="' + color + '" stroke="white" stroke-width="1.5"/>';
+}
+function doubleArrowDefs(id, color) {
+  return '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">' +
+    '<path d="M0,0 L10,5 L0,10 z" fill="' + color + '"/></marker></defs>';
+}
+function lineWithArrowSVG(plane, A, B, color, markerId) {
+  const a = plane.toPx(A.x, A.y), b = plane.toPx(B.x, B.y);
+  return '<line x1="' + a.px + '" y1="' + a.py + '" x2="' + b.px + '" y2="' + b.py + '" stroke="' + color + '" stroke-width="2.5" marker-start="url(#' + markerId + ')" marker-end="url(#' + markerId + ')"/>';
+}
+// Places a text label just past point B, extending outward along the A->B direction —
+// keeps axis labels clear of the shape's fill instead of landing on top of it.
+function axisEndLabel(plane, A, B, text, color) {
+  const dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+  const ext = 0.7, perp = 0.35;
+  const p = plane.toPx(B.x + ux * ext + nx * perp, B.y + uy * ext + ny * perp);
+  const anchor = Math.abs(ux) > Math.abs(uy) ? (ux > 0 ? 'start' : 'end') : 'middle';
+  return '<text x="' + p.px + '" y="' + (p.py + 4) + '" font-size="12" font-weight="800" fill="' + color + '" text-anchor="' + anchor + '">' + text + '</text>';
+}
+function wireDrag(svgEl, plane, points, onChange) {
+  let activeId = null;
+  function mathFromEvent(e) {
+    const p = svgEl.createSVGPoint();
+    p.x = e.clientX; p.y = e.clientY;
+    const loc = p.matrixTransform(svgEl.getScreenCTM().inverse());
+    return plane.toMath(loc.x, loc.y);
+  }
+  svgEl.style.touchAction = 'none';
+  svgEl.addEventListener('pointerdown', function (e) {
+    const g = e.target.closest('[data-point]');
+    if (!g) return;
+    activeId = g.dataset.point;
+    svgEl.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  svgEl.addEventListener('pointermove', function (e) {
+    if (!activeId) return;
+    const m = mathFromEvent(e);
+    points[activeId] = plane.clamp(m.x, m.y);
+    onChange();
+  });
+  svgEl.addEventListener('pointerup', function () { activeId = null; });
+  svgEl.addEventListener('pointercancel', function () { activeId = null; });
+}
+const COORD_TYPE_MIN = -20, COORD_TYPE_MAX = 20;
+function coordPanelHTML(entries) {
+  return entries.map(function (e) {
+    return '<div class="coord-row">' +
+      '<span class="coord-label" style="color:' + e.color + '">' + e.label + '</span>' +
+      '<span class="coord-field"><label>x</label><input type="number" step="0.1" class="coord-input" data-id="' + e.id + '" data-axis="x"></span>' +
+      '<span class="coord-field"><label>y</label><input type="number" step="0.1" class="coord-input" data-id="' + e.id + '" data-axis="y"></span>' +
+      '</div>';
+  }).join('');
+}
+function wireCoordPanel(containerId, points, onChange) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.addEventListener('input', function (e) {
+    const input = e.target.closest('.coord-input');
+    if (!input) return;
+    const val = parseFloat(input.value);
+    if (Number.isNaN(val)) return;
+    const clamped = Math.min(COORD_TYPE_MAX, Math.max(COORD_TYPE_MIN, val));
+    const id = input.dataset.id, axis = input.dataset.axis;
+    points[id] = axis === 'x' ? { x: clamped, y: points[id].y } : { x: points[id].x, y: clamped };
+    onChange();
+  });
+}
+function syncCoordPanel(containerId, points) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.coord-input').forEach(function (input) {
+    if (document.activeElement === input) return;
+    const id = input.dataset.id, axis = input.dataset.axis;
+    input.value = fmt(points[id][axis]);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// Ellipse 2D diagram — C=center, Hx=+x handle (sets p), Hy=+y handle (sets q). Whichever is
+// larger automatically becomes the major axis.
+// ════════════════════════════════════════════════════════════
+const ellipsePts = { C: { x: 0, y: 0 }, Hx: { x: 5, y: 0 }, Hy: { x: 0, y: 3 } };
+const ellipsePlane = makePlane({});
+function renderEllipse() {
+  const lang = getLang();
+  const C = ellipsePts.C;
+  const p = Math.max(0.3, Math.abs(ellipsePts.Hx.x - C.x));
+  const q = Math.max(0.3, Math.abs(ellipsePts.Hy.y - C.y));
+  const a = Math.max(p, q), b = Math.min(p, q);
+  const c = Math.sqrt(Math.max(0, a * a - b * b));
+  const e = a > 0 ? c / a : 0;
+  const majorIsX = p >= q;
+
+  const cPx = ellipsePlane.toPx(C.x, C.y);
+  const rxPx = p * ellipsePlane.scale, ryPx = q * ellipsePlane.scale;
+  const parts = [gridSVG(ellipsePlane)];
+  parts.push('<ellipse cx="' + cPx.px + '" cy="' + cPx.py + '" rx="' + rxPx + '" ry="' + ryPx + '" fill="rgba(255,127,0,0.12)" stroke="#FF7F00" stroke-width="2.5"/>');
+  const xAx1 = { x: C.x - p, y: C.y }, xAx2 = { x: C.x + p, y: C.y };
+  const yAx1 = { x: C.x, y: C.y - q }, yAx2 = { x: C.x, y: C.y + q };
+  const majorSeg = majorIsX ? [xAx1, xAx2] : [yAx1, yAx2];
+  const minorSeg = majorIsX ? [yAx1, yAx2] : [xAx1, xAx2];
+  parts.push(doubleArrowDefs('majAxArrow', 'var(--primary)'));
+  parts.push(doubleArrowDefs('minAxArrow', 'var(--accent-2)'));
+  parts.push(lineWithArrowSVG(ellipsePlane, majorSeg[0], majorSeg[1], 'var(--primary)', 'majAxArrow'));
+  parts.push(lineWithArrowSVG(ellipsePlane, minorSeg[0], minorSeg[1], 'var(--accent-2)', 'minAxArrow'));
+  parts.push(axisEndLabel(ellipsePlane, majorSeg[0], majorSeg[1], lang === 'en' ? 'major (2a)' : 'แกนเอก (2a)', 'var(--primary)'));
+  parts.push(axisEndLabel(ellipsePlane, minorSeg[0], minorSeg[1], lang === 'en' ? 'minor (2b)' : 'แกนโท (2b)', 'var(--accent-2)'));
+  const F1 = majorIsX ? { x: C.x + c, y: C.y } : { x: C.x, y: C.y + c };
+  const F2 = majorIsX ? { x: C.x - c, y: C.y } : { x: C.x, y: C.y - c };
+  parts.push(markerSVG(ellipsePlane, F1, 'var(--secondary)'));
+  parts.push(markerSVG(ellipsePlane, F2, 'var(--secondary)'));
+  const f1px = ellipsePlane.toPx(F1.x, F1.y), f2px = ellipsePlane.toPx(F2.x, F2.y);
+  parts.push('<text x="' + (f1px.px + 8) + '" y="' + (f1px.py - 6) + '" font-size="12" font-weight="800" fill="var(--secondary)">F&#8321;</text>');
+  parts.push('<text x="' + (f2px.px - 8) + '" y="' + (f2px.py - 6) + '" font-size="12" font-weight="800" text-anchor="end" fill="var(--secondary)">F&#8322;</text>');
+  parts.push(markerSVG(ellipsePlane, C, 'var(--primary)', 5));
+  parts.push(pointSVG(ellipsePlane, 'C', C, 'var(--primary)', 'C'));
+  parts.push(pointSVG(ellipsePlane, 'Hx', ellipsePts.Hx, 'var(--accent-2)', 'Hx'));
+  parts.push(pointSVG(ellipsePlane, 'Hy', ellipsePts.Hy, 'var(--accent-2)', 'Hy'));
+  document.getElementById('svgEllipse').innerHTML = parts.join('');
+
+  document.getElementById('statsEllipse').innerHTML =
+    statHTML('h, k', fmt(C.x) + ', ' + fmt(C.y)) +
+    statHTML('a (' + (lang === 'en' ? 'major' : 'เอก') + ')', fmt(a)) +
+    statHTML('b (' + (lang === 'en' ? 'minor' : 'โท') + ')', fmt(b)) +
+    statHTML('c', fmt(c)) +
+    statHTML(lang === 'en' ? 'Ecc. e' : 'ความเยื้อง e', fmt(e));
+
+  document.getElementById('ellipseEqLive').textContent =
+    '(x' + (C.x >= 0 ? '−' + fmt(C.x) : '+' + fmt(-C.x)) + ')²/' + fmt(p) + '² + (y' + (C.y >= 0 ? '−' + fmt(C.y) : '+' + fmt(-C.y)) + ')²/' + fmt(q) + '² = 1';
+
+  syncCoordPanel('coordsEllipse', ellipsePts);
+}
+wireDrag(document.getElementById('svgEllipse'), ellipsePlane, ellipsePts, renderEllipse);
+document.getElementById('coordsEllipse').innerHTML = coordPanelHTML([
+  { id: 'C', label: 'C', color: 'var(--primary)' },
+  { id: 'Hx', label: 'Hx', color: 'var(--accent-2)' },
+  { id: 'Hy', label: 'Hy', color: 'var(--accent-2)' }
+]);
+wireCoordPanel('coordsEllipse', ellipsePts, renderEllipse);
+
+// ════════════════════════════════════════════════════════════
+// Sum-of-distances demo (Definition tab) — mirrors the original GeoGebra construction:
+// P = Point(conic) dragged freely along a FIXED ellipse, both PF segments the same color,
+// a single live formula sentence "PF1+PF2 = d1 + d2 = 2a" proving the sum stays constant.
+// ════════════════════════════════════════════════════════════
+function distance(P, Q) { return Math.hypot(P.x - Q.x, P.y - Q.y); }
+const sumDemo = { a: 5, b: 3, theta: 0.7 };
+const sumDemoPlane = makePlane({});
+function renderSumDemo() {
+  const a = sumDemo.a, b = sumDemo.b, c = Math.sqrt(a * a - b * b);
+  const F1 = { x: c, y: 0 }, F2 = { x: -c, y: 0 };
+  const P = { x: a * Math.cos(sumDemo.theta), y: b * Math.sin(sumDemo.theta) };
+  const d1 = distance(P, F1), d2 = distance(P, F2);
+  const c0 = sumDemoPlane.toPx(0, 0);
+  const parts = [gridSVG(sumDemoPlane)];
+  parts.push('<ellipse cx="' + c0.px + '" cy="' + c0.py + '" rx="' + (a * sumDemoPlane.scale) + '" ry="' + (b * sumDemoPlane.scale) + '" fill="rgba(255,127,0,0.08)" stroke="#FF7F00" stroke-width="2"/>');
+  const p1 = sumDemoPlane.toPx(P.x, P.y), f1 = sumDemoPlane.toPx(F1.x, F1.y), f2 = sumDemoPlane.toPx(F2.x, F2.y);
+  parts.push('<line x1="' + p1.px + '" y1="' + p1.py + '" x2="' + f1.px + '" y2="' + f1.py + '" stroke="var(--secondary)" stroke-width="2.5" stroke-dasharray="6 4"/>');
+  parts.push('<line x1="' + p1.px + '" y1="' + p1.py + '" x2="' + f2.px + '" y2="' + f2.py + '" stroke="var(--secondary)" stroke-width="2.5" stroke-dasharray="6 4"/>');
+  parts.push(markerSVG(sumDemoPlane, F1, 'var(--primary)'));
+  parts.push(markerSVG(sumDemoPlane, F2, 'var(--primary)'));
+  parts.push('<text x="' + (f1.px + 8) + '" y="' + (f1.py - 6) + '" font-size="12" font-weight="800" fill="var(--primary)">F&#8321;</text>');
+  parts.push('<text x="' + (f2.px - 8) + '" y="' + (f2.py - 6) + '" font-size="12" font-weight="800" text-anchor="end" fill="var(--primary)">F&#8322;</text>');
+  parts.push(pointSVG(sumDemoPlane, 'P', P, 'var(--accent-2)', 'P'));
+  document.getElementById('svgSumDemo').innerHTML = parts.join('');
+  document.getElementById('sumDemoLive').textContent =
+    'PF₁ + PF₂ = ' + fmt(d1) + ' + ' + fmt(d2) + ' = ' + fmt(d1 + d2) + ' = 2a';
+}
+function wireAngleDrag(svgEl, plane, state, aVal, bVal, redraw) {
+  let dragging = false;
+  function mathFromEvent(e) {
+    const p = svgEl.createSVGPoint();
+    p.x = e.clientX; p.y = e.clientY;
+    const loc = p.matrixTransform(svgEl.getScreenCTM().inverse());
+    return plane.toMath(loc.x, loc.y);
+  }
+  svgEl.style.touchAction = 'none';
+  svgEl.addEventListener('pointerdown', function (e) {
+    if (!e.target.closest('[data-point]')) return;
+    dragging = true;
+    svgEl.setPointerCapture(e.pointerId);
+  });
+  svgEl.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    const m = mathFromEvent(e);
+    state.theta = Math.atan2(m.y / bVal, m.x / aVal);
+    redraw();
+  });
+  function stop() { dragging = false; }
+  svgEl.addEventListener('pointerup', stop);
+  svgEl.addEventListener('pointercancel', stop);
+}
+wireAngleDrag(document.getElementById('svgSumDemo'), sumDemoPlane, sumDemo, sumDemo.a, sumDemo.b, renderSumDemo);
+
+// ════════════════════════════════════════════════════════════
+// Practice quiz — random general-form ellipse equation, pick the matching standard form
+// ════════════════════════════════════════════════════════════
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function shuffleArr(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function signedTerm(coef, label) {
+  if (coef === 0) return '';
+  const sign = coef >= 0 ? '+' : '−';
+  const abs = Math.abs(coef);
+  const numPart = (label !== '' && abs === 1) ? '' : fmt(abs);
+  return ' ' + sign + ' ' + numPart + label;
+}
+function buildQuizOptions(correct, distractorCandidates, fallbackGen) {
+  const seen = new Set([correct]);
+  const uniq = [];
+  distractorCandidates.forEach(function (d) { if (!seen.has(d)) { seen.add(d); uniq.push(d); } });
+  let guard = 0;
+  while (uniq.length < 3 && guard < 30) {
+    guard++;
+    const cand = fallbackGen();
+    if (!seen.has(cand)) { seen.add(cand); uniq.push(cand); }
+  }
+  return shuffleArr([correct].concat(uniq.slice(0, 3)));
+}
+function ellipseGeneralStr(h, k, p, q) {
+  const A = q * q, B = p * p;
+  const D = -2 * A * h, E = -2 * B * k, F = A * h * h + B * k * k - p * p * q * q;
+  const Astr = (A === 1 ? '' : fmt(A)) + 'x²';
+  const Bstr = (B === 1 ? '' : fmt(B)) + 'y²';
+  return Astr + ' + ' + Bstr + signedTerm(D, 'x') + signedTerm(E, 'y') + signedTerm(F, '') + ' = 0';
+}
+function ellipseStdStr(h, k, p, q) {
+  return '(x' + (h >= 0 ? '−' + fmt(h) : '+' + fmt(-h)) + ')²/' + fmt(p) + '² + (y' + (k >= 0 ? '−' + fmt(k) : '+' + fmt(-k)) + ')²/' + fmt(q) + '² = 1';
+}
+function generateQuizData() {
+  let p = randInt(2, 6), q = randInt(2, 6);
+  if (p === q) q = p + 1; // keep them distinct so "swap axes" is a meaningfully different distractor
+  const h = randInt(-4, 4), k = randInt(-4, 4);
+  const question = ellipseGeneralStr(h, k, p, q);
+  const correct = ellipseStdStr(h, k, p, q);
+  const distractors = [
+    ellipseStdStr(h, k, q, p),   // swapped which axis is which
+    ellipseStdStr(-h, -k, p, q), // sign flip
+    '(x' + (h >= 0 ? '−' + fmt(h) : '+' + fmt(-h)) + ')²/' + fmt(p) + ' + (y' + (k >= 0 ? '−' + fmt(k) : '+' + fmt(-k)) + ')²/' + fmt(q) + ' = 1' // forgot to square p,q
+  ];
+  const options = buildQuizOptions(correct, distractors, function () {
+    return ellipseStdStr(h + randInt(1, 3) * (Math.random() < 0.5 ? -1 : 1), k, p, q);
+  });
+  return { question: question, options: options, correct: correct };
+}
+let quizState = null;
+function newQuiz() {
+  const data = generateQuizData();
+  document.getElementById('quizQ').textContent = data.question;
+  quizState = { correct: data.correct, options: data.options, locked: false };
+  document.getElementById('quizOptions').innerHTML = data.options.map(function (opt, i) {
+    return '<button class="quiz-opt" onclick="answerQuiz(' + i + ')">' + opt + '</button>';
+  }).join('');
+  const fb = document.getElementById('quizFeedback');
+  fb.textContent = '';
+  fb.className = 'quiz-feedback';
+}
+function answerQuiz(idx) {
+  if (!quizState || quizState.locked) return;
+  quizState.locked = true;
+  const lang = getLang();
+  const picked = quizState.options[idx];
+  document.querySelectorAll('.quiz-opt').forEach(function (btn, i) {
+    btn.classList.add('locked');
+    if (quizState.options[i] === quizState.correct) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('quizFeedback');
+  if (picked === quizState.correct) {
+    fb.textContent = lang === 'en' ? '✓ Correct!' : '✓ ถูกต้อง!';
+    fb.className = 'quiz-feedback correct';
+  } else {
+    fb.textContent = lang === 'en' ? '✗ Not quite — the correct answer is highlighted' : '✗ ยังไม่ถูก — เฉลยไฮไลต์ไว้ให้แล้ว';
+    fb.className = 'quiz-feedback wrong';
+  }
+}
+
+redraw3D();
+renderEllipse();
+renderSumDemo();
+newQuiz();
+applyLang(getLang());
+</script>
+
+</body>
+</html>
