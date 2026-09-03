@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ลิมิต (Limits)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #1B3B6F;
+    --secondary: #FF6584;
+    --accent: #43D9AD;
+    --warning: #FFB347;
+    --bg: #F0F4FF;
+    --card: #FFFFFF;
+    --text: #2D3748;
+    --muted: #718096;
+    --border: #E2E8F0;
+    --shadow: 0 4px 24px rgba(27,59,111,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%);
+    color: white;
+    padding: 16px 40px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; }
+  header p  { font-size: .9rem; opacity: .85; margin-top: 2px; }
+  .back-link {
+    position: absolute;
+    top: 12px; left: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    opacity: .9;
+    z-index: 2;
+  }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle {
+    position: absolute;
+    top: 12px; right: 20px;
+    background: rgba(255,255,255,.15);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,.5);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+
+  /* ── Tab Nav ── */
+  nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 24px 0;
+    background: white;
+    border-bottom: 3px solid var(--border);
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 10px 10px 0 0;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .25s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+
+  /* ── Main ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon { font-size: 1.5rem; }
+
+  .desc-text { font-size: 1rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+
+  /* ── Highlight box (disclaimer / notes) ── */
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+
+  /* ── Formula ── */
+  .formula {
+    background: linear-gradient(135deg,#1B3B6F,#2C5F8A);
+    color: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 16px 0;
+    letter-spacing: .5px;
+  }
+  .formula.small { font-size: 1.05rem; padding: 12px 18px; }
+
+  /* ── Step-by-step (also reused for the two continuity conditions) ── */
+  .steps { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .step { display: flex; gap: 14px; align-items: baseline; font-size: 1.02rem; flex-wrap: wrap; }
+  .step-tag { font-size: .72rem; font-weight: 700; color: var(--muted); min-width: 5.5em; text-transform: uppercase; letter-spacing: .04em; }
+  .step.result { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: #fff; padding: 14px 20px; border-radius: 12px; font-weight: 700; margin-top: 4px; }
+  .step.result .step-tag { color: rgba(255,255,255,.75); }
+
+  /* ── Mode / example / side toggle ── */
+  .mode-toggle { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .mode-label { font-size: .88rem; font-weight: 600; color: var(--muted); margin-right: 4px; }
+  .mode-btn {
+    padding: 10px 22px;
+    border: 2px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    background: white;
+    color: var(--muted);
+    transition: all .2s;
+  }
+  .mode-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+  .mode-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+  /* ── Graph panel (new: coordinate-plane function plots) ── */
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .fn-tag { display: inline-flex; align-items: baseline; gap: .5rem; margin-top: .7rem; font-size: .92rem; color: var(--muted); }
+  .fn-tag b { color: var(--primary); }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .guide-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+  .guide-line.hiA { stroke: var(--accent); opacity: .95; }
+  .guide-line.hiB { stroke: var(--secondary); opacity: .95; }
+  .pt { stroke-width: 2.4; }
+  .pt-open { fill: #fff; stroke: var(--secondary); }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillB { fill: var(--secondary); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .hit-target { fill: transparent; cursor: grab; touch-action: none; }
+  .pt.draggable { cursor: grab; touch-action: none; }
+  .drag-hint { font-size: 9.5px; fill: var(--muted); font-style: italic; }
+
+  /* ── Slider (h, reused round-limit look) ── */
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 8rem; height: 5px; border-radius: 3px;
+    background: var(--border); outline: none; cursor: pointer;
+  }
+  .round-limit input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--primary); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--primary);
+  }
+  .round-limit input[type="range"]::-moz-range-thumb {
+    width: 15px; height: 15px; border-radius: 50%; border: 2px solid #fff;
+    background: var(--primary); box-shadow: 0 0 0 1px var(--primary);
+  }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 2.6em; text-align: right; }
+
+  /* ── Buttons (transport controls) ── */
+  .btn {
+    font-family: 'Sarabun', sans-serif;
+    border: none; cursor: pointer;
+    border-radius: 999px;
+    width: 2.5rem; height: 2.5rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--card); color: var(--text); border: 1px solid var(--border);
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-play { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-play:hover:not(:disabled) { border-color: var(--primary); color: #fff; opacity: .9; }
+
+  .sim-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 1.6rem; justify-content: space-between; }
+  .transport { display: flex; align-items: center; gap: .5rem; }
+  .round-indicator { font-size: .9rem; color: var(--muted); font-weight: 600; min-width: 6.5em; text-align: center; }
+
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background: #FFE3E9; color: var(--secondary); padding: .05em .4em; border-radius: 6px; font-weight: 800; }
+  .formula-live .hlA { background: #E1F8EF; color: #12805F; padding: .05em .4em; border-radius: 6px; font-weight: 800; }
+
+  /* ── Proper stacked fraction (numerator / horizontal bar / denominator) ── */
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+
+  /* ── History / approach table ── */
+  .history-wrap { max-height: 240px; overflow-y: auto; margin-top: .6rem; }
+  table.history { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  table.history th, table.history td { text-align: right; padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+  table.history th:first-child, table.history td:first-child { text-align: left; }
+  table.history th { color: var(--muted); font-weight: 600; font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; position: sticky; top: 0; background: var(--card); }
+  table.history tr:last-child td { color: var(--secondary); font-weight: 700; }
+
+  /* ── Continuity checklist (new component) ── */
+  .check-list { display: flex; flex-direction: column; margin-top: .8rem; border-top: 1.5px solid var(--border); }
+  .check-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1.5px solid var(--border); }
+  .check-row .ctext { font-size: .96rem; color: var(--text); }
+  .check-mark { font-weight: 800; font-size: .92rem; padding: .2rem .6rem; border-radius: 8px; white-space: nowrap; }
+  .check-mark.yes { color: #12805F; background: #E1F8EF; }
+  .check-mark.no { color: var(--secondary); background: #FFE3E9; }
+  .check-mark.na { color: var(--muted); background: var(--border); }
+  .check-row.result { border-bottom: none; padding-top: 1.1rem; }
+  .check-row.result .ctext { font-weight: 700; color: var(--primary); font-size: 1.02rem; }
+
+  /* ── Summary grid ── */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    .card { padding: 16px 14px; }
+    .tab-btn { font-size: .85rem; padding: 8px 12px; }
+    .mode-btn { padding: 10px 16px; font-size: .95rem; }
+    .formula { font-size: 1.05rem; padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าแคลคูลัส" data-en="← Back to Calculus">← กลับหน้าแคลคูลัส</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🔍 ลิมิต" data-en="🔍 Limits">🔍 ลิมิต</h1>
+  <p data-th="ที่มา ความหมาย ลิมิตทางเดียว และความต่อเนื่อง • สื่อการสอนแบบโต้ตอบ" data-en="Origins, meaning, one-sided limits, and continuity • Interactive Teaching Aid">ที่มา ความหมาย ลิมิตทางเดียว และความต่อเนื่อง • สื่อการสอนแบบโต้ตอบ</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="origin" onclick="showTab('origin', this)" data-th="🔍 ที่มา" data-en="🔍 Origin">🔍 ที่มา</button>
+  <button class="tab-btn" data-tab="meaning" onclick="showTab('meaning', this)" data-th="🧲 ความหมายของลิมิต" data-en="🧲 What a Limit Means">🧲 ความหมายของลิมิต</button>
+  <button class="tab-btn" data-tab="onesided" onclick="showTab('onesided', this)" data-th="🧭 ลิมิตทางเดียว" data-en="🧭 One-Sided Limits">🧭 ลิมิตทางเดียว</button>
+  <button class="tab-btn" data-tab="continuity" onclick="showTab('continuity', this)" data-th="🔗 ความต่อเนื่อง" data-en="🔗 Continuity">🔗 ความต่อเนื่อง</button>
+  <button class="tab-btn" data-tab="summary" onclick="showTab('summary', this)" data-th="🎯 สรุป" data-en="🎯 Summary">🎯 สรุป</button>
+</nav>
+
+<main>
+
+<!-- ══════════════ TAB: ที่มา ══════════════ -->
+<section id="tab-origin" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔍</span><span data-th="ไอเดียตั้งต้น: การเปลี่ยนแปลงที่เล็กจนเข้าใกล้ 0" data-en="The Starting Idea: A Change So Small It Approaches 0">ไอเดียตั้งต้น: การเปลี่ยนแปลงที่เล็กจนเข้าใกล้ 0</span></div>
+    <p class="desc-text" data-th="สมมติมีจุด P คงที่บนกราฟ และจุด Q ที่อยู่ห่างออกไปทางขวาเป็นระยะ h เส้นตรงที่ลากผ่าน P กับ Q เรียกว่า เส้นตัด (secant line) — ไอเดียของลิมิตคือ ถ้าเราลด h ให้เล็กลงเรื่อย ๆ จนเข้าใกล้ 0 จุด Q จะเลื่อนเข้าใกล้ P และเส้นตัดจะค่อย ๆ กลายเป็น เส้นสัมผัส (tangent line) ที่จุด P พอดี" data-en="Suppose point P is fixed on a graph, and point Q sits h units to its right. The line through P and Q is called a secant line. The idea behind a limit: as we shrink h closer and closer to 0, Q slides toward P, and the secant line gradually becomes the tangent line right at P.">สมมติมีจุด P คงที่บนกราฟ และจุด Q ที่อยู่ห่างออกไปทางขวาเป็นระยะ h เส้นตรงที่ลากผ่าน P กับ Q เรียกว่า เส้นตัด (secant line) — ไอเดียของลิมิตคือ ถ้าเราลด h ให้เล็กลงเรื่อย ๆ จนเข้าใกล้ 0 จุด Q จะเลื่อนเข้าใกล้ P และเส้นตัดจะค่อย ๆ กลายเป็น เส้นสัมผัส (tangent line) ที่จุด P พอดี</p>
+  </div>
+
+  <div class="card">
+    <div class="plot-wrap"><svg id="plotOrigin" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b>f(x) = x²</b></div>
+
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">h</span>
+        <input type="range" id="hSlider" min="0" max="100" step="1" value="0">
+        <span class="val" id="hVal">2.00</span>
+      </div>
+      <div class="transport">
+        <button class="btn btn-play" id="hPlay" data-th-title="เล่นอัตโนมัติ" data-en-title="Play" aria-label="Play">
+          <svg id="hPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn" id="hReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg>
+        </button>
+      </div>
+      <span class="desc-text" style="font-size:.85rem;color:var(--muted);" data-th="ลาก slider หรือกดเล่น เพื่อดู h ลดลงเข้าใกล้ 0" data-en="Drag the slider or press play to watch h shrink toward 0">ลาก slider หรือกดเล่น เพื่อดู h ลดลงเข้าใกล้ 0</span>
+    </div>
+    <div class="formula-live" id="originFormula"></div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('meaning', document.querySelector('.tab-btn[data-tab=meaning]'))" data-th="ต่อไป: ความหมายของลิมิต →" data-en="Next: What a Limit Means →">ต่อไป: ความหมายของลิมิต →</button>
+</section>
+
+<!-- ══════════════ TAB: ความหมายของลิมิต ══════════════ -->
+<section id="tab-meaning" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🧲</span><span data-th="เข้าใกล้ค่าหนึ่งมาก ๆ ทั้งซ้ายและขวา" data-en="Getting Very Close From Both Sides">เข้าใกล้ค่าหนึ่งมาก ๆ ทั้งซ้ายและขวา</span></div>
+    <p class="desc-text" data-th="ลิมิตของ f(x) เมื่อ x เข้าใกล้ a เท่ากับ L หมายความว่า ไม่ว่าเราจะให้ x เข้าใกล้ a จากทางซ้ายหรือทางขวา ค่า f(x) ก็เข้าใกล้ L เสมอ — โดยไม่จำเป็นต้องสนใจว่า x = a จริง ๆ แล้วให้ค่าอะไร (หรือมีค่าหรือไม่)" data-en="The limit of f(x) as x approaches a equals L means: whether x approaches a from the left or from the right, f(x) always gets close to L — regardless of what f actually equals at x = a itself (or whether it's even defined there).">ลิมิตของ f(x) เมื่อ x เข้าใกล้ a เท่ากับ L หมายความว่า ไม่ว่าเราจะให้ x เข้าใกล้ a จากทางซ้ายหรือทางขวา ค่า f(x) ก็เข้าใกล้ L เสมอ — โดยไม่จำเป็นต้องสนใจว่า x = a จริง ๆ แล้วให้ค่าอะไร (หรือมีค่าหรือไม่)</p>
+  </div>
+
+  <div class="card">
+    <div class="plot-wrap"><svg id="plotMeaning" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b>f(x) = (x² − 1)/(x − 1)</b></div>
+    <p class="desc-text" style="font-size:.9rem;color:var(--muted);margin-top:.4rem;" data-th="ฟังก์ชันนี้ลดรูปเหลือ x + 1 ได้ทุกจุด ยกเว้น x = 1 ซึ่งหาค่าไม่ได้ (0/0) — จึงมีวงกลมโปร่งที่จุดนั้น" data-en="This function simplifies to x + 1 everywhere except x = 1, where it's undefined (0/0) — hence the open circle there.">ฟังก์ชันนี้ลดรูปเหลือ x + 1 ได้ทุกจุด ยกเว้น x = 1 ซึ่งหาค่าไม่ได้ (0/0) — จึงมีวงกลมโปร่งที่จุดนั้น</p>
+
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="transport">
+        <button class="btn" id="mPrev" data-th-title="ก่อนหน้า" data-en-title="Previous" aria-label="Previous"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="btn btn-play" id="mPlay" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause"><svg id="mPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="btn" id="mNext" data-th-title="ถัดไป" data-en-title="Next" aria-label="Next"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button>
+        <span class="round-indicator" id="mIndicator">ขั้นที่ 1 / 7</span>
+        <button class="btn" id="mReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg></button>
+      </div>
+    </div>
+    <div class="formula-live" id="meaningFormula"></div>
+    <div class="history-wrap">
+      <table class="history">
+        <thead><tr><th data-th="ขั้น" data-en="Step">ขั้น</th><th>x → 1⁻</th><th>f(x)</th><th>x → 1⁺</th><th>f(x)</th></tr></thead>
+        <tbody id="meaningBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('onesided', document.querySelector('.tab-btn[data-tab=onesided]'))" data-th="ต่อไป: ลิมิตทางเดียว →" data-en="Next: One-Sided Limits →">ต่อไป: ลิมิตทางเดียว →</button>
+</section>
+
+<!-- ══════════════ TAB: ลิมิตทางเดียว ══════════════ -->
+<section id="tab-onesided" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🧭</span><span data-th="ลิมิตซ้าย และ ลิมิตขวา" data-en="Left-Hand and Right-Hand Limits">ลิมิตซ้าย และ ลิมิตขวา</span></div>
+    <p class="desc-text" data-th="บางฟังก์ชันเข้าใกล้จุดหนึ่งได้แค่ทางเดียว (นอกโดเมน) และบางฟังก์ชัน 'กระโดด' ที่จุดหนึ่งจนค่าที่เข้าใกล้จากสองด้านไม่เท่ากัน — ทั้งสองกรณีทำให้ลิมิตสองทาง (two-sided limit) ไม่มีค่า ต้องพิจารณาแยกเป็น ลิมิตซ้าย lim(x→a⁻) และ ลิมิตขวา lim(x→a⁺)" data-en="Some functions can only approach a point from one direction (outside the domain), and some functions 'jump' at a point so the values approached from the two sides differ. Either way, the two-sided limit doesn't exist — we must consider the left-hand limit lim(x→a⁻) and the right-hand limit lim(x→a⁺) separately.">บางฟังก์ชันเข้าใกล้จุดหนึ่งได้แค่ทางเดียว (นอกโดเมน) และบางฟังก์ชัน "กระโดด" ที่จุดหนึ่งจนค่าที่เข้าใกล้จากสองด้านไม่เท่ากัน — ทั้งสองกรณีทำให้ลิมิตสองทาง (two-sided limit) ไม่มีค่า ต้องพิจารณาแยกเป็น ลิมิตซ้าย lim(x→a⁻) และ ลิมิตขวา lim(x→a⁺)</p>
+  </div>
+
+  <div class="card">
+    <div class="sim-controls">
+      <div class="mode-toggle">
+        <span class="mode-label" data-th="ตัวอย่างฟังก์ชัน" data-en="Example function">ตัวอย่างฟังก์ชัน</span>
+        <button class="mode-btn active" id="exBtnSqrt">f(x) = √x</button>
+        <button class="mode-btn" id="exBtnJump" data-th="f(x) แบบขั้นบันได" data-en="f(x), step-shaped">f(x) แบบขั้นบันได</button>
+      </div>
+      <div class="mode-toggle">
+        <span class="mode-label" data-th="เข้าใกล้จาก" data-en="Approach from">เข้าใกล้จาก</span>
+        <button class="mode-btn" id="sideBtnLeft" data-th="ซ้าย (a⁻)" data-en="Left (a⁻)">ซ้าย (a⁻)</button>
+        <button class="mode-btn active" id="sideBtnRight" data-th="ขวา (a⁺)" data-en="Right (a⁺)">ขวา (a⁺)</button>
+      </div>
+    </div>
+
+    <div class="plot-wrap" style="margin-top:1rem;"><svg id="plotOneSided" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b id="oneSidedFnTag">f(x) = √x</b></div>
+    <p class="desc-text" id="oneSidedNote" style="font-size:.88rem;color:var(--muted);margin-top:.3rem;"></p>
+
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="transport">
+        <button class="btn" id="osPrev" data-th-title="ก่อนหน้า" data-en-title="Previous" aria-label="Previous"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="btn btn-play" id="osPlay" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause"><svg id="osPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="btn" id="osNext" data-th-title="ถัดไป" data-en-title="Next" aria-label="Next"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button>
+        <span class="round-indicator" id="osIndicator">ขั้นที่ 1 / 6</span>
+        <button class="btn" id="osReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg></button>
+      </div>
+    </div>
+    <div class="formula-live" id="osFormula"></div>
+    <div class="box-info" id="osSummary" style="margin-top:.8rem;"></div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('continuity', document.querySelector('.tab-btn[data-tab=continuity]'))" data-th="ต่อไป: ความต่อเนื่อง →" data-en="Next: Continuity →">ต่อไป: ความต่อเนื่อง →</button>
+</section>
+
+<!-- ══════════════ TAB: ความต่อเนื่อง ══════════════ -->
+<section id="tab-continuity" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span><span data-th="ต่อเนื่อง หรือ ไม่ต่อเนื่อง ที่จุด x = a" data-en="Continuous or Discontinuous at x = a">ต่อเนื่อง หรือ ไม่ต่อเนื่อง ที่จุด x = a</span></div>
+    <p class="desc-text" data-th="f จะต่อเนื่องที่จุด a ก็ต่อเมื่อเงื่อนไขสองข้อเป็นจริงพร้อมกัน:" data-en="f is continuous at a if and only if both conditions hold at the same time:">f จะต่อเนื่องที่จุด a ก็ต่อเมื่อเงื่อนไขสองข้อเป็นจริงพร้อมกัน:</p>
+    <div class="steps">
+      <div class="step"><span class="step-tag" data-th="เงื่อนไข ①" data-en="Condition ①">เงื่อนไข ①</span><span data-th="ลิมิตที่จุด a มีค่า" data-en="The limit at a exists">ลิมิตที่จุด a มีค่า</span></div>
+      <div class="step"><span class="step-tag" data-th="เงื่อนไข ②" data-en="Condition ②">เงื่อนไข ②</span><span data-th="ค่าลิมิตนั้นเท่ากับ f(a) พอดี" data-en="That limit equals f(a) exactly">ค่าลิมิตนั้นเท่ากับ f(a) พอดี</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="mode-toggle">
+      <span class="mode-label" data-th="กรณีตัวอย่าง" data-en="Example case">กรณีตัวอย่าง</span>
+      <button class="mode-btn active" id="ctBtn0" data-th="ก. ฟังก์ชันมีลิมิต" data-en="A. A function with a limit">ก. ฟังก์ชันมีลิมิต</button>
+      <button class="mode-btn" id="ctBtn1" data-th="ข. ลิมิตไม่มีค่า (กระโดด)" data-en="B. Limit doesn't exist (jump)">ข. ลิมิตไม่มีค่า (กระโดด)</button>
+    </div>
+    <p class="desc-text" style="font-size:.9rem;color:var(--muted);margin-top:.6rem;" data-th="จุดสีเขียวลากข้าม x=1 ได้ก็ต่อเมื่อ checklist ด้านล่างบอกว่าต่อเนื่องเท่านั้น (เช็คสดตลอด ไม่ใช่ตายตัวตามกรณี) — ลองลากจุดสีชมพู f(a) ออกจากกราฟดูสิ พอไม่ต่อเนื่องปุ๊บ จุดสีเขียวจะลากผ่าน x=1 ไม่ได้ทันที ลากกลับมาตรงเดิมก็ผ่านได้อีกครั้ง ส่วนกรณี ข ลิมิตไม่มีค่าอยู่แล้วไม่ว่า f(a) จะอยู่ตรงไหน จุดสีเขียวจึงข้ามไม่ได้เสมอ" data-en="The green point can only cross x=1 when the checklist below says continuous (checked live, not fixed per case) — try dragging the pink f(a) point off the graph: the moment it's discontinuous, the green point can no longer cross x=1; drag f(a) back and it can cross again. In case B the limit never exists no matter where f(a) sits, so the green point can never cross there either">จุดสีเขียวลากข้าม x=1 ได้ก็ต่อเมื่อ checklist ด้านล่างบอกว่าต่อเนื่องเท่านั้น (เช็คสดตลอด ไม่ใช่ตายตัวตามกรณี) — ลองลากจุดสีชมพู f(a) ออกจากกราฟดูสิ พอไม่ต่อเนื่องปุ๊บ จุดสีเขียวจะลากผ่าน x=1 ไม่ได้ทันที ลากกลับมาตรงเดิมก็ผ่านได้อีกครั้ง ส่วนกรณี ข ลิมิตไม่มีค่าอยู่แล้วไม่ว่า f(a) จะอยู่ตรงไหน จุดสีเขียวจึงข้ามไม่ได้เสมอ</p>
+
+    <div class="plot-wrap" style="margin-top:1rem;"><svg id="plotContinuity" viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="formula small" id="ctFormula" style="margin-top:1rem;"></div>
+    <div class="check-list" id="ctChecklist"></div>
+  </div>
+
+  <button class="mode-btn" style="width:100%;" onclick="showTab('summary', document.querySelector('.tab-btn[data-tab=summary]'))" data-th="ต่อไป: สรุป →" data-en="Next: Summary →">ต่อไป: สรุป →</button>
+</section>
+
+<!-- ══════════════ TAB: สรุป ══════════════ -->
+<section id="tab-summary" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span><span data-th="สิ่งที่ต้องจำ" data-en="What to Remember">สิ่งที่ต้องจำ</span></div>
+
+    <div class="concept-grid">
+      <div>
+        <div class="formula small">lim<sub>x→a</sub> f(x) = L</div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="ลิมิตสองทาง — f(x) เข้าใกล้ L ทั้งจากซ้ายและขวาของ a" data-en="Two-sided limit — f(x) approaches L from both the left and right of a.">ลิมิตสองทาง — f(x) เข้าใกล้ L ทั้งจากซ้ายและขวาของ a</p>
+      </div>
+      <div>
+        <div class="formula small">lim<sub>x→a⁻</sub> f(x) &nbsp;,&nbsp; lim<sub>x→a⁺</sub> f(x)</div>
+        <p class="desc-text" style="font-size:.9rem;" data-th="ลิมิตทางเดียว — ต้องเท่ากันทั้งคู่ ลิมิตสองทางจึงจะมีค่า" data-en="One-sided limits — both must agree for the two-sided limit to exist.">ลิมิตทางเดียว — ต้องเท่ากันทั้งคู่ ลิมิตสองทางจึงจะมีค่า</p>
+      </div>
+    </div>
+
+    <div class="card-title" style="font-size:1rem;margin-top:1.2rem;"><span class="icon">🔗</span><span data-th="ความต่อเนื่องที่ x = a" data-en="Continuity at x = a">ความต่อเนื่องที่ x = a</span></div>
+    <div class="formula small">lim<sub>x→a</sub> f(x) &nbsp;มีค่า&nbsp; และ &nbsp;lim<sub>x→a</sub> f(x) = f(a)</div>
+
+    <div class="box-info" style="margin-top:12px;">
+      <b data-th="สรุปภาพรวม:" data-en="Big picture:">สรุปภาพรวม:</b>
+      <span data-th="ลิมิตคือแนวคิดของการ 'เข้าใกล้' ค่าหนึ่งอย่างมาก ๆ โดยไม่จำเป็นต้อง 'ถึง' ค่านั้นจริง ๆ — เป็นรากฐานของอนุพันธ์ (ที่มาจากลิมิตของความชันเส้นตัดเมื่อ h → 0) และปริพันธ์ (ที่มาจากลิมิตของผลรวมพื้นที่แท่งสี่เหลี่ยมย่อย ๆ) ซึ่งจะเป็นหัวข้อต่อไปของแคลคูลัส" data-en="A limit is the idea of getting extremely close to a value without necessarily ever reaching it. It's the foundation of the derivative (the limit of a secant line's slope as h → 0) and the integral (the limit of a sum of tiny rectangle areas) — the next two topics in calculus.">ลิมิตคือแนวคิดของการ "เข้าใกล้" ค่าหนึ่งอย่างมาก ๆ โดยไม่จำเป็นต้อง "ถึง" ค่านั้นจริง ๆ — เป็นรากฐานของอนุพันธ์ (ที่มาจากลิมิตของความชันเส้นตัดเมื่อ h → 0) และปริพันธ์ (ที่มาจากลิมิตของผลรวมพื้นที่แท่งสี่เหลี่ยมย่อย ๆ) ซึ่งจะเป็นหัวข้อต่อไปของแคลคูลัส</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ══════════════ ปุ่มสลับภาษาไทย/อังกฤษ (โค้ดชุดนี้ฝังซ้ำในทุกหน้าของเว็บ) ══════════════
+const PAGE_TITLE = { th: 'สื่อการสอน : ลิมิต (Limits)', en: 'Teaching Aid: Limits' };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  document.querySelectorAll('[data-th-title]').forEach(el => {
+    el.title = (lang === 'en' && el.dataset.enTitle) ? el.dataset.enTitle : el.dataset.thTitle;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+
+function onLangChange(lang) {
+  if (typeof renderOrigin === 'function') renderOrigin();
+  if (typeof renderMeaning === 'function') renderMeaning();
+  if (typeof renderOneSided === 'function') renderOneSided();
+  if (typeof renderContinuity === 'function') renderContinuity();
+}
+
+// ══════════════ Tab switching ══════════════
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="' + id + '"]');
+  if (btn) btn.classList.add('active');
+}
+
+// ══════════════ number formatting ══════════════
+function fmt(n, d) {
+  if (d === undefined) d = 3;
+  if (!isFinite(n)) return '—';
+  var s = n.toFixed(d);
+  if (s.indexOf('.') > -1) { s = s.replace(/0+$/, '').replace(/\.$/, ''); }
+  if (s === '-0') s = '0';
+  return s;
+}
+
+// Builds a proper stacked fraction (numerator over a bar over the denominator) — see .frac CSS.
+function frac(numHTML, denHTML) {
+  return '<span class="frac"><span class="num">' + numHTML + '</span><span class="den">' + denHTML + '</span></span>';
+}
+
+// ══════════════ reusable coordinate-plane plotter ══════════════
+function Plot(opts) {
+  var xmin = opts.xmin, xmax = opts.xmax, ymin = opts.ymin, ymax = opts.ymax;
+  var w = opts.w, h = opts.h, pad = opts.pad || 34;
+  function px(x) { return pad + (x - xmin) / (xmax - xmin) * (w - 2 * pad); }
+  function py(y) { return h - pad - (y - ymin) / (ymax - ymin) * (h - 2 * pad); }
+  function invX(pxVal) { return xmin + (pxVal - pad) / (w - 2 * pad) * (xmax - xmin); }
+  function invY(pyVal) { return ymin + (h - pad - pyVal) / (h - 2 * pad) * (ymax - ymin); }
+
+  function axesSVG() {
+    var parts = [];
+    var x0 = Math.ceil(xmin), x1 = Math.floor(xmax);
+    var y0 = Math.ceil(ymin), y1 = Math.floor(ymax);
+    var gx, gy;
+    for (gx = x0; gx <= x1; gx++) parts.push('<line class="grid-line" x1="' + px(gx) + '" y1="' + py(ymin) + '" x2="' + px(gx) + '" y2="' + py(ymax) + '"/>');
+    for (gy = y0; gy <= y1; gy++) parts.push('<line class="grid-line" x1="' + px(xmin) + '" y1="' + py(gy) + '" x2="' + px(xmax) + '" y2="' + py(gy) + '"/>');
+    parts.push('<line class="axis-line" x1="' + px(xmin) + '" y1="' + py(0) + '" x2="' + (px(xmax) + 8) + '" y2="' + py(0) + '"/>');
+    parts.push('<line class="axis-line" x1="' + px(0) + '" y1="' + py(ymin) + '" x2="' + px(0) + '" y2="' + (py(ymax) - 8) + '"/>');
+    parts.push('<polygon class="axis-arrow" points="' + (px(xmax) + 8) + ',' + py(0) + ' ' + (px(xmax) - 1) + ',' + (py(0) - 3.5) + ' ' + (px(xmax) - 1) + ',' + (py(0) + 3.5) + '"/>');
+    parts.push('<polygon class="axis-arrow" points="' + px(0) + ',' + (py(ymax) - 8) + ' ' + (px(0) - 3.5) + ',' + (py(ymax) + 1) + ' ' + (px(0) + 3.5) + ',' + (py(ymax) + 1) + '"/>');
+    parts.push('<text class="axis-letter" x="' + (px(xmax) + 10) + '" y="' + (py(0) + 4) + '">X</text>');
+    parts.push('<text class="axis-letter" x="' + (px(0) + 6) + '" y="' + (py(ymax) - 9) + '">Y</text>');
+    for (gx = x0; gx <= x1; gx++) { if (gx === 0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="' + px(gx) + '" y="' + (py(0) + 13) + '">' + gx + '</text>'); }
+    for (gy = y0; gy <= y1; gy++) { if (gy === 0) continue; parts.push('<text class="tick-label" text-anchor="end" x="' + (px(0) - 6) + '" y="' + (py(gy) + 3) + '">' + gy + '</text>'); }
+    return parts.join('');
+  }
+
+  function pathFor(fn, x0, x1, steps) {
+    var d = '', started = false, i, x, y;
+    for (i = 0; i <= steps; i++) {
+      x = x0 + (x1 - x0) * i / steps;
+      y = fn(x);
+      if (y === null || y === undefined || !isFinite(y)) { started = false; continue; }
+      d += (started ? ' L ' : 'M ') + px(x).toFixed(2) + ' ' + py(y).toFixed(2);
+      started = true;
+    }
+    return d;
+  }
+
+  function circle(x, y, r, cls) { return '<circle class="pt ' + cls + '" cx="' + px(x).toFixed(2) + '" cy="' + py(y).toFixed(2) + '" r="' + r + '"/>'; }
+  // A draggable point: an oversized invisible hit-circle (easier to grab, esp. on touch)
+  // stacked under the small visible point, both tagged data-drag="<id>" so a pointerdown
+  // on either one starts the drag (see attachDrag()).
+  function dragPoint(x, y, r, cls, id) {
+    var cx = px(x).toFixed(2), cy = py(y).toFixed(2);
+    return '<circle class="hit-target" data-drag="' + id + '" cx="' + cx + '" cy="' + cy + '" r="16"/>' +
+      '<circle class="pt draggable ' + cls + '" data-drag="' + id + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+  }
+  function guide(x1_, y1_, x2_, y2_, cls) { return '<line class="guide-line ' + (cls || '') + '" x1="' + px(x1_).toFixed(2) + '" y1="' + py(y1_).toFixed(2) + '" x2="' + px(x2_).toFixed(2) + '" y2="' + py(y2_).toFixed(2) + '"/>'; }
+  function pathD(dStr, cls) { return '<path class="' + cls + '" d="' + dStr + '"/>'; }
+
+  return { px: px, py: py, invX: invX, invY: invY, w: w, h: h, xmin: xmin, xmax: xmax, ymin: ymin, ymax: ymax, axesSVG: axesSVG, pathFor: pathFor, circle: circle, dragPoint: dragPoint, guide: guide, pathD: pathD };
+}
+
+// ══════════════ generic SVG drag support (pointer events, delegated on the <svg>) ══════════════
+// Since each render() replaces the SVG's innerHTML, listeners are attached ONCE on the
+// persistent <svg> element itself (event delegation) rather than on the regenerated points.
+function attachDrag(svg, onMove, onEnd) {
+  var active = null;
+  function toPlotXY(e) {
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    var loc = pt.matrixTransform(ctm.inverse());
+    return { px: loc.x, py: loc.y };
+  }
+  svg.addEventListener('pointerdown', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-drag');
+    if (!id) return;
+    active = id;
+    try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+    var loc = toPlotXY(e);
+    if (loc) onMove(id, loc.px, loc.py);
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!active) return;
+    var loc = toPlotXY(e);
+    if (loc) onMove(active, loc.px, loc.py);
+    e.preventDefault();
+  });
+  function end(e) {
+    if (!active) return;
+    var id = active;
+    active = null;
+    if (onEnd) onEnd(id);
+  }
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+}
+
+// ══════════════ ที่มา: secant → tangent ══════════════
+var renderOrigin;
+(function () {
+  var svg = document.getElementById('plotOrigin');
+  var P = Plot({ xmin: -0.6, xmax: 3, ymin: -0.6, ymax: 9.2, w: 460, h: 320, pad: 36 });
+  var f = function (x) { return x * x; };
+  var x0 = 1;
+  var slider = document.getElementById('hSlider');
+  var hVal = document.getElementById('hVal');
+  var formulaLive = document.getElementById('originFormula');
+  var playBtn = document.getElementById('hPlay');
+  var playIcon = document.getElementById('hPlayIcon');
+  var resetBtn = document.getElementById('hReset');
+  var hMax = 2, hMin = 0.02;
+  var playing = false, rafId = null, playStart = 0;
+
+  var TXT = {
+    th: function (Qy, Py, h, m, tangentSlope) {
+      return 'ความชันเส้นตัด PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') +
+        '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) +
+        '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>เมื่อ h → 0 : ความชัน → <span class="hlA">' + tangentSlope + '</span> (ความชันเส้นสัมผัสที่ x₀ = 1)';
+    },
+    en: function (Qy, Py, h, m, tangentSlope) {
+      return 'Secant slope PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') +
+        '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) +
+        '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>As h → 0 : slope → <span class="hlA">' + tangentSlope + '</span> (the tangent slope at x₀ = 1)';
+    }
+  };
+
+  function hFromSlider(v) { return hMax * Math.pow(hMin / hMax, v / 100); }
+  function sliderFromH(hv) { return 100 * Math.log(hv / hMax) / Math.log(hMin / hMax); }
+
+  renderOrigin = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var v = parseFloat(slider.value);
+    var h = hFromSlider(v);
+    var Px = x0, Py = f(x0);
+    var Qx = x0 + h, Qy = f(Qx);
+    var m = (Qy - Py) / h;
+    var tangentSlope = 2 * x0;
+
+    var curve = P.pathFor(f, P.xmin + 0.05, P.xmax - 0.05, 120);
+    var lineFn = function (x) { return Py + m * (x - Px); };
+    var secant = P.pathFor(lineFn, P.xmin + 0.05, P.xmax - 0.05, 2);
+
+    var parts = [];
+    parts.push(P.axesSVG());
+    parts.push(P.pathD(curve, 'curve-base'));
+    parts.push(P.pathD(secant, 'curve-hi'));
+    parts.push(P.guide(Px, Py, Qx, Py, 'hiB'));
+    parts.push(P.guide(Qx, Py, Qx, Qy, 'hiB'));
+    parts.push(P.circle(Px, Py, 4.8, 'pt-fillP'));
+    parts.push(P.dragPoint(Qx, Qy, 4.8, 'pt-fillB', 'Q'));
+    parts.push('<text class="plot-caption" x="' + (P.px(Px) - 4) + '" y="' + (P.py(Py) + 16) + '">P</text>');
+    parts.push('<text class="plot-caption" x="' + (P.px(Qx) + 6) + '" y="' + (P.py(Qy) - 6) + '">Q</text>');
+    parts.push('<text class="plot-caption" x="' + ((P.px(Px) + P.px(Qx)) / 2 - 6) + '" y="' + (P.py(Py) + 16) + '">h</text>');
+    svg.innerHTML = parts.join('');
+
+    hVal.textContent = fmt(h, 3);
+    formulaLive.innerHTML = TXT[lang](Qy, Py, h, m, tangentSlope);
+  };
+
+  slider.addEventListener('input', function () { stopPlaying(); renderOrigin(); });
+
+  function stopPlaying() {
+    playing = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+  function startPlaying() {
+    playing = true;
+    playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    slider.value = 0;
+    playStart = performance.now();
+    var duration = 4200;
+    function step(t) {
+      var elapsed = t - playStart;
+      var v = Math.min(100, elapsed / duration * 100);
+      slider.value = v;
+      renderOrigin();
+      if (v < 100 && playing) { rafId = requestAnimationFrame(step); }
+      else { stopPlaying(); }
+    }
+    rafId = requestAnimationFrame(step);
+  }
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+  resetBtn.addEventListener('click', function () { stopPlaying(); slider.value = 0; renderOrigin(); });
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'Q') return;
+    stopPlaying();
+    var h = P.invX(pxv) - x0;
+    if (h < hMin) h = hMin;
+    if (h > hMax) h = hMax;
+    slider.value = sliderFromH(h);
+    renderOrigin();
+  });
+
+  renderOrigin();
+})();
+
+// ══════════════ ความหมายของลิมิต: สองทาง ══════════════
+var renderMeaning;
+(function () {
+  var svg = document.getElementById('plotMeaning');
+  var P = Plot({ xmin: -1, xmax: 4, ymin: -1, ymax: 5.6, w: 460, h: 320, pad: 36 });
+  var f = function (x) { return x + 1; };
+  var a = 1, L = 2;
+  var deltas = [1, 0.6, 0.35, 0.18, 0.08, 0.03, 0.01];
+  var step = 0;
+  var dMin = 0.01, dMax = 1.8;
+  // dLeft/dRight are what actually get drawn — the transport buttons keep them in sync
+  // (dLeft = dRight = deltas[step], and log each synced step to the table), while dragging
+  // either point moves it independently and just updates the live view (no table row).
+  var dLeft = deltas[0], dRight = deltas[0];
+
+  var indicator = document.getElementById('mIndicator');
+  var formulaLive = document.getElementById('meaningFormula');
+  var body = document.getElementById('meaningBody');
+  var prevBtn = document.getElementById('mPrev');
+  var nextBtn = document.getElementById('mNext');
+  var playBtn = document.getElementById('mPlay');
+  var playIcon = document.getElementById('mPlayIcon');
+  var resetBtn = document.getElementById('mReset');
+  var timer = null, playing = false;
+
+  var STEP_TXT = { th: 'ขั้นที่', en: 'Step' };
+
+  renderMeaning = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var xL = a - dLeft, xR = a + dRight, fL = f(xL), fR = f(xR);
+
+    var curve = P.pathFor(f, P.xmin + 0.05, P.xmax - 0.05, 2);
+    var parts = [];
+    parts.push(P.axesSVG());
+    parts.push('<line class="guide-line" x1="' + P.px(P.xmin) + '" y1="' + P.py(L) + '" x2="' + P.px(P.xmax) + '" y2="' + P.py(L) + '"/>');
+    parts.push(P.pathD(curve, 'curve-base'));
+    parts.push(P.circle(a, L, 5.4, 'pt-open'));
+    parts.push(P.guide(xL, 0, xL, fL, 'hiA')); parts.push(P.guide(P.xmin, fL, xL, fL, 'hiA'));
+    parts.push(P.guide(xR, 0, xR, fR, 'hiB')); parts.push(P.guide(P.xmin, fR, xR, fR, 'hiB'));
+    parts.push(P.dragPoint(xL, fL, 4.8, 'pt-fillA', 'L'));
+    parts.push(P.dragPoint(xR, fR, 4.8, 'pt-fillB', 'R'));
+    parts.push('<text class="plot-caption" x="' + (P.px(a) - 22) + '" y="' + (P.py(L) - 9) + '">a=1, L=2</text>');
+    svg.innerHTML = parts.join('');
+
+    indicator.textContent = (lang === 'en' ? STEP_TXT.en : STEP_TXT.th) + ' ' + (step + 1) + ' / ' + deltas.length;
+    var approachTxt = lang === 'en' ? 'x approaches' : 'x เข้าใกล้';
+    formulaLive.innerHTML =
+      approachTxt + ' <span class="hlA">' + fmt(xL, 4) + '</span> &nbsp;→&nbsp; f(x) = <span class="hlA">' + fmt(fL, 4) + '</span><br>' +
+      approachTxt + ' <span class="hl">' + fmt(xR, 4) + '</span> &nbsp;→&nbsp; f(x) = <span class="hl">' + fmt(fR, 4) + '</span>';
+
+    body.innerHTML = '';
+    for (var k = 0; k <= step; k++) {
+      var dk = deltas[k], xlk = a - dk, xrk = a + dk;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + (k + 1) + '</td><td>' + fmt(xlk, 4) + '</td><td>' + fmt(f(xlk), 4) + '</td><td>' + fmt(xrk, 4) + '</td><td>' + fmt(f(xrk), 4) + '</td>';
+      body.appendChild(tr);
+    }
+    body.parentElement.scrollTop = body.parentElement.scrollHeight;
+
+    prevBtn.disabled = step <= 0;
+    nextBtn.disabled = step >= deltas.length - 1;
+    if (step >= deltas.length - 1) stopPlaying();
+  };
+
+  function syncFromStep() { dLeft = deltas[step]; dRight = deltas[step]; }
+
+  function stopPlaying() { playing = false; if (timer) clearInterval(timer); timer = null; playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    if (step >= deltas.length - 1) step = 0;
+    playing = true; playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    timer = setInterval(function () { if (step >= deltas.length - 1) { stopPlaying(); return; } step++; syncFromStep(); renderMeaning(); }, 1300);
+  }
+  prevBtn.addEventListener('click', function () { stopPlaying(); if (step > 0) { step--; syncFromStep(); renderMeaning(); } });
+  nextBtn.addEventListener('click', function () { stopPlaying(); if (step < deltas.length - 1) { step++; syncFromStep(); renderMeaning(); } });
+  resetBtn.addEventListener('click', function () { stopPlaying(); step = 0; syncFromStep(); renderMeaning(); });
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    stopPlaying();
+    var mathX = P.invX(pxv);
+    if (id === 'L') {
+      var dl = a - mathX;
+      if (dl < dMin) dl = dMin; if (dl > dMax) dl = dMax;
+      dLeft = dl;
+    } else if (id === 'R') {
+      var dr = mathX - a;
+      if (dr < dMin) dr = dMin; if (dr > dMax) dr = dMax;
+      dRight = dr;
+    } else return;
+    renderMeaning();
+  });
+
+  renderMeaning();
+})();
+
+// ══════════════ ลิมิตทางเดียว ══════════════
+var renderOneSided;
+(function () {
+  var svg = document.getElementById('plotOneSided');
+  var fnTag = document.getElementById('oneSidedFnTag');
+  var note = document.getElementById('oneSidedNote');
+  var indicator = document.getElementById('osIndicator');
+  var formulaLive = document.getElementById('osFormula');
+  var summary = document.getElementById('osSummary');
+  var prevBtn = document.getElementById('osPrev');
+  var nextBtn = document.getElementById('osNext');
+  var playBtn = document.getElementById('osPlay');
+  var playIcon = document.getElementById('osPlayIcon');
+  var resetBtn = document.getElementById('osReset');
+  var exBtnSqrt = document.getElementById('exBtnSqrt');
+  var exBtnJump = document.getElementById('exBtnJump');
+  var sideBtnLeft = document.getElementById('sideBtnLeft');
+  var sideBtnRight = document.getElementById('sideBtnRight');
+
+  var EXAMPLES = {
+    sqrt: {
+      fn: function (x) { return x < 0 ? null : Math.sqrt(x); },
+      a: 0, plot: { xmin: -1, xmax: 4, ymin: -0.6, ymax: 2.3, w: 460, h: 320, pad: 36 },
+      tag: 'f(x) = √x', leftAllowed: false,
+      note: { th: '√x นิยามเฉพาะ x ≥ 0 จึงเข้าใกล้ 0 ได้แค่จากทางขวาเท่านั้น — ลิมิตซ้ายไม่มีความหมาย (ไม่อยู่ในโดเมน)', en: '√x is only defined for x ≥ 0, so it can only approach 0 from the right — the left-hand limit has no meaning (outside the domain).' },
+      deltas: [1, 0.6, 0.3, 0.12, 0.05, 0.02]
+    },
+    jump: {
+      fn: function (x) { return x < 1 ? x : x + 1; },
+      a: 1, plot: { xmin: -1, xmax: 3, ymin: -1, ymax: 4, w: 460, h: 320, pad: 36 },
+      tag: 'f(x) = x เมื่อ x<1 , f(x) = x+1 เมื่อ x≥1', leftAllowed: true,
+      note: { th: 'ที่ x=1 กราฟ "กระโดด" ขึ้น 1 หน่วย ลิมิตซ้ายกับลิมิตขวาจึงต่างกัน', en: 'At x=1 the graph "jumps" up by 1 unit, so the left- and right-hand limits differ.' },
+      deltas: [1, 0.6, 0.3, 0.12, 0.05, 0.01]
+    }
+  };
+
+  var state = { example: 'sqrt', side: 'right', step: 0, customD: null, timer: null, playing: false };
+  function current() { return EXAMPLES[state.example]; }
+
+  renderOneSided = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var ex = current();
+    var P = Plot(ex.plot);
+    var d = (state.customD != null) ? state.customD : ex.deltas[state.step];
+    var x = state.side === 'left' ? ex.a - d : ex.a + d;
+    var y = ex.fn(x);
+
+    var curve;
+    if (state.example === 'sqrt') {
+      curve = P.pathFor(ex.fn, 0, P.xmax - 0.05, 120);
+    } else {
+      var leftPart = P.pathFor(ex.fn, P.xmin + 0.05, 1 - 0.001, 2);
+      var rightPart = P.pathFor(ex.fn, 1, P.xmax - 0.05, 2);
+      curve = leftPart + ' ' + rightPart;
+    }
+
+    var parts = [];
+    parts.push(P.axesSVG());
+    parts.push(P.pathD(curve, 'curve-base'));
+
+    if (state.example === 'sqrt') {
+      parts.push(P.circle(0, 0, 4.8, 'pt-fillP'));
+    } else {
+      parts.push(P.circle(1, ex.fn(1 - 0.0001), 5.2, 'pt-open'));
+      parts.push(P.circle(1, ex.fn(1), 4.8, 'pt-fillP'));
+    }
+
+    if (y !== null && isFinite(y)) {
+      var hiCls = state.side === 'left' ? 'hiA' : 'hiB';
+      var ptCls = state.side === 'left' ? 'pt-fillA' : 'pt-fillB';
+      parts.push(P.guide(x, 0, x, y, hiCls));
+      parts.push(P.guide(P.xmin, y, x, y, hiCls));
+      parts.push(P.dragPoint(x, y, 4.8, ptCls, 'PT'));
+    }
+    svg.innerHTML = parts.join('');
+
+    fnTag.textContent = ex.tag;
+    note.textContent = ex.note[lang];
+    indicator.textContent = (lang === 'en' ? 'Step' : 'ขั้นที่') + ' ' + (state.step + 1) + ' / ' + ex.deltas.length;
+    var arrow = fmt(ex.a) + (state.side === 'left' ? '⁻' : '⁺');
+    var sideCls = state.side === 'left' ? 'hlA' : 'hl';
+    var approachTxt = lang === 'en' ? 'x approaches' : 'x เข้าใกล้';
+    formulaLive.innerHTML =
+      approachTxt + ' <span class="' + sideCls + '">' + fmt(x, 4) + '</span><br>' +
+      'f(x) = <span class="' + sideCls + '">' + (y === null ? (lang === 'en' ? 'undefined' : 'ไม่นิยาม') : fmt(y, 4)) + '</span> &nbsp; (lim<sub>x→' + arrow + '</sub> f(x))';
+
+    var leftVal = ex.leftAllowed ? fmt(ex.fn(ex.a - 0.0001), 3) : null;
+    var rightVal = fmt(ex.fn(ex.a + 0.0001), 3);
+    if (state.example === 'sqrt') {
+      summary.innerHTML = lang === 'en'
+        ? 'Summary: lim<sub>x→0⁻</sub> √x <b>does not exist</b> (outside the domain) &nbsp;•&nbsp; lim<sub>x→0⁺</sub> √x = <b>0</b>'
+        : 'สรุป: lim<sub>x→0⁻</sub> √x <b>ไม่มีค่า</b> (นอกโดเมน) &nbsp;•&nbsp; lim<sub>x→0⁺</sub> √x = <b>0</b>';
+    } else {
+      summary.innerHTML = lang === 'en'
+        ? 'Summary: lim<sub>x→1⁻</sub> f(x) = <b>' + leftVal + '</b> &nbsp;≠&nbsp; lim<sub>x→1⁺</sub> f(x) = <b>' + rightVal + '</b> &nbsp;⇒&nbsp; lim<sub>x→1</sub> f(x) <b>does not exist</b>'
+        : 'สรุป: lim<sub>x→1⁻</sub> f(x) = <b>' + leftVal + '</b> &nbsp;≠&nbsp; lim<sub>x→1⁺</sub> f(x) = <b>' + rightVal + '</b> &nbsp;⇒&nbsp; lim<sub>x→1</sub> f(x) <b>ไม่มีค่า</b>';
+    }
+
+    prevBtn.disabled = state.step <= 0;
+    nextBtn.disabled = state.step >= ex.deltas.length - 1;
+    if (state.step >= ex.deltas.length - 1) stopPlaying();
+  };
+
+  function stopPlaying() { state.playing = false; if (state.timer) clearInterval(state.timer); state.timer = null; playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    var ex = current();
+    if (state.step >= ex.deltas.length - 1) state.step = 0;
+    state.playing = true; playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    state.timer = setInterval(function () { var e = current(); if (state.step >= e.deltas.length - 1) { stopPlaying(); return; } state.step++; state.customD = null; renderOneSided(); }, 1200);
+  }
+  prevBtn.addEventListener('click', function () { stopPlaying(); if (state.step > 0) { state.step--; state.customD = null; renderOneSided(); } });
+  nextBtn.addEventListener('click', function () { stopPlaying(); var ex = current(); if (state.step < ex.deltas.length - 1) { state.step++; state.customD = null; renderOneSided(); } });
+  resetBtn.addEventListener('click', function () { stopPlaying(); state.step = 0; state.customD = null; renderOneSided(); });
+  playBtn.addEventListener('click', function () { if (state.playing) stopPlaying(); else startPlaying(); });
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'PT') return;
+    stopPlaying();
+    var ex = current();
+    var Pnow = Plot(ex.plot);
+    var mathX = Pnow.invX(pxv);
+    var d = state.side === 'left' ? (ex.a - mathX) : (mathX - ex.a);
+    if (d < 0.005) d = 0.005;
+    if (d > ex.deltas[0]) d = ex.deltas[0];
+    state.customD = d;
+    renderOneSided();
+  });
+
+  function setExample(name) {
+    stopPlaying();
+    state.example = name; state.step = 0; state.customD = null;
+    state.side = EXAMPLES[name].leftAllowed ? state.side : 'right';
+    exBtnSqrt.classList.toggle('active', name === 'sqrt');
+    exBtnJump.classList.toggle('active', name === 'jump');
+    sideBtnLeft.disabled = !EXAMPLES[name].leftAllowed;
+    sideBtnLeft.classList.toggle('active', state.side === 'left');
+    sideBtnRight.classList.toggle('active', state.side === 'right');
+    renderOneSided();
+  }
+  function setSide(side) {
+    if (side === 'left' && !current().leftAllowed) return;
+    stopPlaying();
+    state.side = side; state.step = 0; state.customD = null;
+    sideBtnLeft.classList.toggle('active', side === 'left');
+    sideBtnRight.classList.toggle('active', side === 'right');
+    renderOneSided();
+  }
+  exBtnSqrt.addEventListener('click', function () { setExample('sqrt'); });
+  exBtnJump.addEventListener('click', function () { setExample('jump'); });
+  sideBtnLeft.addEventListener('click', function () { setSide('left'); });
+  sideBtnRight.addEventListener('click', function () { setSide('right'); });
+
+  setExample('sqrt');
+})();
+
+// ══════════════ ความต่อเนื่อง: ลากจุด f(a) เพื่อสำรวจเอง ══════════════
+var renderContinuity;
+(function () {
+  var svg = document.getElementById('plotContinuity');
+  var formulaEl = document.getElementById('ctFormula');
+  var checklistEl = document.getElementById('ctChecklist');
+  var btns = [document.getElementById('ctBtn0'), document.getElementById('ctBtn1')];
+  var P = Plot({ xmin: -2, xmax: 3, ymin: -2, ymax: 5.5, w: 420, h: 300, pad: 34 });
+  var g = function (x) { return Math.abs(x - 1) + 1; }; // base V, open at x=1 in both cases below
+  var EPS = 0.15; // how close f(a) must land to the limit to count as "equal" (snaps within half that)
+  var activeCase = 0;
+
+  // ONE green trace point per case, pinned to the curve (y = c.pieceFn(x)) — in case A you can
+  // drag it straight across x=1 because the line really is joined there; in case B it hits an
+  // invisible wall right at x=1 and can't be dragged any further, because there's a genuine gap.
+  var CASES = [
+    {
+      // faStart matches limitVal on purpose — the page opens with the point already
+      // sitting right on the curve (looks like an ordinary continuous graph); dragging
+      // it away is what reveals the open circle and breaks continuity.
+      hasJump: false, limitVal: 1, faStart: 1, traceStart: 2.3,
+      pieceFn: function (x) { return g(x); }, // same formula on both sides — nothing stops a crossing
+      draw: function () {
+        var parts = [P.axesSVG()];
+        parts.push(P.pathD(P.pathFor(g, P.xmin + 0.05, P.xmax - 0.05, 60), 'curve-base'));
+        parts.push(P.circle(1, 1, 5.2, 'pt-open'));
+        return parts.join('');
+      },
+      formula: function (faVal) { return 'f(x) = { |x−1| + 1 &nbsp; (x ≠ 1) &nbsp; ; &nbsp; ' + fmt(faVal, 2) + ' &nbsp; (x = 1) }'; }
+    },
+    {
+      hasJump: true, limitVal: null, faStart: 3,
+      leftFn: function (x) { return x; }, rightFn: function (x) { return x + 2; },
+      traceStart: 2,
+      pieceFn: function (x) { return x < 1 ? this.leftFn(x) : this.rightFn(x); }, // which side you're on decides the formula
+      draw: function () {
+        var parts = [P.axesSVG()];
+        parts.push(P.pathD(P.pathFor(this.leftFn, P.xmin + 0.05, 1 - 0.001, 2), 'curve-base'));
+        parts.push(P.pathD(P.pathFor(this.rightFn, 1 + 0.001, P.xmax - 0.05, 2), 'curve-base'));
+        parts.push(P.circle(1, 1, 5.2, 'pt-open'));
+        parts.push(P.circle(1, 3, 5.2, 'pt-open'));
+        return parts.join('');
+      },
+      formula: function (faVal) { return 'f(x) = { x &nbsp; (x &lt; 1) &nbsp; ; &nbsp; x+2 &nbsp; (x &gt; 1) &nbsp; ; &nbsp; ' + fmt(faVal, 2) + ' &nbsp; (x = 1) }'; }
+    }
+  ];
+  var faVal = [CASES[0].faStart, CASES[1].faStart]; // remembers where you left the f(a) point
+  var traceX = [CASES[0].traceStart, CASES[1].traceStart]; // remembers where you left the trace point, per case
+  var CROSS_GAP = 0.12; // in a discontinuous case, how close the trace point may get to x=1 —
+  // kept visibly short of the open circle rather than flush against it, so the stop reads clearly
+  var dragSide = null; // which side of x=1 the current drag gesture is locked to (hasJump cases only)
+
+  var TXT = {
+    th: {
+      c1: '① ลิมิตที่ x = 1 มีค่าหรือไม่', c2: '② ถ้ามี ลิมิตนั้นเท่ากับ f(1) หรือไม่',
+      result: 'สรุป: f ต่อเนื่องที่ x = 1 หรือไม่',
+      yes: '✓ ใช่', no: '✗ ไม่ใช่', na: '— ไม่เกี่ยว', cont: '✓ ต่อเนื่อง', notCont: '✗ ไม่ต่อเนื่อง'
+    },
+    en: {
+      c1: '① Does the limit at x = 1 exist?', c2: '② If so, does it equal f(1)?',
+      result: 'Result: is f continuous at x = 1?',
+      yes: '✓ Yes', no: '✗ No', na: '— N/A', cont: '✓ Continuous', notCont: '✗ Discontinuous'
+    }
+  };
+
+  function checkRow(text, mark, T) {
+    var cls = mark === true ? 'yes' : (mark === false ? 'no' : 'na');
+    var label = mark === true ? T.yes : (mark === false ? T.no : T.na);
+    return '<div class="check-row"><span class="ctext">' + text + '</span><span class="check-mark ' + cls + '">' + label + '</span></div>';
+  }
+
+  // The green point's wall isn't a fixed per-case rule — it reflects whatever the checklist
+  // currently says. Case A starts continuous, but dragging the pink f(a) point away from the
+  // limit breaks continuity right there, and the wall should snap up the moment it does.
+  function limitExistsFor(caseIdx) { return !CASES[caseIdx].hasJump; }
+  function equalsLimitFor(caseIdx) {
+    var c = CASES[caseIdx];
+    return limitExistsFor(caseIdx) ? (Math.abs(faVal[caseIdx] - c.limitVal) < EPS) : null;
+  }
+  function isContinuousNow(caseIdx) { return limitExistsFor(caseIdx) && equalsLimitFor(caseIdx) === true; }
+
+  renderContinuity = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var T = TXT[lang];
+    var c = CASES[activeCase];
+    var fa = faVal[activeCase];
+
+    var tx = traceX[activeCase], ty = c.pieceFn(tx);
+    var parts = [c.draw()];
+    parts.push(P.dragPoint(tx, ty, 5.4, 'pt-fillA', 'TRACE'));
+    parts.push(P.dragPoint(1, fa, 5.4, 'pt-fillB', 'FA'));
+    parts.push('<text class="plot-caption" x="' + (P.px(1) + 10) + '" y="' + (P.py(fa) - 8) + '">f(1)</text>');
+    svg.innerHTML = parts.join('');
+    formulaEl.innerHTML = c.formula(fa);
+
+    var limitExists = limitExistsFor(activeCase);
+    var equalsLimit = equalsLimitFor(activeCase);
+    var continuous = isContinuousNow(activeCase);
+
+    var rows = '';
+    rows += checkRow(T.c1, limitExists, T);
+    rows += checkRow(T.c2, equalsLimit, T);
+    rows += '<div class="check-row result"><span class="ctext">' + T.result + '</span><span class="check-mark ' + (continuous ? 'yes' : 'no') + '">' + (continuous ? T.cont : T.notCont) + '</span></div>';
+    checklistEl.innerHTML = rows;
+  };
+
+  btns.forEach(function (b, i) {
+    b.addEventListener('click', function () {
+      activeCase = i;
+      dragSide = null;
+      btns.forEach(function (bb, ii) { bb.classList.toggle('active', ii === i); });
+      renderContinuity();
+    });
+  });
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    var c = CASES[activeCase];
+    if (id === 'FA') {
+      var y = P.invY(pyv);
+      if (y < P.ymin + 0.2) y = P.ymin + 0.2;
+      if (y > P.ymax - 0.2) y = P.ymax - 0.2;
+      // snap-to-continuous: once dragged very close to the limit, lock it exactly on —
+      // gives a satisfying "click" the moment the checklist flips to continuous.
+      if (!c.hasJump && Math.abs(y - c.limitVal) < EPS / 2) y = c.limitVal;
+      faVal[activeCase] = y;
+      renderContinuity();
+    } else if (id === 'TRACE') {
+      var x = P.invX(pxv);
+      if (x < P.xmin + 0.15) x = P.xmin + 0.15;
+      if (x > P.xmax - 0.15) x = P.xmax - 0.15;
+      // The wall reflects the LIVE checklist result, not a fixed per-case rule — if you've
+      // dragged the pink f(a) point off the limit (breaking continuity even in case A), the
+      // green point immediately can't cross either; drag f(a) back on and the wall drops.
+      if (!isContinuousNow(activeCase)) {
+        // Lock which side this drag gesture may move within, decided once at the start of
+        // the gesture from wherever the point currently sits — not from the cursor — so a
+        // fast drag can't "teleport" it across the gap in a single jump either.
+        if (dragSide === null) dragSide = traceX[activeCase] < 1 ? 'left' : 'right';
+        if (dragSide === 'left' && x > 1 - CROSS_GAP) x = 1 - CROSS_GAP;
+        if (dragSide === 'right' && x < 1 + CROSS_GAP) x = 1 + CROSS_GAP;
+      }
+      traceX[activeCase] = x;
+      renderContinuity();
+    }
+  }, function () { dragSide = null; });
+
+  renderContinuity();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>
