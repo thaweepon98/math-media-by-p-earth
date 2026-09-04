@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : นิยามและกฎอนุพันธ์ (Definition &amp; Rules)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #1B3B6F; --secondary: #FF6584; --accent: #43D9AD; --warning: #FFB347;
+    --bg: #F0F4FF; --card: #FFFFFF; --text: #2D3748; --muted: #718096; --border: #E2E8F0;
+    --shadow: 0 4px 24px rgba(27,59,111,0.10); --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: rgba(255,255,255,0.07); border-radius: 50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family: 'Sarabun', sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family: 'Sarabun', sans-serif; font-size: 0.92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.2rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .fn-tag { display: inline-flex; align-items: baseline; gap: .5rem; margin-top: .7rem; font-size: .92rem; color: var(--muted); }
+  .fn-tag b { color: var(--primary); }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .curve-alt { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 6 4; }
+  .guide-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+  .guide-line.hiA { stroke: var(--accent); opacity: .95; }
+  .guide-line.hiB { stroke: var(--secondary); opacity: .95; }
+  .pt { stroke-width: 2.4; }
+  .pt-open { fill: #fff; stroke: var(--secondary); }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillB { fill: var(--secondary); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .fn-label { font-size: .74rem; fill: var(--primary); font-weight: 700; }
+  .slope-label { font-size: .64rem; fill: var(--secondary); font-weight: 700; }
+  .hit-target { fill: transparent; cursor: grab; touch-action: none; }
+  .pt.draggable { cursor: grab; touch-action: none; }
+
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance: none; appearance: none; width: 8rem; height: 5px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #fff; background: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 2.6em; text-align: right; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+
+  .btn { font-family: 'Sarabun', sans-serif; border: none; cursor: pointer; border-radius: 999px; width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; background: var(--card); color: var(--text); border: 1px solid var(--border); transition: transform .15s ease, border-color .15s ease; }
+  .btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-play { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-play:hover:not(:disabled) { border-color: var(--primary); color: #fff; opacity: .9; }
+
+  .sim-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 1.6rem; justify-content: space-between; }
+  .transport { display: flex; align-items: center; gap: .5rem; }
+
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background: #FFE3E9; color: var(--secondary); padding: .05em .4em; border-radius: 6px; font-weight: 800; }
+  .formula-live .hlA { background: #E1F8EF; color: #12805F; padding: .05em .4em; border-radius: 6px; font-weight: 800; }
+
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+
+  .mode-toggle { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .mode-label { font-size: .88rem; font-weight: 600; color: var(--muted); margin-right: 4px; }
+  .mode-btn { padding: 8px 16px; border: 2px solid var(--border); border-radius: 30px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: .88rem; font-weight: 700; background: white; color: var(--muted); transition: all .2s; }
+  .mode-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+  .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+  .rule-card .name { font-size: .82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+  .rule-card .expr { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
+
+  .example-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-top: 10px; }
+  .example-box .step { font-size: .96rem; line-height: 1.9; }
+  .example-box .step b { color: var(--primary); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2rem; }
+    .card { padding: 16px 14px; }
+    .tab-btn { font-size: .82rem; padding: 8px 12px; }
+    .formula { font-size: 1rem; padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าอนุพันธ์" data-en="← Back to Derivatives">← กลับหน้าอนุพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📏 นิยามและกฎอนุพันธ์" data-en="📏 Definition & Differentiation Rules">📏 นิยามและกฎอนุพันธ์</h1>
+  <p data-th="จากเส้นตัดสู่เส้นสัมผัส • กฎพื้นฐาน • ตรีโกณ • โดยปริยาย" data-en="From secant to tangent • Basic rules • Trig • Implicit">จากเส้นตัดสู่เส้นสัมผัส • กฎพื้นฐาน • ตรีโกณ • โดยปริยาย</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="origin" onclick="showTab('origin', this)" data-th="📏 นิยามอนุพันธ์" data-en="📏 Definition">📏 นิยามอนุพันธ์</button>
+  <button class="tab-btn" data-tab="rules" onclick="showTab('rules', this)" data-th="🧮 กฎพื้นฐาน" data-en="🧮 Basic Rules">🧮 กฎพื้นฐาน</button>
+  <button class="tab-btn" data-tab="trig" onclick="showTab('trig', this)" data-th="🌊 อนุพันธ์ตรีโกณ" data-en="🌊 Trig Derivatives">🌊 อนุพันธ์ตรีโกณ</button>
+  <button class="tab-btn" data-tab="implicit" onclick="showTab('implicit', this)" data-th="⭕ โดยปริยาย" data-en="⭕ Implicit">⭕ โดยปริยาย</button>
+</nav>
+
+<main>
+
+<!-- ══════════════ TAB: นิยามอนุพันธ์ ══════════════ -->
+<section id="tab-origin" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">📏</span><span data-th="สามเหลี่ยมผลต่างของแบร์โรว์: จากเส้นตัดสู่เส้นสัมผัส" data-en="Barrow's Differential Triangle: From Secant to Tangent">สามเหลี่ยมผลต่างของแบร์โรว์: จากเส้นตัดสู่เส้นสัมผัส</span></div>
+    <p class="desc-text" data-th="จุด P คงที่บนกราฟ จุด Q ห่างออกไป h หน่วย เส้นตัด PQ มีความชัน (f(x+h)−f(x))/h — เมื่อ h → 0 จุด Q เลื่อนเข้าใกล้ P และความชันเส้นตัดจะเข้าใกล้ค่าคงที่ค่าหนึ่ง เรียกค่านี้ว่า อนุพันธ์ของ f ที่จุด x เขียนแทนด้วย f′(x)" data-en="Point P is fixed on the graph, Q sits h units away. The secant PQ has slope (f(x+h)−f(x))/h — as h → 0, Q slides toward P and the secant slope approaches a fixed value called the derivative of f at x, written f′(x).">จุด P คงที่บนกราฟ จุด Q ห่างออกไป h หน่วย เส้นตัด PQ มีความชัน (f(x+h)−f(x))/h — เมื่อ h → 0 จุด Q เลื่อนเข้าใกล้ P และความชันเส้นตัดจะเข้าใกล้ค่าคงที่ค่าหนึ่ง เรียกค่านี้ว่า อนุพันธ์ของ f ที่จุด x เขียนแทนด้วย f′(x)</p>
+    <div class="formula" id="defFormula">f′(x) = lim<sub>h→0</sub> <span class="frac"><span class="num">f(x+h) − f(x)</span><span class="den">h</span></span></div>
+  </div>
+
+  <div class="card">
+    <div class="plot-wrap"><svg id="plotOrigin" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b>f(x) = x²</b></div>
+
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">h</span>
+        <input type="range" id="hSlider" min="0" max="100" step="1" value="0">
+        <input type="number" class="x0-input" id="hNumInput" min="0.02" max="2" step="0.01" value="2">
+      </div>
+      <div class="transport">
+        <button class="btn btn-play" id="hPlay" data-th-title="เล่นอัตโนมัติ" data-en-title="Play" aria-label="Play">
+          <svg id="hPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn" id="hReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg>
+        </button>
+      </div>
+      <span class="desc-text" style="font-size:.85rem;color:var(--muted);" data-th="ลาก slider หรือกดเล่น เพื่อดู Q เข้าใกล้ P จนเส้นตัดกลายเป็นเส้นสัมผัส" data-en="Drag the slider or press play to watch Q approach P until the secant becomes the tangent">ลาก slider หรือกดเล่น เพื่อดู Q เข้าใกล้ P จนเส้นตัดกลายเป็นเส้นสัมผัส</span>
+    </div>
+    <div class="formula-live" id="originFormula"></div>
+  </div>
+</section>
+
+<!-- ══════════════ TAB: กฎพื้นฐาน ══════════════ -->
+<section id="tab-rules" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="กฎการหาอนุพันธ์ที่ใช้บ่อย" data-en="Commonly-Used Differentiation Rules">กฎการหาอนุพันธ์ที่ใช้บ่อย</span></div>
+    <div class="rule-grid">
+      <div class="rule-card"><div class="name" data-th="ค่าคงที่" data-en="Constant">ค่าคงที่</div><div class="expr">d/dx [c] = 0</div></div>
+      <div class="rule-card"><div class="name" data-th="กำลัง (Power Rule)" data-en="Power Rule">กำลัง (Power Rule)</div><div class="expr">d/dx [x<sup>n</sup>] = n·x<sup>n−1</sup></div></div>
+      <div class="rule-card"><div class="name" data-th="ผลบวก/ผลต่าง" data-en="Sum / Difference">ผลบวก/ผลต่าง</div><div class="expr">[f ± g]′ = f′ ± g′</div></div>
+      <div class="rule-card"><div class="name" data-th="ผลคูณ (Product Rule)" data-en="Product Rule">ผลคูณ (Product Rule)</div><div class="expr">[f·g]′ = f′g + fg′</div></div>
+      <div class="rule-card"><div class="name" data-th="ผลหาร (Quotient Rule)" data-en="Quotient Rule">ผลหาร (Quotient Rule)</div><div class="expr">[f/g]′ = <span class="frac"><span class="num">f′g − fg′</span><span class="den">g²</span></span></div></div>
+      <div class="rule-card"><div class="name" data-th="ลูกโซ่ (Chain Rule)" data-en="Chain Rule">ลูกโซ่ (Chain Rule)</div><div class="expr">[f(g(x))]′ = f′(g(x))·g′(x)</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="ลองเล่นกับกฎกำลัง: y = xⁿ" data-en="Play with the Power Rule: y = xⁿ">ลองเล่นกับกฎกำลัง: y = xⁿ</span></div>
+    <p class="desc-text" style="font-size:.9rem;color:var(--muted);" data-th="ลาก n เพื่อดูกราฟของ f(x)=xⁿ (สีน้ำเงิน) และอนุพันธ์ f′(x)=n·x^(n−1) (สีชมพู เส้นประ) เปลี่ยนไปพร้อมกัน" data-en="Drag n to see the graph of f(x)=xⁿ (blue) and its derivative f′(x)=n·x^(n−1) (dashed pink) change together">ลาก n เพื่อดูกราฟของ f(x)=xⁿ (สีน้ำเงิน) และอนุพันธ์ f′(x)=n·x^(n−1) (สีชมพู เส้นประ) เปลี่ยนไปพร้อมกัน</p>
+    <div class="plot-wrap"><svg id="plotPower" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">n</span>
+        <input type="range" id="nSlider" min="1" max="5" step="1" value="2">
+        <input type="number" class="x0-input" id="nNumInput" min="1" max="5" step="1" value="2">
+      </div>
+    </div>
+    <div class="formula-live" id="powerFormula"></div>
+  </div>
+</section>
+
+<!-- ══════════════ TAB: อนุพันธ์ตรีโกณ ══════════════ -->
+<section id="tab-trig" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🌊</span><span data-th="สูตรอนุพันธ์ของฟังก์ชันตรีโกณมิติ" data-en="Trigonometric Derivative Formulas">สูตรอนุพันธ์ของฟังก์ชันตรีโกณมิติ</span></div>
+    <div class="rule-grid">
+      <div class="rule-card"><div class="expr">d/dx sin x = cos x</div></div>
+      <div class="rule-card"><div class="expr">d/dx cos x = −sin x</div></div>
+      <div class="rule-card"><div class="expr">d/dx tan x = sec²x</div></div>
+      <div class="rule-card"><div class="expr">d/dx cot x = −csc²x</div></div>
+      <div class="rule-card"><div class="expr">d/dx sec x = sec x·tan x</div></div>
+      <div class="rule-card"><div class="expr">d/dx csc x = −csc x·cot x</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span><span data-th="ลากจุด (หรือพิมพ์ x₀) เพื่อดูความชัน ณ จุดนั้น" data-en="Drag the point (or type x₀) to see the slope there">ลากจุด (หรือพิมพ์ x₀) เพื่อดูความชัน ณ จุดนั้น</span></div>
+    <div class="mode-toggle" style="margin-bottom:.8rem;">
+      <span class="mode-label" data-th="ฟังก์ชัน" data-en="Function">ฟังก์ชัน</span>
+      <button class="mode-btn active" id="trigBtn-sin">sin</button>
+      <button class="mode-btn" id="trigBtn-cos">cos</button>
+      <button class="mode-btn" id="trigBtn-tan">tan</button>
+      <button class="mode-btn" id="trigBtn-csc" data-th="csc (1/sin)" data-en="csc (1/sin)">csc (1/sin)</button>
+      <button class="mode-btn" id="trigBtn-sec" data-th="sec (1/cos)" data-en="sec (1/cos)">sec (1/cos)</button>
+      <button class="mode-btn" id="trigBtn-cot" data-th="cot (1/tan)" data-en="cot (1/tan)">cot (1/tan)</button>
+    </div>
+    <div class="plot-wrap"><svg id="plotTrig" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x₀</span>
+        <input type="number" class="x0-input" id="trigX0Input" step="0.1">
+      </div>
+      <span class="desc-text" style="font-size:.82rem;color:var(--muted);" data-th="ลากจุดบนกราฟได้ หรือพิมพ์ค่า x₀ ตรงนี้" data-en="Drag the point on the graph, or type x₀ here">ลากจุดบนกราฟได้ หรือพิมพ์ค่า x₀ ตรงนี้</span>
+    </div>
+    <div class="formula-live" id="trigFormula"></div>
+  </div>
+</section>
+
+<!-- ══════════════ TAB: อนุพันธ์โดยปริยาย ══════════════ -->
+<section id="tab-implicit" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">⭕</span><span data-th="อนุพันธ์ของฟังก์ชันโดยปริยาย (Implicit Differentiation)" data-en="Implicit Differentiation">อนุพันธ์ของฟังก์ชันโดยปริยาย (Implicit Differentiation)</span></div>
+    <p class="desc-text" data-th="ฟังก์ชันโดยปริยายคือฟังก์ชันที่เขียนในรูป F(x,y) = c เช่นวงกลม x² + y² = 9 — หาอนุพันธ์ dy/dx ได้โดยหาอนุพันธ์ทั้งสองข้างเทียบ x แล้วใช้กฎลูกโซ่กับพจน์ y (เพราะ y คือฟังก์ชันของ x โดยปริยาย)" data-en="An implicit function is written as F(x,y) = c, e.g. the circle x² + y² = 9 — differentiate both sides with respect to x and apply the chain rule to terms containing y (since y is implicitly a function of x).">ฟังก์ชันโดยปริยายคือฟังก์ชันที่เขียนในรูป F(x,y) = c เช่นวงกลม x² + y² = 9 — หาอนุพันธ์ dy/dx ได้โดยหาอนุพันธ์ทั้งสองข้างเทียบ x แล้วใช้กฎลูกโซ่กับพจน์ y (เพราะ y คือฟังก์ชันของ x โดยปริยาย)</p>
+    <div class="steps" style="display:flex;flex-direction:column;gap:8px;">
+      <div class="formula small">2x + 2y·<span class="frac"><span class="num">dy</span><span class="den">dx</span></span> = 0</div>
+      <div class="formula small"><span class="frac"><span class="num">dy</span><span class="den">dx</span></span> = <span class="frac"><span class="num">−x</span><span class="den">y</span></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span><span data-th="ลากจุดบนวงกลม x² + y² = 9 ดูเส้นสัมผัสเปลี่ยนตาม" data-en="Drag a point on x² + y² = 9 and watch the tangent line follow">ลากจุดบนวงกลม x² + y² = 9 ดูเส้นสัมผัสเปลี่ยนตาม</span></div>
+    <div class="plot-wrap"><svg id="plotImplicit" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="formula-live" id="implicitFormula"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ตัวอย่างการคำนวณ" data-en="Worked Example">ตัวอย่างการคำนวณ</span></div>
+    <p class="desc-text" data-th="หา dy/dx ของวงกลม x² + y² = 25 ที่จุด (3, 4)" data-en="Find dy/dx of the circle x² + y² = 25 at the point (3, 4)">หา dy/dx ของวงกลม x² + y² = 25 ที่จุด (3, 4)</p>
+    <div class="example-box">
+      <div class="step">① <span data-th="หาอนุพันธ์ทั้งสองข้างเทียบ x:" data-en="Differentiate both sides w.r.t. x:">หาอนุพันธ์ทั้งสองข้างเทียบ x:</span> &nbsp; 2x + 2y·<span class="frac"><span class="num">dy</span><span class="den">dx</span></span> = 0</div>
+      <div class="step">② <span data-th="แก้สมการหา dy/dx:" data-en="Solve for dy/dx:">แก้สมการหา dy/dx:</span> &nbsp; <span class="frac"><span class="num">dy</span><span class="den">dx</span></span> = <span class="frac"><span class="num">−x</span><span class="den">y</span></span></div>
+      <div class="step">③ <span data-th="แทนจุด (3, 4):" data-en="Substitute (3, 4):">แทนจุด (3, 4):</span> &nbsp; <span class="frac"><span class="num">dy</span><span class="den">dx</span></span> = <span class="frac"><span class="num">−3</span><span class="den">4</span></span></div>
+      <div class="step"><b>④ <span data-th="ผลลัพธ์: ความชันเส้นสัมผัสที่จุด (3,4) คือ" data-en="Result: the tangent slope at (3,4) is">ผลลัพธ์: ความชันเส้นสัมผัสที่จุด (3,4) คือ</span> <span class="frac"><span class="num">−3</span><span class="den">4</span></span></b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span><span data-th="สิ่งที่ต้องจำ" data-en="What to Remember">สิ่งที่ต้องจำ</span></div>
+    <div class="box-info">
+      <b data-th="สรุปภาพรวม:" data-en="Big picture:">สรุปภาพรวม:</b>
+      <span data-th="อนุพันธ์คือลิมิตของความชันเส้นตัดเมื่อ h → 0 — กฎพื้นฐาน (กำลัง ผลบวก ผลคูณ ผลหาร ลูกโซ่) และกฎตรีโกณคือทางลัดที่มาจากนิยามนี้ทั้งหมด ส่วนฟังก์ชันโดยปริยายใช้กฎลูกโซ่แบบเดียวกันเพียงแต่ y ขึ้นกับ x อยู่ในตัว" data-en="The derivative is the limit of the secant slope as h → 0 — every basic rule (power, sum, product, quotient, chain) and every trig rule is a shortcut derived from this definition. Implicit differentiation uses the same chain rule, only y already depends on x.">อนุพันธ์คือลิมิตของความชันเส้นตัดเมื่อ h → 0 — กฎพื้นฐาน (กำลัง ผลบวก ผลคูณ ผลหาร ลูกโซ่) และกฎตรีโกณคือทางลัดที่มาจากนิยามนี้ทั้งหมด ส่วนฟังก์ชันโดยปริยายใช้กฎลูกโซ่แบบเดียวกันเพียงแต่ y ขึ้นกับ x อยู่ในตัว</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ══════════════ ปุ่มสลับภาษาไทย/อังกฤษ ══════════════
+const PAGE_TITLE = { th: 'สื่อการสอน : นิยามและกฎอนุพันธ์', en: 'Teaching Aid: Definition & Differentiation Rules' };
+
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch (e) { return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th; });
+  document.querySelectorAll('[data-th-title]').forEach(el => { el.title = (lang === 'en' && el.dataset.enTitle) ? el.dataset.enTitle : el.dataset.thTitle; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang() === 'en' ? 'th' : 'en'; langMemory = next; try { localStorage.setItem('siteLang', next); } catch (e) {} applyLang(next); }
+function onLangChange(lang) {
+  if (typeof renderOrigin === 'function') renderOrigin();
+  if (typeof renderPower === 'function') renderPower();
+  if (typeof renderTrig === 'function') renderTrig();
+  if (typeof renderImplicit === 'function') renderImplicit();
+}
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="' + id + '"]');
+  if (btn) btn.classList.add('active');
+}
+
+function fmt(n, d) {
+  if (d === undefined) d = 3;
+  if (!isFinite(n)) return '—';
+  var s = n.toFixed(d);
+  if (s.indexOf('.') > -1) { s = s.replace(/0+$/, '').replace(/\.$/, ''); }
+  if (s === '-0') s = '0';
+  return s;
+}
+function frac(numHTML, denHTML) { return '<span class="frac"><span class="num">' + numHTML + '</span><span class="den">' + denHTML + '</span></span>'; }
+
+// unicode superscript helper — used for on-graph SVG labels (single-digit exponents)
+var SUP_MAP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+function sup(n) { return String(n).split('').map(function (c) { return SUP_MAP[c] || c; }).join(''); }
+
+// ══════════════ reusable coordinate-plane plotter ══════════════
+function Plot(opts) {
+  var xmin = opts.xmin, xmax = opts.xmax, ymin = opts.ymin, ymax = opts.ymax;
+  var w = opts.w, h = opts.h, pad = opts.pad || 34;
+  function px(x) { return pad + (x - xmin) / (xmax - xmin) * (w - 2 * pad); }
+  function py(y) { return h - pad - (y - ymin) / (ymax - ymin) * (h - 2 * pad); }
+  function invX(pxVal) { return xmin + (pxVal - pad) / (w - 2 * pad) * (xmax - xmin); }
+  function invY(pyVal) { return ymin + (h - pad - pyVal) / (h - 2 * pad) * (ymax - ymin); }
+
+  function axesSVG() {
+    var parts = [];
+    var x0 = Math.ceil(xmin), x1 = Math.floor(xmax);
+    var y0 = Math.ceil(ymin), y1 = Math.floor(ymax);
+    var gx, gy;
+    for (gx = x0; gx <= x1; gx++) parts.push('<line class="grid-line" x1="' + px(gx) + '" y1="' + py(ymin) + '" x2="' + px(gx) + '" y2="' + py(ymax) + '"/>');
+    for (gy = y0; gy <= y1; gy++) parts.push('<line class="grid-line" x1="' + px(xmin) + '" y1="' + py(gy) + '" x2="' + px(xmax) + '" y2="' + py(gy) + '"/>');
+    parts.push('<line class="axis-line" x1="' + px(xmin) + '" y1="' + py(0) + '" x2="' + (px(xmax) + 8) + '" y2="' + py(0) + '"/>');
+    parts.push('<line class="axis-line" x1="' + px(0) + '" y1="' + py(ymin) + '" x2="' + px(0) + '" y2="' + (py(ymax) - 8) + '"/>');
+    parts.push('<polygon class="axis-arrow" points="' + (px(xmax) + 8) + ',' + py(0) + ' ' + (px(xmax) - 1) + ',' + (py(0) - 3.5) + ' ' + (px(xmax) - 1) + ',' + (py(0) + 3.5) + '"/>');
+    parts.push('<polygon class="axis-arrow" points="' + px(0) + ',' + (py(ymax) - 8) + ' ' + (px(0) - 3.5) + ',' + (py(ymax) + 1) + ' ' + (px(0) + 3.5) + ',' + (py(ymax) + 1) + '"/>');
+    parts.push('<text class="axis-letter" x="' + (px(xmax) + 10) + '" y="' + (py(0) + 4) + '">X</text>');
+    parts.push('<text class="axis-letter" x="' + (px(0) + 6) + '" y="' + (py(ymax) - 9) + '">Y</text>');
+    for (gx = x0; gx <= x1; gx++) { if (gx === 0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="' + px(gx) + '" y="' + (py(0) + 13) + '">' + gx + '</text>'); }
+    for (gy = y0; gy <= y1; gy++) { if (gy === 0) continue; parts.push('<text class="tick-label" text-anchor="end" x="' + (px(0) - 6) + '" y="' + (py(gy) + 3) + '">' + gy + '</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d = '', started = false, i, x, y;
+    for (i = 0; i <= steps; i++) {
+      x = x0 + (x1 - x0) * i / steps;
+      y = fn(x);
+      if (y === null || y === undefined || !isFinite(y)) { started = false; continue; }
+      d += (started ? ' L ' : 'M ') + px(x).toFixed(2) + ' ' + py(y).toFixed(2);
+      started = true;
+    }
+    return d;
+  }
+  function circle(x, y, r, cls) { return '<circle class="pt ' + cls + '" cx="' + px(x).toFixed(2) + '" cy="' + py(y).toFixed(2) + '" r="' + r + '"/>'; }
+  function dragPoint(x, y, r, cls, id) {
+    var cx = px(x).toFixed(2), cy = py(y).toFixed(2);
+    return '<circle class="hit-target" data-drag="' + id + '" cx="' + cx + '" cy="' + cy + '" r="16"/>' +
+      '<circle class="pt draggable ' + cls + '" data-drag="' + id + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+  }
+  function guide(x1_, y1_, x2_, y2_, cls) { return '<line class="guide-line ' + (cls || '') + '" x1="' + px(x1_).toFixed(2) + '" y1="' + py(y1_).toFixed(2) + '" x2="' + px(x2_).toFixed(2) + '" y2="' + py(y2_).toFixed(2) + '"/>'; }
+  function pathD(dStr, cls) { return '<path class="' + cls + '" d="' + dStr + '"/>'; }
+
+  return { px: px, py: py, invX: invX, invY: invY, w: w, h: h, xmin: xmin, xmax: xmax, ymin: ymin, ymax: ymax, axesSVG: axesSVG, pathFor: pathFor, circle: circle, dragPoint: dragPoint, guide: guide, pathD: pathD };
+}
+
+function attachDrag(svg, onMove, onEnd) {
+  var active = null;
+  function toPlotXY(e) {
+    var pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    var loc = pt.matrixTransform(ctm.inverse());
+    return { px: loc.x, py: loc.y };
+  }
+  svg.addEventListener('pointerdown', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-drag');
+    if (!id) return;
+    active = id;
+    try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+    var loc = toPlotXY(e);
+    if (loc) onMove(id, loc.px, loc.py);
+    e.preventDefault();
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!active) return;
+    var loc = toPlotXY(e);
+    if (loc) onMove(active, loc.px, loc.py);
+    e.preventDefault();
+  });
+  function end(e) { if (!active) return; var id = active; active = null; if (onEnd) onEnd(id); }
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+}
+
+// ══════════════ นิยาม: secant → tangent ══════════════
+var renderOrigin;
+(function () {
+  var svg = document.getElementById('plotOrigin');
+  var P = Plot({ xmin: -0.6, xmax: 3, ymin: -0.6, ymax: 9.2, w: 460, h: 320, pad: 36 });
+  var f = function (x) { return x * x; };
+  var x0 = 1;
+  var slider = document.getElementById('hSlider');
+  var hInput = document.getElementById('hNumInput');
+  var formulaLive = document.getElementById('originFormula');
+  var playBtn = document.getElementById('hPlay');
+  var playIcon = document.getElementById('hPlayIcon');
+  var resetBtn = document.getElementById('hReset');
+  var hMax = 2, hMin = 0.02;
+  var playing = false, rafId = null, playStart = 0;
+
+  var TXT = {
+    th: function (Qy, Py, h, m) {
+      return 'ความชันเส้นตัด PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>เมื่อ h → 0 : f′(1) → <span class="hlA">2</span>';
+    },
+    en: function (Qy, Py, h, m) {
+      return 'Secant slope PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>As h → 0 : f′(1) → <span class="hlA">2</span>';
+    }
+  };
+
+  function hFromSlider(v) { return hMax * Math.pow(hMin / hMax, v / 100); }
+  function sliderFromH(hv) { return 100 * Math.log(hv / hMax) / Math.log(hMin / hMax); }
+
+  renderOrigin = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var v = parseFloat(slider.value);
+    var h = hFromSlider(v);
+    var Px = x0, Py = f(x0);
+    var Qx = x0 + h, Qy = f(Qx);
+    var m = (Qy - Py) / h;
+
+    var curve = P.pathFor(f, P.xmin + 0.05, P.xmax - 0.05, 120);
+    var lineFn = function (x) { return Py + m * (x - Px); };
+    var secant = P.pathFor(lineFn, P.xmin + 0.05, P.xmax - 0.05, 2);
+
+    var parts = [];
+    parts.push(P.axesSVG());
+    parts.push(P.pathD(curve, 'curve-base'));
+    parts.push(P.pathD(secant, 'curve-hi'));
+    parts.push(P.guide(Px, Py, Qx, Py, 'hiB'));
+    parts.push(P.guide(Qx, Py, Qx, Qy, 'hiB'));
+    parts.push(P.circle(Px, Py, 4.8, 'pt-fillP'));
+    parts.push(P.dragPoint(Qx, Qy, 4.8, 'pt-fillB', 'Q'));
+    parts.push('<text class="plot-caption" x="' + (P.px(Px) - 4) + '" y="' + (P.py(Py) + 16) + '">P</text>');
+    parts.push('<text class="plot-caption" x="' + (P.px(Qx) + 6) + '" y="' + (P.py(Qy) - 6) + '">Q</text>');
+    // item 1: h annotated directly on the graph, on the horizontal leg PQ
+    parts.push('<text class="slope-label" text-anchor="middle" x="' + ((P.px(Px) + P.px(Qx)) / 2) + '" y="' + (P.py(Py) + 15) + '">h = ' + fmt(h, 2) + '</text>');
+    // item 5: slope shown next to the point too (small font, 2dp)
+    parts.push('<text class="slope-label" x="' + (P.px(Qx) + 8) + '" y="' + (P.py(Qy) + 12) + '">m ≈ ' + fmt(m, 2) + '</text>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== hInput) hInput.value = fmt(h, 3);
+    formulaLive.innerHTML = TXT[lang](Qy, Py, h, m);
+  };
+
+  slider.addEventListener('input', function () { stopPlaying(); renderOrigin(); });
+  hInput.addEventListener('change', function () {
+    var v = parseFloat(hInput.value);
+    if (!isFinite(v)) return;
+    if (v < hMin) v = hMin; if (v > hMax) v = hMax;
+    stopPlaying();
+    slider.value = sliderFromH(v);
+    renderOrigin();
+  });
+  function stopPlaying() { playing = false; if (rafId) cancelAnimationFrame(rafId); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    playing = true;
+    playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    slider.value = 0;
+    playStart = performance.now();
+    var duration = 4200;
+    function step(t) {
+      var elapsed = t - playStart;
+      var v = Math.min(100, elapsed / duration * 100);
+      slider.value = v;
+      renderOrigin();
+      if (v < 100 && playing) { rafId = requestAnimationFrame(step); } else { stopPlaying(); }
+    }
+    rafId = requestAnimationFrame(step);
+  }
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+  resetBtn.addEventListener('click', function () { stopPlaying(); slider.value = 0; renderOrigin(); });
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'Q') return;
+    stopPlaying();
+    var h = P.invX(pxv) - x0;
+    if (h < hMin) h = hMin; if (h > hMax) h = hMax;
+    slider.value = sliderFromH(h);
+    renderOrigin();
+  });
+
+  renderOrigin();
+})();
+
+// ══════════════ กฎพื้นฐาน: power rule slider ══════════════
+var renderPower;
+(function () {
+  var svg = document.getElementById('plotPower');
+  var slider = document.getElementById('nSlider');
+  var nInput = document.getElementById('nNumInput');
+  var formulaLive = document.getElementById('powerFormula');
+  var P = Plot({ xmin: -2.4, xmax: 2.4, ymin: -6, ymax: 6, w: 460, h: 320, pad: 36 });
+
+  renderPower = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var n = parseInt(slider.value, 10);
+    var f = function (x) { return Math.pow(x, n); };
+    var fp = function (x) { return n * Math.pow(x, n - 1); };
+
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(f, P.xmin + 0.05, P.xmax - 0.05, 160), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(fp, P.xmin + 0.05, P.xmax - 0.05, 160), 'curve-hi'));
+    // item 2: function names labeled directly on the graph, with floating (superscript) exponents
+    parts.push('<text class="fn-label" x="10" y="20">f(x) = x' + sup(n) + '</text>');
+    parts.push('<text class="fn-label" x="10" y="38" style="fill:var(--secondary);">f′(x) = ' + n + '·x' + sup(n - 1) + '</text>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== nInput) nInput.value = n;
+    formulaLive.innerHTML =
+      '<span class="hl">f(x) = x<sup>' + n + '</sup></span> (' + (lang === 'en' ? 'blue' : 'สีน้ำเงิน') + ')&nbsp;&nbsp;&nbsp;' +
+      '<span class="hlA">f′(x) = ' + n + '·x<sup>' + (n - 1) + '</sup></span> (' + (lang === 'en' ? 'dashed pink' : 'สีชมพูเส้นประ') + ')';
+  };
+  slider.addEventListener('input', renderPower);
+  nInput.addEventListener('change', function () {
+    var v = parseInt(nInput.value, 10);
+    if (!isFinite(v)) return;
+    if (v < 1) v = 1; if (v > 5) v = 5;
+    slider.value = v;
+    renderPower();
+  });
+  renderPower();
+})();
+
+// ══════════════ อนุพันธ์ตรีโกณ: จุดลากบนกราฟ (สลับฟังก์ชันได้) ══════════════
+var renderTrig;
+(function () {
+  var svg = document.getElementById('plotTrig');
+  var formulaLive = document.getElementById('trigFormula');
+  var x0Input = document.getElementById('trigX0Input');
+  var buttons = { sin: document.getElementById('trigBtn-sin'), cos: document.getElementById('trigBtn-cos'), tan: document.getElementById('trigBtn-tan'), csc: document.getElementById('trigBtn-csc'), sec: document.getElementById('trigBtn-sec'), cot: document.getElementById('trigBtn-cot') };
+
+  function clip(fn, lim) { return function (x) { var v = fn(x); return (v === null || v === undefined || !isFinite(v) || Math.abs(v) > lim) ? null : v; }; }
+
+  var FUNCS = {
+    sin: { fn: Math.sin, dfn: Math.cos, label: 'sin x', dlabelTh: 'cos x', dlabelEn: 'cos x', ymin: -1.8, ymax: 1.8, sings: [] },
+    cos: { fn: Math.cos, dfn: function (x) { return -Math.sin(x); }, label: 'cos x', dlabelTh: '−sin x', dlabelEn: '−sin x', ymin: -1.8, ymax: 1.8, sings: [] },
+    tan: { fn: Math.tan, dfn: function (x) { return 1 / (Math.cos(x) * Math.cos(x)); }, label: 'tan x', dlabelTh: 'sec²x', dlabelEn: 'sec²x', ymin: -4, ymax: 4, sings: [Math.PI / 2, 3 * Math.PI / 2] },
+    csc: { fn: function (x) { return 1 / Math.sin(x); }, dfn: function (x) { return -Math.cos(x) / (Math.sin(x) * Math.sin(x)); }, label: 'csc x', dlabelTh: '−csc x·cot x', dlabelEn: '−csc x·cot x', ymin: -4, ymax: 4, sings: [0, Math.PI, 2 * Math.PI] },
+    sec: { fn: function (x) { return 1 / Math.cos(x); }, dfn: function (x) { return Math.tan(x) / Math.cos(x); }, label: 'sec x', dlabelTh: 'sec x·tan x', dlabelEn: 'sec x·tan x', ymin: -4, ymax: 4, sings: [Math.PI / 2, 3 * Math.PI / 2] },
+    cot: { fn: function (x) { return 1 / Math.tan(x); }, dfn: function (x) { return -1 / (Math.sin(x) * Math.sin(x)); }, label: 'cot x', dlabelTh: '−csc²x', dlabelEn: '−csc²x', ymin: -4, ymax: 4, sings: [0, Math.PI, 2 * Math.PI] }
+  };
+
+  var state = { func: 'sin', x0: 1.0 };
+
+  function nudgeAwayFromSingularity(x, sings) {
+    var eps = 0.14;
+    for (var i = 0; i < sings.length; i++) {
+      if (Math.abs(x - sings[i]) < eps) { x = sings[i] + (x < sings[i] ? -eps : eps); }
+    }
+    return x;
+  }
+
+  renderTrig = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var cfg = FUNCS[state.func];
+    var P = Plot({ xmin: -0.5, xmax: 6.9, ymin: cfg.ymin, ymax: cfg.ymax, w: 460, h: 320, pad: 36 });
+    var f = clip(cfg.fn, cfg.ymax + 2);
+    var y0 = cfg.fn(state.x0), slope = cfg.dfn(state.x0);
+    var tanFn = function (x) { return y0 + slope * (x - state.x0); };
+
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(f, P.xmin + 0.05, P.xmax - 0.05, 240), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(tanFn, state.x0 - 0.9, state.x0 + 0.9, 2), 'curve-hi'));
+    parts.push('<text class="fn-label" x="10" y="20">f(x) = ' + cfg.label + '</text>');
+    parts.push(P.dragPoint(state.x0, y0, 5, 'pt-fillP', 'T'));
+    // item 5: slope label next to the point, small font, 2dp
+    parts.push('<text class="slope-label" x="' + (P.px(state.x0) + 9) + '" y="' + (P.py(y0) - 8) + '">m ≈ ' + fmt(slope, 2) + '</text>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== x0Input) x0Input.value = fmt(state.x0, 2);
+    formulaLive.innerHTML =
+      'x₀ = <span class="hl">' + fmt(state.x0, 3) + '</span> &nbsp;→&nbsp; ' +
+      "f′(x₀) = " + (lang === 'en' ? cfg.dlabelEn : cfg.dlabelTh) + ' = <span class="hlA">' + fmt(slope, 3) + '</span> = ' + (lang === 'en' ? 'the tangent slope shown above' : 'ความชันของเส้นสัมผัสที่วาดไว้ด้านบน');
+  };
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'T') return;
+    var cfg = FUNCS[state.func];
+    var P = Plot({ xmin: -0.5, xmax: 6.9, ymin: cfg.ymin, ymax: cfg.ymax, w: 460, h: 320, pad: 36 });
+    var x = P.invX(pxv);
+    if (x < P.xmin + 0.1) x = P.xmin + 0.1;
+    if (x > P.xmax - 0.1) x = P.xmax - 0.1;
+    state.x0 = nudgeAwayFromSingularity(x, cfg.sings);
+    renderTrig();
+  });
+
+  x0Input.addEventListener('change', function () {
+    var v = parseFloat(x0Input.value);
+    if (!isFinite(v)) return;
+    state.x0 = nudgeAwayFromSingularity(v, FUNCS[state.func].sings);
+    renderTrig();
+  });
+
+  Object.keys(buttons).forEach(function (key) {
+    buttons[key].addEventListener('click', function () {
+      state.func = key;
+      state.x0 = nudgeAwayFromSingularity(1.0, FUNCS[key].sings);
+      Object.keys(buttons).forEach(function (k) { buttons[k].classList.toggle('active', k === key); });
+      renderTrig();
+    });
+  });
+
+  renderTrig();
+})();
+
+// ══════════════ โดยปริยาย: x² + y² = 9 ══════════════
+var renderImplicit;
+(function () {
+  var svg = document.getElementById('plotImplicit');
+  var formulaLive = document.getElementById('implicitFormula');
+  var P = Plot({ xmin: -4.2, xmax: 4.2, ymin: -4.2, ymax: 4.2, w: 420, h: 320, pad: 36 });
+  var R = 3;
+  var theta = Math.PI / 4;
+
+  renderImplicit = function render() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    var x0 = R * Math.cos(theta), y0 = R * Math.sin(theta);
+    var slope = Math.abs(y0) < 1e-4 ? null : -x0 / y0;
+
+    var circFn1 = function (x) { var v = R * R - x * x; return v < 0 ? null : Math.sqrt(v); };
+    var circFn2 = function (x) { var v = R * R - x * x; return v < 0 ? null : -Math.sqrt(v); };
+
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(circFn1, -R, R, 100), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(circFn2, -R, R, 100), 'curve-base'));
+    if (slope !== null) {
+      var tanFn = function (x) { return y0 + slope * (x - x0); };
+      parts.push(P.pathD(P.pathFor(tanFn, x0 - 1.6, x0 + 1.6, 2), 'curve-hi'));
+    } else {
+      parts.push('<line class="curve-hi" x1="' + P.px(x0) + '" y1="' + P.py(y0 - 1.6) + '" x2="' + P.px(x0) + '" y2="' + P.py(y0 + 1.6) + '"/>');
+    }
+    parts.push(P.dragPoint(x0, y0, 5, 'pt-fillP', 'C'));
+    // item 5: slope label next to the point, small font, 2dp
+    parts.push('<text class="slope-label" x="' + (P.px(x0) + 9) + '" y="' + (P.py(y0) - 8) + '">' + (slope === null ? 'm = —' : ('dy/dx ≈ ' + fmt(slope, 2))) + '</text>');
+    svg.innerHTML = parts.join('');
+
+    formulaLive.innerHTML =
+      (lang === 'en' ? 'Point' : 'จุด') + ' (x, y) = (<span class="hl">' + fmt(x0, 2) + '</span>, <span class="hl">' + fmt(y0, 2) + '</span>) &nbsp;→&nbsp; ' +
+      frac('dy','dx') + ' = ' + frac('−x','y') + ' = <span class="hlA">' + (slope === null ? '—' : fmt(slope, 3)) + '</span>';
+  };
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'C') return;
+    var x = P.invX(pxv), y = P.invY(pyv);
+    theta = Math.atan2(y, x);
+    renderImplicit();
+  });
+
+  renderImplicit();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

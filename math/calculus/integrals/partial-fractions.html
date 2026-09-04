@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : เศษส่วนย่อย (Partial Fractions)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 20px 40px; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px; }
+  .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+  .rule-card .name { font-size: .8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+  .rule-card .expr { font-size: .96rem; color: var(--primary); font-weight: 700; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .btn { font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .btn:disabled { opacity:.35; cursor:not-allowed; }
+  .btn-play { background: var(--primary); color:#fff; border-color: var(--primary); }
+  .transport { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: 10px; }
+  .round-indicator { font-size: .9rem; color: var(--muted); font-weight: 600; min-width: 6.5em; text-align: center; }
+  .step-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .step-row { padding: 12px 16px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); font-size: 1rem; opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .4s ease; }
+  .step-row.shown { opacity: 1; transform: translateY(0); }
+  .step-row .tag { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-right: 8px; }
+  .step-row.result { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: #fff; border: none; font-weight: 700; }
+  .step-row.result .tag { color: rgba(255,255,255,.75); }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าปริพันธ์" data-en="← Back to Integrals">← กลับหน้าปริพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="➗ เศษส่วนย่อย" data-en="➗ Partial Fractions">➗ เศษส่วนย่อย</h1>
+  <p data-th="แยกเศษส่วนย่อย 3 กรณี สำหรับปริพันธ์ของฟังก์ชันตรรกยะ" data-en="The 3 cases of partial-fraction decomposition for rational functions">แยกเศษส่วนย่อย 3 กรณี สำหรับปริพันธ์ของฟังก์ชันตรรกยะ</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">➗</span><span data-th="แนวคิด: แยก P(x)/Q(x) เป็นเศษส่วนย่อยๆ" data-en="The Idea: Split P(x)/Q(x) into Simpler Fractions">แนวคิด: แยก P(x)/Q(x) เป็นเศษส่วนย่อยๆ</span></div>
+    <p class="desc-text" data-th="ใช้เมื่อ f คือฟังก์ชันตรรกยะ P(x)/Q(x) (ดีกรี P น้อยกว่า Q) — แยกตัวส่วนเป็นตัวประกอบก่อน แล้วแยกเศษส่วนตามชนิดของตัวประกอบ 3 กรณี" data-en="Used when f is a rational function P(x)/Q(x) (degree of P less than Q) — first factor the denominator, then split based on the type of each factor, 3 cases.">ใช้เมื่อ f คือฟังก์ชันตรรกยะ P(x)/Q(x) (ดีกรี P น้อยกว่า Q) — แยกตัวส่วนเป็นตัวประกอบก่อน แล้วแยกเศษส่วนตามชนิดของตัวประกอบ 3 กรณี</p>
+    <div class="rule-grid">
+      <div class="rule-card"><div class="name" data-th="กรณี 1: ตัวประกอบเชิงเส้นไม่ซ้ำ" data-en="Case 1: Distinct Linear Factors">กรณี 1: ตัวประกอบเชิงเส้นไม่ซ้ำ</div><div class="expr"><span class="frac"><span class="num">P(x)</span><span class="den">(x−a)(x−b)</span></span> = <span class="frac"><span class="num">A</span><span class="den">x−a</span></span> + <span class="frac"><span class="num">B</span><span class="den">x−b</span></span></div></div>
+      <div class="rule-card"><div class="name" data-th="กรณี 2: ตัวประกอบเชิงเส้นซ้ำ" data-en="Case 2: Repeated Linear Factors">กรณี 2: ตัวประกอบเชิงเส้นซ้ำ</div><div class="expr"><span class="frac"><span class="num">P(x)</span><span class="den">(x−a)²</span></span> = <span class="frac"><span class="num">A</span><span class="den">x−a</span></span> + <span class="frac"><span class="num">B</span><span class="den">(x−a)²</span></span></div></div>
+      <div class="rule-card"><div class="name" data-th="กรณี 3: ตัวประกอบกำลังสองลดทอนไม่ได้" data-en="Case 3: Irreducible Quadratic Factor">กรณี 3: ตัวประกอบกำลังสองลดทอนไม่ได้</div><div class="expr"><span class="frac"><span class="num">P(x)</span><span class="den">x(x²+1)</span></span> = <span class="frac"><span class="num">A</span><span class="den">x</span></span> + <span class="frac"><span class="num">Bx+C</span><span class="den">x²+1</span></span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ตัวอย่าง: หาค่า A, B ของ (x−2)/[(x+1)(x−3)]" data-en="Example: Find A, B for (x−2)/[(x+1)(x−3)]">ตัวอย่าง: หาค่า A, B ของ (x−2)/[(x+1)(x−3)]</span></div>
+    <p class="desc-text" style="font-size:.9rem;color:var(--muted);" data-th="วิธีเร็ว (cover-up method): แทนค่า x ที่ทำให้แต่ละตัวประกอบเป็น 0 ลงในสมการหลังคูณตลอดด้วยตัวส่วนร่วมแล้ว" data-en="Fast method (cover-up): substitute the x-value that zeros out each factor into the equation after clearing denominators.">วิธีเร็ว (cover-up method): แทนค่า x ที่ทำให้แต่ละตัวประกอบเป็น 0 ลงในสมการหลังคูณตลอดด้วยตัวส่วนร่วมแล้ว</p>
+    <div id="pfSteps" class="step-list"></div>
+    <div class="transport">
+      <button class="btn" id="pfPrev">‹</button>
+      <button class="btn btn-play" id="pfNext">›</button>
+      <span class="round-indicator" id="pfIndicator"></span>
+      <button class="btn" id="pfReset">↺</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="box-info">
+      <b data-th="สรุป:" data-en="Result:">สรุป:</b>
+      <span data-th="หลังแยกเศษส่วนย่อยแล้ว แต่ละเทอมกลายเป็นปริพันธ์รูป ∫A/(x−a)dx = A·ln|x−a| + C ซึ่งหาได้ง่ายกว่าฟังก์ชันตรรกยะตั้งต้นมาก" data-en="After decomposing, each term becomes an integral of the form ∫A/(x−a)dx = A·ln|x−a| + C — much easier than the original rational function.">หลังแยกเศษส่วนย่อยแล้ว แต่ละเทอมกลายเป็นปริพันธ์รูป ∫A/(x−a)dx = A·ln|x−a| + C ซึ่งหาได้ง่ายกว่าฟังก์ชันตรรกยะตั้งต้นมาก</span>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : เศษส่วนย่อย', en: 'Teaching Aid: Partial Fractions' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderPf==='function') renderPf(); }
+
+function StepRevealer(containerId, prevId, nextId, resetId, indicatorId, stepsByLang) {
+  var container = document.getElementById(containerId);
+  var prevBtn = document.getElementById(prevId);
+  var nextBtn = document.getElementById(nextId);
+  var resetBtn = document.getElementById(resetId);
+  var indicator = document.getElementById(indicatorId);
+  var shown = 1;
+  function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var steps = stepsByLang[lang];
+    container.innerHTML = steps.map(function (s, i) {
+      var cls = 'step-row' + (i < shown ? ' shown' : '') + (s.result ? ' result' : '');
+      return '<div class="'+cls+'"><span class="tag">'+s.tag+'</span>'+s.html+'</div>';
+    }).join('');
+    indicator.textContent = shown + ' / ' + steps.length;
+    prevBtn.disabled = shown <= 1;
+    nextBtn.disabled = shown >= steps.length;
+  }
+  prevBtn.addEventListener('click', function () { if (shown > 1) { shown--; render(); } });
+  nextBtn.addEventListener('click', function () { if (shown < stepsByLang.th.length) { shown++; render(); } });
+  resetBtn.addEventListener('click', function () { shown = 1; render(); });
+  render();
+  return render;
+}
+
+var renderPf = StepRevealer('pfSteps', 'pfPrev', 'pfNext', 'pfReset', 'pfIndicator', {
+  th: [
+    { tag: 'ตั้งรูป', html: '<span class="frac"><span class="num">x−2</span><span class="den">(x+1)(x−3)</span></span> = <span class="frac"><span class="num">A</span><span class="den">x+1</span></span> + <span class="frac"><span class="num">B</span><span class="den">x−3</span></span>' },
+    { tag: 'คูณตลอด', html: 'x − 2 = A(x−3) + B(x+1)' },
+    { tag: 'แทน x=−1', html: '−1−2 = A(−1−3) &nbsp;⇒&nbsp; −3 = −4A &nbsp;⇒&nbsp; A = <span class="frac"><span class="num">3</span><span class="den">4</span></span>' },
+    { tag: 'แทน x=3', html: '3−2 = B(3+1) &nbsp;⇒&nbsp; 1 = 4B &nbsp;⇒&nbsp; B = <span class="frac"><span class="num">1</span><span class="den">4</span></span>' },
+    { tag: 'ผลลัพธ์', html: '<span class="frac"><span class="num">x−2</span><span class="den">(x+1)(x−3)</span></span> = <span class="frac"><span class="num">3/4</span><span class="den">x+1</span></span> + <span class="frac"><span class="num">1/4</span><span class="den">x−3</span></span>', result: true }
+  ],
+  en: [
+    { tag: 'Set up', html: '<span class="frac"><span class="num">x−2</span><span class="den">(x+1)(x−3)</span></span> = <span class="frac"><span class="num">A</span><span class="den">x+1</span></span> + <span class="frac"><span class="num">B</span><span class="den">x−3</span></span>' },
+    { tag: 'Clear denominators', html: 'x − 2 = A(x−3) + B(x+1)' },
+    { tag: 'Sub x=−1', html: '−1−2 = A(−1−3) &nbsp;⇒&nbsp; −3 = −4A &nbsp;⇒&nbsp; A = <span class="frac"><span class="num">3</span><span class="den">4</span></span>' },
+    { tag: 'Sub x=3', html: '3−2 = B(3+1) &nbsp;⇒&nbsp; 1 = 4B &nbsp;⇒&nbsp; B = <span class="frac"><span class="num">1</span><span class="den">4</span></span>' },
+    { tag: 'Result', html: '<span class="frac"><span class="num">x−2</span><span class="den">(x+1)(x−3)</span></span> = <span class="frac"><span class="num">3/4</span><span class="den">x+1</span></span> + <span class="frac"><span class="num">1/4</span><span class="den">x−3</span></span>', result: true }
+  ]
+});
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

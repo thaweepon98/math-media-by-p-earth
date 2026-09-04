@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : กฎโลปีตาล (L'Hôpital's Rule)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 20px 40px; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.15rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+  .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; font-weight: 700; color: var(--primary); font-size: 1.05rem; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .guide-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+  .pt { stroke-width: 2.4; }
+  .pt-open { fill: #fff; stroke: var(--secondary); }
+  .pt-fillB { fill: var(--secondary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .btn { font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .btn:disabled { opacity:.35; cursor:not-allowed; }
+  .btn-play { background: var(--primary); color:#fff; border-color: var(--primary); }
+  .transport { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .round-indicator { font-size: .9rem; color: var(--muted); font-weight: 600; min-width: 6.5em; text-align: center; }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .history-wrap { max-height: 200px; overflow-y: auto; margin-top: .6rem; }
+  .example-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-top: 10px; }
+  .example-box .step { font-size: .96rem; line-height: 1.9; }
+  .example-box .step b { color: var(--primary); }
+  table.history { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  table.history th, table.history td { text-align: right; padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+  table.history th:first-child, table.history td:first-child { text-align: left; }
+  table.history th { color: var(--muted); font-weight: 600; font-size: .74rem; text-transform: uppercase; position: sticky; top: 0; background: var(--card); }
+  table.history tr:last-child td { color: var(--secondary); font-weight: 700; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าอนุพันธ์" data-en="← Back to Derivatives">← กลับหน้าอนุพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="⚖️ กฎโลปีตาล" data-en="⚖️ L'Hôpital's Rule">⚖️ กฎโลปีตาล</h1>
+  <p data-th="รูปแบบยังไม่กำหนด • การใช้กฎโลปีตาลแก้ลิมิต" data-en="Indeterminate forms • Solving limits with L'Hôpital's Rule">รูปแบบยังไม่กำหนด • การใช้กฎโลปีตาลแก้ลิมิต</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">❓</span><span data-th="รูปแบบยังไม่กำหนด (Indeterminate Forms)" data-en="Indeterminate Forms">รูปแบบยังไม่กำหนด (Indeterminate Forms)</span></div>
+    <p class="desc-text" data-th="เมื่อลิมิตของ f(x)/g(x) อยู่ในรูปเหล่านี้ ไม่สามารถตอบได้ทันที ต้องใช้เทคนิคเพิ่มเติม (เช่นกฎโลปีตาล) เพื่อหาค่าจริง" data-en="When the limit of f(x)/g(x) takes one of these forms, it cannot be evaluated directly — a technique like L'Hôpital's Rule is needed to find the true value." >เมื่อลิมิตของ f(x)/g(x) อยู่ในรูปเหล่านี้ ไม่สามารถตอบได้ทันที ต้องใช้เทคนิคเพิ่มเติม (เช่นกฎโลปีตาล) เพื่อหาค่าจริง</p>
+    <div class="rule-grid">
+      <div class="rule-card">0/0</div>
+      <div class="rule-card">∞/∞</div>
+      <div class="rule-card">0·∞</div>
+      <div class="rule-card">∞−∞</div>
+      <div class="rule-card">1^∞</div>
+      <div class="rule-card">0^0</div>
+      <div class="rule-card">∞^0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">⚖️</span><span data-th="กฎโลปีตาล (L'Hôpital's Rule)" data-en="L'Hôpital's Rule">กฎโลปีตาล (L'Hôpital's Rule)</span></div>
+    <p class="desc-text" data-th="ถ้า lim f(x)/g(x) เป็นรูปแบบ 0/0 หรือ ∞/∞ และ f, g หาอนุพันธ์ได้ ให้หาลิมิตของอัตราส่วนอนุพันธ์แทน (ทำซ้ำได้ถ้ายังไม่กำหนด)" data-en="If lim f(x)/g(x) is 0/0 or ∞/∞ and f, g are differentiable, take the limit of the ratio of derivatives instead (repeat if still indeterminate)." >ถ้า lim f(x)/g(x) เป็นรูปแบบ 0/0 หรือ ∞/∞ และ f, g หาอนุพันธ์ได้ ให้หาลิมิตของอัตราส่วนอนุพันธ์แทน (ทำซ้ำได้ถ้ายังไม่กำหนด)</p>
+    <div class="formula small">lim <span class="frac"><span class="num">f(x)</span><span class="den">g(x)</span></span> &nbsp;=&nbsp; lim <span class="frac"><span class="num">f′(x)</span><span class="den">g′(x)</span></span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ตัวอย่างง่ายๆ: lim (sin x)/x เมื่อ x → 0" data-en="A Simple Example: lim (sin x)/x as x → 0">ตัวอย่างง่ายๆ: lim (sin x)/x เมื่อ x → 0</span></div>
+    <div class="example-box">
+      <div class="step" data-th="① ที่ x=0: sin(0)/0 = 0/0 — เป็นรูปแบบยังไม่กำหนด ใช้กฎโลปีตาลได้" data-en="① At x=0: sin(0)/0 = 0/0 — an indeterminate form, so L'Hôpital's applies">① ที่ x=0: sin(0)/0 = 0/0 — เป็นรูปแบบยังไม่กำหนด ใช้กฎโลปีตาลได้</div>
+      <div class="step" data-th="② หาอนุพันธ์เศษและส่วนแยกกัน: (sin x)′ = cos x &nbsp;,&nbsp; (x)′ = 1" data-en="② Differentiate numerator and denominator separately: (sin x)′ = cos x &nbsp;,&nbsp; (x)′ = 1">② หาอนุพันธ์เศษและส่วนแยกกัน: (sin x)′ = cos x &nbsp;,&nbsp; (x)′ = 1</div>
+      <div class="step" data-th="③ lim (sin x)/x = lim cos(x)/1 เมื่อ x → 0" data-en="③ lim (sin x)/x = lim cos(x)/1 as x → 0">③ lim (sin x)/x = lim cos(x)/1 เมื่อ x → 0</div>
+      <div class="step"><b data-th="④ ผลลัพธ์: = cos(0)/1 = 1" data-en="④ Result: = cos(0)/1 = 1">④ ผลลัพธ์: = cos(0)/1 = 1</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ตัวอย่าง: lim (ln x)/(x−1) เมื่อ x → 1" data-en="Example: lim (ln x)/(x−1) as x → 1">ตัวอย่าง: lim (ln x)/(x−1) เมื่อ x → 1</span></div>
+    <p class="desc-text" style="font-size:.9rem;color:var(--muted);" data-th="ที่ x=1 ค่านี้เป็น 0/0 — ใช้กฎโลปีตาล: (ln x)′/(x−1)′ = (1/x)/1 → 1 เมื่อ x → 1 กดปุ่มเพื่อดู x เข้าใกล้ 1 แล้วดูค่าฟังก์ชันเข้าใกล้ 1" data-en="At x=1 this is 0/0 — apply L'Hôpital's: (ln x)′/(x−1)′ = (1/x)/1 → 1 as x → 1. Press the buttons to watch x approach 1 and the function value approach 1.">ที่ x=1 ค่านี้เป็น 0/0 — ใช้กฎโลปีตาล: (ln x)′/(x−1)′ = (1/x)/1 → 1 เมื่อ x → 1 กดปุ่มเพื่อดู x เข้าใกล้ 1 แล้วดูค่าฟังก์ชันเข้าใกล้ 1</p>
+    <div class="plot-wrap"><svg id="plotLHopital" viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+
+    <div class="transport" style="margin-top:1rem;">
+      <button class="btn" id="lPrev" data-th-title="ก่อนหน้า" data-en-title="Previous" aria-label="Previous"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="btn btn-play" id="lPlay" data-th-title="เล่น/หยุด" data-en-title="Play/Pause" aria-label="Play/Pause"><svg id="lPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="btn" id="lNext" data-th-title="ถัดไป" data-en-title="Next" aria-label="Next"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button>
+      <span class="round-indicator" id="lIndicator">ขั้นที่ 1 / 7</span>
+      <button class="btn" id="lReset" data-th-title="เริ่มใหม่" data-en-title="Reset" aria-label="Reset"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 1 2.6 6.3M3 12V6m0 6h6"/></svg></button>
+    </div>
+    <div class="formula-live" id="lFormula"></div>
+    <div class="history-wrap">
+      <table class="history">
+        <thead><tr><th data-th="ขั้น" data-en="Step">ขั้น</th><th>x</th><th>f(x) = ln(x)/(x−1)</th></tr></thead>
+        <tbody id="lBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="box-info">
+      <b data-th="สรุปภาพรวม:" data-en="Big picture:">สรุปภาพรวม:</b>
+      <span data-th="กฎโลปีตาลใช้ได้เฉพาะรูปแบบยังไม่กำหนด 0/0 หรือ ∞/∞ เท่านั้น — รูปแบบอื่นๆ (0·∞, ∞−∞, 1^∞ ฯลฯ) ต้องจัดรูปให้เป็น 0/0 หรือ ∞/∞ ก่อนจึงใช้กฎนี้ได้" data-en="L'Hôpital's Rule only applies to 0/0 or ∞/∞ forms — other forms (0·∞, ∞−∞, 1^∞, etc.) must first be rearranged into 0/0 or ∞/∞ before the rule can be used.">กฎโลปีตาลใช้ได้เฉพาะรูปแบบยังไม่กำหนด 0/0 หรือ ∞/∞ เท่านั้น — รูปแบบอื่นๆ (0·∞, ∞−∞, 1^∞ ฯลฯ) ต้องจัดรูปให้เป็น 0/0 หรือ ∞/∞ ก่อนจึงใช้กฎนี้ได้</span>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: "สื่อการสอน : กฎโลปีตาล", en: "Teaching Aid: L'Hôpital's Rule" };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  document.querySelectorAll('[data-th-title]').forEach(el => { el.title = (lang==='en'&&el.dataset.enTitle)?el.dataset.enTitle:el.dataset.thTitle; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderL==='function') renderL(); }
+
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,pathD:pathD};
+}
+
+var renderL;
+(function () {
+  var svg = document.getElementById('plotLHopital');
+  var indicator = document.getElementById('lIndicator');
+  var formulaLive = document.getElementById('lFormula');
+  var body = document.getElementById('lBody');
+  var prevBtn = document.getElementById('lPrev');
+  var nextBtn = document.getElementById('lNext');
+  var playBtn = document.getElementById('lPlay');
+  var playIcon = document.getElementById('lPlayIcon');
+  var resetBtn = document.getElementById('lReset');
+  var P = Plot({ xmin: 0.05, xmax: 2.5, ymin: -0.5, ymax: 2, w: 460, h: 300, pad: 36 });
+  var f = function (x) { return Math.log(x)/(x-1); };
+  var deltas = [0.8, 0.5, 0.25, 0.1, 0.04, 0.015, 0.005];
+  var step = 0, timer = null, playing = false;
+
+  renderL = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var d = deltas[step];
+    var x = 1 + d;
+    var y = f(x);
+
+    var left = P.pathFor(f, P.xmin+0.02, 1-0.02, 60);
+    var right = P.pathFor(f, 1+0.02, P.xmax-0.02, 60);
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(left, 'curve-base'));
+    parts.push(P.pathD(right, 'curve-base'));
+    parts.push(P.circle(1, 1, 5, 'pt-open'));
+    parts.push(P.circle(x, y, 4.6, 'pt-fillB'));
+    svg.innerHTML = parts.join('');
+
+    indicator.textContent = (lang==='en'?'Step':'ขั้นที่') + ' ' + (step+1) + ' / ' + deltas.length;
+    formulaLive.innerHTML =
+      'x = <span class="hl">'+fmt(x,4)+'</span> &nbsp;→&nbsp; f(x) = <span class="hl">'+fmt(y,5)+'</span> &nbsp;&nbsp;('+(lang==='en'?'approaching':'เข้าใกล้')+' <span class="hlA">1</span>)';
+
+    body.innerHTML = '';
+    for (var k=0; k<=step; k++) {
+      var dk = deltas[k], xk = 1+dk;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+(k+1)+'</td><td>'+fmt(xk,4)+'</td><td>'+fmt(f(xk),5)+'</td>';
+      body.appendChild(tr);
+    }
+    body.parentElement.scrollTop = body.parentElement.scrollHeight;
+    prevBtn.disabled = step <= 0;
+    nextBtn.disabled = step >= deltas.length - 1;
+    if (step >= deltas.length - 1) stopPlaying();
+  };
+
+  function stopPlaying() { playing = false; if (timer) clearInterval(timer); timer = null; playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    if (step >= deltas.length - 1) step = 0;
+    playing = true; playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    timer = setInterval(function () { if (step >= deltas.length - 1) { stopPlaying(); return; } step++; renderL(); }, 1300);
+  }
+  prevBtn.addEventListener('click', function () { stopPlaying(); if (step > 0) { step--; renderL(); } });
+  nextBtn.addEventListener('click', function () { stopPlaying(); if (step < deltas.length-1) { step++; renderL(); } });
+  resetBtn.addEventListener('click', function () { stopPlaying(); step = 0; renderL(); });
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+
+  renderL();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

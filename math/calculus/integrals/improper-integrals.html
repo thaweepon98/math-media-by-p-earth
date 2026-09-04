@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ปริพันธ์ไม่ตรงแบบ (Improper Integrals)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.15rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .area-fill { fill: rgba(67,217,173,.3); stroke: none; }
+  .pt { stroke-width: 2.4; }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-open { fill:#fff; stroke: var(--secondary); }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance:none; appearance:none; width:12rem; height:5px; border-radius:3px; background: var(--border); outline:none; cursor:pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background: var(--primary); border:2px solid #fff; box-shadow:0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background: var(--primary); box-shadow:0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 3.4em; text-align: right; }
+  .btn { font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .btn-play { background: var(--primary); color:#fff; border-color: var(--primary); }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าปริพันธ์" data-en="← Back to Integrals">← กลับหน้าปริพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="♾️ ปริพันธ์ไม่ตรงแบบ" data-en="♾️ Improper Integrals">♾️ ปริพันธ์ไม่ตรงแบบ</h1>
+  <p data-th="ชนิดที่ 1 (ช่วงอนันต์) • ชนิดที่ 2 (ไม่ต่อเนื่อง) • ลู่เข้าหรือลู่ออก" data-en="Type 1 (infinite interval) • Type 2 (discontinuous) • Convergent or divergent">ชนิดที่ 1 (ช่วงอนันต์) • ชนิดที่ 2 (ไม่ต่อเนื่อง) • ลู่เข้าหรือลู่ออก</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="type1" onclick="showTab('type1', this)" data-th="1️⃣ ชนิดที่ 1: ช่วงอนันต์" data-en="1️⃣ Type 1: Infinite Interval">1️⃣ ชนิดที่ 1: ช่วงอนันต์</button>
+  <button class="tab-btn" data-tab="type2" onclick="showTab('type2', this)" data-th="2️⃣ ชนิดที่ 2: ไม่ต่อเนื่อง" data-en="2️⃣ Type 2: Discontinuous">2️⃣ ชนิดที่ 2: ไม่ต่อเนื่อง</button>
+</nav>
+
+<main>
+
+<section id="tab-type1" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">1️⃣</span><span data-th="ปริพันธ์ไม่ตรงแบบชนิดที่ 1: ช่วงอนันต์" data-en="Improper Integrals Type 1: Infinite Interval">ปริพันธ์ไม่ตรงแบบชนิดที่ 1: ช่วงอนันต์</span></div>
+    <p class="desc-text" data-th="เมื่อขอบเขตการหาปริพันธ์เป็น ∞ ให้แทนที่ด้วย t แล้วหาลิมิตเมื่อ t → ∞ — ถ้าลิมิตมีค่าเป็นจำนวนจริง เรียกว่า ลู่เข้า ถ้าเป็น ±∞ หรือไม่มีค่า เรียกว่า ลู่ออก" data-en="When a bound of integration is ∞, replace it with t and take the limit as t → ∞ — if the limit is a real number, it converges; if it's ±∞ or doesn't exist, it diverges.">เมื่อขอบเขตการหาปริพันธ์เป็น ∞ ให้แทนที่ด้วย t แล้วหาลิมิตเมื่อ t → ∞ — ถ้าลิมิตมีค่าเป็นจำนวนจริง เรียกว่า ลู่เข้า ถ้าเป็น ±∞ หรือไม่มีค่า เรียกว่า ลู่ออก</p>
+    <div class="formula small">∫<sub>a</sub><sup>∞</sup> f(x)dx = lim<sub>t→∞</sub> ∫<sub>a</sub><sup>t</sup> f(x)dx</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="เพิ่ม t ดู ∫₁ᵗ (1/x²)dx เข้าใกล้ค่าลู่เข้า" data-en="Increase t and watch ∫₁ᵗ (1/x²)dx approach its convergent value">เพิ่ม t ดู ∫₁ᵗ (1/x²)dx เข้าใกล้ค่าลู่เข้า</span></div>
+    <div class="plot-wrap"><svg id="plotType1" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">t</span>
+        <input type="range" id="tSlider" min="100" max="4000" step="10" value="300">
+        <input type="number" class="x0-input" id="tNumInput" min="1" max="40" step="0.1" value="3">
+      </div>
+      <button class="btn btn-play" id="t1Play" data-th-title="เล่นอัตโนมัติ" data-en-title="Play" aria-label="Play">
+        <svg id="t1PlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+    <div class="formula-live" id="type1Formula"></div>
+  </div>
+</section>
+
+<section id="tab-type2" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">2️⃣</span><span data-th="ปริพันธ์ไม่ตรงแบบชนิดที่ 2: ตัวส่วนเป็น 0 / ไม่ต่อเนื่อง" data-en="Improper Integrals Type 2: Discontinuous Integrand">ปริพันธ์ไม่ตรงแบบชนิดที่ 2: ตัวส่วนเป็น 0 / ไม่ต่อเนื่อง</span></div>
+    <p class="desc-text" data-th="เมื่อฟังก์ชันไม่ต่อเนื่อง (หรือหาค่าไม่ได้) ที่ขอบเขตช่วง ให้แทนที่ขอบเขตนั้นด้วย ε แล้วหาลิมิตเมื่อ ε เข้าใกล้จุดนั้น" data-en="When the function is discontinuous (or undefined) at an endpoint, replace that endpoint with ε and take the limit as ε approaches that point.">เมื่อฟังก์ชันไม่ต่อเนื่อง (หรือหาค่าไม่ได้) ที่ขอบเขตช่วง ให้แทนที่ขอบเขตนั้นด้วย ε แล้วหาลิมิตเมื่อ ε เข้าใกล้จุดนั้น</p>
+    <div class="formula small">∫<sub>0</sub><sup>1</sup> f(x)dx = lim<sub>ε→0⁺</sub> ∫<sub>ε</sub><sup>1</sup> f(x)dx</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="ลด ε ดู ∫_ε¹ (1/√x)dx เข้าใกล้ค่าลู่เข้า" data-en="Decrease ε and watch ∫_ε¹ (1/√x)dx approach its convergent value">ลด ε ดู ∫_ε¹ (1/√x)dx เข้าใกล้ค่าลู่เข้า</span></div>
+    <div class="plot-wrap"><svg id="plotType2" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">ε</span>
+        <input type="range" id="epsSlider" min="0" max="100" step="1" value="30">
+        <input type="number" class="x0-input" id="epsNumInput" min="0.01" max="1" step="0.01" value="0.3">
+      </div>
+    </div>
+    <div class="formula-live" id="type2Formula"></div>
+  </div>
+
+  <div class="card">
+    <div class="box-info">
+      <b data-th="สรุปภาพรวม:" data-en="Big picture:">สรุปภาพรวม:</b>
+      <span data-th="ทั้งสองชนิดใช้แนวคิดเดียวกัน: แทนขอบเขต 'มีปัญหา' ด้วยตัวแปร แล้วหาลิมิต — ถ้าปริพันธ์มีทั้ง ∞ และจุดไม่ต่อเนื่องพร้อมกัน (ชนิดผสม) ให้แยกเป็นสองอินทิกรัลแล้วตรวจแต่ละส่วนแยกกัน ทั้งสองส่วนต้องลู่เข้าจึงจะสรุปว่าลู่เข้า" data-en="Both types share the same idea: replace the 'problematic' bound with a variable and take a limit — if an integral has both ∞ and a discontinuity (mixed type), split it into two integrals and check each separately; both must converge for the whole to converge.">ทั้งสองชนิดใช้แนวคิดเดียวกัน: แทนขอบเขต "มีปัญหา" ด้วยตัวแปร แล้วหาลิมิต — ถ้าปริพันธ์มีทั้ง ∞ และจุดไม่ต่อเนื่องพร้อมกัน (ชนิดผสม) ให้แยกเป็นสองอินทิกรัลแล้วตรวจแต่ละส่วนแยกกัน ทั้งสองส่วนต้องลู่เข้าจึงจะสรุปว่าลู่เข้า</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : ปริพันธ์ไม่ตรงแบบ', en: 'Teaching Aid: Improper Integrals' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  document.querySelectorAll('[data-th-title]').forEach(el => { el.title = (lang==='en'&&el.dataset.enTitle)?el.dataset.enTitle:el.dataset.thTitle; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderType1==='function') renderType1(); if (typeof renderType2==='function') renderType2(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+function frac(numHTML, denHTML) { return '<span class="frac"><span class="num">' + numHTML + '</span><span class="den">' + denHTML + '</span></span>'; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,pathD:pathD};
+}
+
+// ══════════════ ชนิดที่ 1: ∫₁^t (1/x²)dx → 1 ══════════════
+var renderType1;
+(function () {
+  var svg = document.getElementById('plotType1');
+  var slider = document.getElementById('tSlider');
+  var tInput = document.getElementById('tNumInput');
+  var formulaLive = document.getElementById('type1Formula');
+  var playBtn = document.getElementById('t1Play');
+  var playIcon = document.getElementById('t1PlayIcon');
+  var P = Plot({ xmin: 0, xmax: 12, ymin: -0.1, ymax: 1.3, w: 460, h: 260, pad: 34 });
+  var f = function (x) { return 1/(x*x); };
+  var Fanti = function (x) { return -1/x; }; // antiderivative of 1/x^2
+  var playing = false, timer = null;
+
+  renderType1 = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var t = parseFloat(slider.value)/100;
+    var tDisplay = Math.min(t, P.xmax - 0.3);
+    var integral = Fanti(t) - Fanti(1);
+
+    var parts = [P.axesSVG()];
+    var polyX = [];
+    for (var i=0;i<=60;i++){ polyX.push(1 + (tDisplay-1)*i/60); }
+    var poly = 'M ' + P.px(1) + ' ' + P.py(0);
+    polyX.forEach(function (xi) { poly += ' L ' + P.px(xi) + ' ' + P.py(f(xi)); });
+    poly += ' L ' + P.px(tDisplay) + ' ' + P.py(0) + ' Z';
+    parts.push('<path class="area-fill" d="'+poly+'"/>');
+    parts.push(P.pathD(P.pathFor(f, 0.15, P.xmax-0.05, 100), 'curve-base'));
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== tInput) tInput.value = fmt(t, 1);
+    formulaLive.innerHTML =
+      '∫₁^'+fmt(t,1)+' ('+frac('1','x²')+')dx = [−'+frac('1','x')+']₁^'+fmt(t,1)+' = <span class="hl">'+fmt(integral,5)+'</span> &nbsp;&nbsp;' +
+      (lang==='en' ? '(converges to' : '(ลู่เข้าสู่') + ' <span class="hlA">1</span>' + (lang==='en'?')':'）');
+  };
+  slider.addEventListener('input', function () { stopPlaying(); renderType1(); });
+  tInput.addEventListener('change', function () {
+    var v = parseFloat(tInput.value);
+    if (!isFinite(v)) return;
+    if (v < 1) v = 1; if (v > 40) v = 40;
+    stopPlaying();
+    slider.value = Math.round(v*100);
+    renderType1();
+  });
+  function stopPlaying() { playing=false; if (timer) clearInterval(timer); playIcon.innerHTML='<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    playing=true; playIcon.innerHTML='<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    slider.value = 150;
+    timer = setInterval(function () {
+      var v = parseFloat(slider.value) * 1.09;
+      if (v > 4000) { stopPlaying(); return; }
+      slider.value = v;
+      renderType1();
+    }, 140);
+  }
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+  renderType1();
+})();
+
+// ══════════════ ชนิดที่ 2: ∫_ε^1 (1/√x)dx → 2 ══════════════
+var renderType2;
+(function () {
+  var svg = document.getElementById('plotType2');
+  var slider = document.getElementById('epsSlider');
+  var epsInput = document.getElementById('epsNumInput');
+  var formulaLive = document.getElementById('type2Formula');
+  var P = Plot({ xmin: -0.1, xmax: 1.3, ymin: -0.3, ymax: 3.5, w: 460, h: 260, pad: 34 });
+  var f = function (x) { return 1/Math.sqrt(x); };
+  var Fanti = function (x) { return 2*Math.sqrt(x); };
+
+  renderType2 = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var eps = Math.max(0.01, parseFloat(slider.value)/100);
+    var integral = Fanti(1) - Fanti(eps);
+
+    var parts = [P.axesSVG()];
+    var poly = 'M ' + P.px(eps) + ' ' + P.py(0);
+    for (var i=0;i<=60;i++){ var xi = eps + (1-eps)*i/60; poly += ' L ' + P.px(xi) + ' ' + P.py(Math.min(f(xi), P.ymax)); }
+    poly += ' L ' + P.px(1) + ' ' + P.py(0) + ' Z';
+    parts.push('<path class="area-fill" d="'+poly+'"/>');
+    parts.push(P.pathD(P.pathFor(function(x){ return Math.min(f(x), P.ymax); }, 0.02, P.xmax-0.05, 100), 'curve-base'));
+    parts.push(P.circle(0, P.ymax-0.2, 4.6, 'pt-open'));
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== epsInput) epsInput.value = fmt(eps, 2);
+    formulaLive.innerHTML =
+      '∫_'+fmt(eps,2)+'¹ ('+frac('1','√x')+')dx = [2√x]_'+fmt(eps,2)+'¹ = <span class="hl">'+fmt(integral,5)+'</span> &nbsp;&nbsp;' +
+      (lang==='en' ? '(converges to' : '(ลู่เข้าสู่') + ' <span class="hlA">2</span>' + (lang==='en'?')':'）');
+  };
+  slider.addEventListener('input', renderType2);
+  epsInput.addEventListener('change', function () {
+    var v = parseFloat(epsInput.value);
+    if (!isFinite(v)) return;
+    if (v < 0.01) v = 0.01; if (v > 1) v = 1;
+    slider.value = Math.round(v*100);
+    renderType2();
+  });
+  renderType2();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

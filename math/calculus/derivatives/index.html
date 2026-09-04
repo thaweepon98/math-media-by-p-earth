@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>อนุพันธ์ — รวมสื่อการสอน by P'Earth</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #1B3B6F;
+  --secondary: #FF6584;
+  --accent: #43D9AD;
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --text: #2D3748;
+  --muted: #718096;
+  --border: #E2E8F0;
+  --shadow: 0 4px 24px rgba(108,99,255,0.10);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%);
+  color: white;
+  padding: 32px 24px 28px;
+  text-align: center;
+  position: relative;
+}
+
+header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+header p { font-size: 0.95rem; opacity: 0.9; }
+.lang-toggle {
+  position: absolute;
+  top: 12px; right: 20px;
+  background: rgba(255,255,255,.15);
+  color: white;
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 2;
+}
+.lang-toggle:hover { background: rgba(255,255,255,.28); }
+
+.crumb {
+  max-width: 1000px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+}
+.crumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.crumb a:hover { text-decoration: underline; }
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(108,99,255,0.18);
+}
+
+.card .icon { font-size: 2.2rem; }
+.card .title { font-size: 1.1rem; font-weight: 700; }
+.card .desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+.card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.card .tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: #E7ECF5;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📐 อนุพันธ์" data-en="📐 Derivatives">📐 อนุพันธ์</h1>
+  <p data-th="นิยาม กฎการหาอนุพันธ์ ค่าสุดขีด การร่างกราฟ และการประยุกต์" data-en="Definition, differentiation rules, extrema, curve sketching, and applications">นิยาม กฎการหาอนุพันธ์ ค่าสุดขีด การร่างกราฟ และการประยุกต์</p>
+</header>
+
+<div class="crumb"><a href="../index.html" data-th="← กลับหน้าแคลคูลัส" data-en="← Back to Calculus">← กลับหน้าแคลคูลัส</a></div>
+
+<main>
+  <div id="topicGrid" class="grid"></div>
+</main>
+
+<script>
+const PAGE_TITLE = { th: "อนุพันธ์ — รวมสื่อการสอน by P'Earth", en: "Derivatives — Teaching Materials by P'Earth" };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) { renderTopics(); }
+
+const TOPICS = [
+  { file: "definition-rules.html", title_th: "นิยามและกฎอนุพันธ์", title_en: "Definition & Differentiation Rules", desc_th: "จากเส้นตัดสู่เส้นสัมผัส กฎพื้นฐาน กฎลูกโซ่ อนุพันธ์ตรีโกณ และอนุพันธ์โดยปริยาย", desc_en: "From secant to tangent, basic rules, chain rule, trig derivatives, and implicit differentiation", icon: "📏", tags_th: ["นิยาม", "กฎอนุพันธ์"], tags_en: ["Definition", "Rules"] },
+  { file: "extrema-optimization.html", title_th: "ค่าสุดขีดและโจทย์ค่าจัดสุด", title_en: "Extrema & Optimization", desc_th: "จุดวิกฤต การทดสอบอนุพันธ์อันดับ 1-2 และโจทย์ปัญหาค่าจัดสุด", desc_en: "Critical points, 1st/2nd derivative tests, and optimization word problems", icon: "🎯", tags_th: ["ค่าสุดขีด", "Optimization"], tags_en: ["Extrema", "Optimization"] },
+  { file: "curve-sketching.html", title_th: "ความเว้าและการร่างกราฟ", title_en: "Concavity & Curve Sketching", desc_th: "ความเว้า จุดเปลี่ยนเว้า เส้นกำกับ และขั้นตอนการร่างกราฟเต็มรูปแบบ", desc_en: "Concavity, inflection points, asymptotes, and a full curve-sketching walkthrough", icon: "📈", tags_th: ["ความเว้า", "ร่างกราฟ"], tags_en: ["Concavity", "Graphing"] },
+  { file: "linear-approx-related-rates.html", title_th: "การประมาณเชิงเส้นและอัตราสัมพัทธ์", title_en: "Linear Approximation & Related Rates", desc_th: "ประมาณค่า f(x+Δx) ด้วยเส้นสัมผัส และโจทย์อัตราการเปลี่ยนแปลงที่สัมพันธ์กัน", desc_en: "Approximating f(x+Δx) with the tangent line, and related-rates word problems", icon: "🌡️", tags_th: ["ประมาณค่า", "อัตราสัมพัทธ์"], tags_en: ["Approximation", "Related Rates"] },
+  { file: "lhopital.html", title_th: "กฎโลปีตาล", title_en: "L'Hôpital's Rule", desc_th: "รูปแบบยังไม่กำหนด (0/0, ∞/∞) และการใช้กฎโลปีตาลแก้ลิมิต", desc_en: "Indeterminate forms (0/0, ∞/∞) and solving limits with L'Hôpital's Rule", icon: "⚖️", tags_th: ["โลปีตาล"], tags_en: ["L'Hôpital"] }
+];
+
+function renderTopics() {
+  const lang = getLang();
+  const grid = document.getElementById("topicGrid");
+  grid.innerHTML = TOPICS.map(t => `
+    <a class="card" href="./${t.file}">
+      <div class="icon">${t.icon}</div>
+      <div class="title">${lang === 'en' ? t.title_en : t.title_th}</div>
+      <div class="desc">${lang === 'en' ? t.desc_en : t.desc_th}</div>
+      <div class="tags">${(lang === 'en' ? t.tags_en : t.tags_th).map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+    </a>
+  `).join("");
+}
+
+renderTopics();
+applyLang(getLang());
+</script>
+
+</body>
+</html>

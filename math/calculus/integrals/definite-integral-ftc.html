@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ปริพันธ์จำกัดเขตและทฤษฎีบทหลักมูล (Definite Integrals &amp; FTC)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.15rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .rect-bar { fill: rgba(67,217,173,.35); stroke: var(--accent); stroke-width: 1; }
+  .area-fill { fill: rgba(27,59,111,.16); stroke: none; }
+  .pt { stroke-width: 2.4; }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance:none; appearance:none; width:12rem; height:5px; border-radius:3px; background: var(--border); outline:none; cursor:pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background: var(--primary); border:2px solid #fff; box-shadow:0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background: var(--primary); box-shadow:0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 3em; text-align: right; }
+  .btn { font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .btn-play { background: var(--primary); color:#fff; border-color: var(--primary); }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าปริพันธ์" data-en="← Back to Integrals">← กลับหน้าปริพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="▦ ปริพันธ์จำกัดเขตและทฤษฎีบทหลักมูล" data-en="▦ Definite Integrals & the FTC">▦ ปริพันธ์จำกัดเขตและทฤษฎีบทหลักมูล</h1>
+  <p data-th="ผลรวมรีมันน์ • ทฤษฎีบทหลักมูลของแคลคูลัส • การประมาณค่าเชิงตัวเลข" data-en="Riemann sums • The Fundamental Theorem of Calculus • Numerical integration">ผลรวมรีมันน์ • ทฤษฎีบทหลักมูลของแคลคูลัส • การประมาณค่าเชิงตัวเลข</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="riemann" onclick="showTab('riemann', this)" data-th="▦ ผลรวมรีมันน์" data-en="▦ Riemann Sums">▦ ผลรวมรีมันน์</button>
+  <button class="tab-btn" data-tab="ftc" onclick="showTab('ftc', this)" data-th="🔗 ทฤษฎีบทหลักมูล" data-en="🔗 Fundamental Theorem">🔗 ทฤษฎีบทหลักมูล</button>
+</nav>
+
+<main>
+
+<section id="tab-riemann" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">▦</span><span data-th="ผลรวมรีมันน์: พื้นที่จากแท่งสี่เหลี่ยมย่อย" data-en="Riemann Sums: Area from Tiny Rectangles">ผลรวมรีมันน์: พื้นที่จากแท่งสี่เหลี่ยมย่อย</span></div>
+    <p class="desc-text" data-th="แบ่ง [a,b] เป็น n ช่องเท่าๆ กัน สร้างแท่งสี่เหลี่ยมสูง f(xᵢ) แล้วรวมพื้นที่ทั้งหมด — เมื่อ n → ∞ ผลรวมนี้เข้าใกล้พื้นที่จริงใต้กราฟ นิยามว่าเป็นปริพันธ์จำกัดเขต" data-en="Divide [a,b] into n equal pieces, build rectangles of height f(xᵢ), and sum their areas — as n → ∞, this sum approaches the true area under the curve, defined as the definite integral.">แบ่ง [a,b] เป็น n ช่องเท่าๆ กัน สร้างแท่งสี่เหลี่ยมสูง f(xᵢ) แล้วรวมพื้นที่ทั้งหมด — เมื่อ n → ∞ ผลรวมนี้เข้าใกล้พื้นที่จริงใต้กราฟ นิยามว่าเป็นปริพันธ์จำกัดเขต</p>
+    <div class="formula small">∫<sub>a</sub><sup>b</sup> f(x) dx &nbsp;=&nbsp; lim<sub>n→∞</sub> Σ f(xᵢ)·Δx</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="เพิ่ม n ดูแท่งสี่เหลี่ยมแคบลงจนเข้าใกล้พื้นที่จริง — f(x) = x²+1 บน [0,1]" data-en="Increase n and watch the rectangles narrow toward the true area — f(x) = x²+1 on [0,1]">เพิ่ม n ดูแท่งสี่เหลี่ยมแคบลงจนเข้าใกล้พื้นที่จริง — f(x) = x²+1 บน [0,1]</span></div>
+    <div class="plot-wrap"><svg id="plotRiemann" viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">n</span>
+        <input type="range" id="nSlider" min="2" max="80" step="1" value="6">
+        <input type="number" class="x0-input" id="nNumInput" min="2" max="80" step="1" value="6">
+      </div>
+      <button class="btn btn-play" id="riemannPlay" data-th-title="เล่นอัตโนมัติ" data-en-title="Play" aria-label="Play">
+        <svg id="riemannPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+    <div class="formula-live" id="riemannFormula"></div>
+  </div>
+</section>
+
+<section id="tab-ftc" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔗</span><span data-th="ทฤษฎีบทหลักมูลของแคลคูลัส" data-en="The Fundamental Theorem of Calculus">ทฤษฎีบทหลักมูลของแคลคูลัส</span></div>
+    <p class="desc-text" data-th="ภาค 1: ถ้า F(x) = ∫ₐˣ f(t)dt แล้ว F′(x) = f(x) — การหาอนุพันธ์และหาปริพันธ์เป็นการดำเนินการที่ 'ย้อนกลับ' กัน &nbsp;•&nbsp; ภาค 2: ∫ₐᵇ f(x)dx = F(b) − F(a) เมื่อ F เป็นปฏิยานุพันธ์ใดๆ ของ f" data-en="Part 1: If F(x) = ∫ₐˣ f(t)dt then F′(x) = f(x) — differentiation and integration are inverse operations &nbsp;•&nbsp; Part 2: ∫ₐᵇ f(x)dx = F(b) − F(a) for any antiderivative F of f.">ภาค 1: ถ้า F(x) = ∫ₐˣ f(t)dt แล้ว F′(x) = f(x) — การหาอนุพันธ์และหาปริพันธ์เป็นการดำเนินการที่ "ย้อนกลับ" กัน &nbsp;•&nbsp; ภาค 2: ∫ₐᵇ f(x)dx = F(b) − F(a) เมื่อ F เป็นปฏิยานุพันธ์ใดๆ ของ f</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🖱️</span><span data-th="ลาก x ดู F(x) = ∫₀ˣ t dt สะสมพื้นที่ (F′(x) = f(x) เสมอ)" data-en="Drag x to see F(x) = ∫₀ˣ t dt accumulate area (F′(x) = f(x) always)">ลาก x ดู F(x) = ∫₀ˣ t dt สะสมพื้นที่ (F′(x) = f(x) เสมอ)</span></div>
+    <div class="two-col">
+      <div>
+        <div class="plot-wrap"><svg id="plotAccumF" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="fn-tag" style="text-align:center;margin-top:.4rem;font-size:.85rem;color:var(--muted);">f(t) = t</div>
+      </div>
+      <div>
+        <div class="plot-wrap"><svg id="plotAccumBig" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <div class="fn-tag" style="text-align:center;margin-top:.4rem;font-size:.85rem;color:var(--muted);">F(x) = x²/2</div>
+      </div>
+    </div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x</span>
+        <input type="range" id="accumSlider" min="0" max="400" step="1" value="200">
+        <input type="number" class="x0-input" id="accumNumInput" min="0" max="4" step="0.01" value="2">
+      </div>
+    </div>
+    <div class="formula-live" id="accumFormula"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📏</span><span data-th="การประมาณค่าเชิงตัวเลข" data-en="Numerical Integration">การประมาณค่าเชิงตัวเลข</span></div>
+    <p class="desc-text" data-th="เมื่อหาปฏิยานุพันธ์ไม่ได้ ใช้สูตรประมาณค่าแทน:" data-en="When an antiderivative can't be found, approximate instead:">เมื่อหาปฏิยานุพันธ์ไม่ได้ ใช้สูตรประมาณค่าแทน:</p>
+    <div class="formula small">Trapezoidal: <span class="frac"><span class="num">Δx</span><span class="den">2</span></span> · [y₀+2y₁+⋯+2yₙ₋₁+yₙ]</div>
+    <div class="formula small">Simpson's: <span class="frac"><span class="num">Δx</span><span class="den">3</span></span> · [y₀+4y₁+2y₂+4y₃+⋯+yₙ]</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : ปริพันธ์จำกัดเขตและทฤษฎีบทหลักมูล', en: 'Teaching Aid: Definite Integrals & the FTC' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  document.querySelectorAll('[data-th-title]').forEach(el => { el.title = (lang==='en'&&el.dataset.enTitle)?el.dataset.enTitle:el.dataset.thTitle; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderRiemann==='function') renderRiemann(); if (typeof renderAccum==='function') renderAccum(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function invX(pxVal){ return xmin+(pxVal-pad)/(w-2*pad)*(xmax-xmin); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,invX:invX,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,pathD:pathD};
+}
+
+// ══════════════ ผลรวมรีมันน์: f(x)=x²+1 บน [0,1] ══════════════
+var renderRiemann;
+(function () {
+  var svg = document.getElementById('plotRiemann');
+  var slider = document.getElementById('nSlider');
+  var nInput = document.getElementById('nNumInput');
+  var formulaLive = document.getElementById('riemannFormula');
+  var playBtn = document.getElementById('riemannPlay');
+  var playIcon = document.getElementById('riemannPlayIcon');
+  var P = Plot({ xmin: -0.2, xmax: 1.3, ymin: -0.2, ymax: 2.3, w: 460, h: 300, pad: 36 });
+  var f = function (x) { return x*x + 1; };
+  var exact = 4/3;
+  var playing = false, timer = null;
+
+  renderRiemann = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var n = parseInt(slider.value, 10);
+    var dx = 1/n, sum = 0;
+    var parts = [P.axesSVG()];
+    for (var i=0; i<n; i++) {
+      var xi = (i+1)*dx; // right endpoint
+      var yi = f(xi);
+      sum += yi*dx;
+      var x0p = P.px(i*dx), x1p = P.px(xi);
+      var y0p = P.py(0), y1p = P.py(yi);
+      parts.push('<rect class="rect-bar" x="'+x0p.toFixed(2)+'" y="'+y1p.toFixed(2)+'" width="'+(x1p-x0p).toFixed(2)+'" height="'+(y0p-y1p).toFixed(2)+'"/>');
+    }
+    parts.push(P.pathD(P.pathFor(f, 0, 1, 80), 'curve-base'));
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== nInput) nInput.value = n;
+    formulaLive.innerHTML =
+      'Σ f(xᵢ)Δx = <span class="hl">'+fmt(sum,5)+'</span> &nbsp;&nbsp;(' + (lang==='en'?'exact value':'ค่าจริง') + ' = 4/3 ≈ <span class="hlA">'+fmt(exact,5)+'</span>)';
+  };
+  slider.addEventListener('input', function () { stopPlaying(); renderRiemann(); });
+  nInput.addEventListener('change', function () {
+    var v = parseInt(nInput.value, 10);
+    if (!isFinite(v)) return;
+    if (v < 2) v = 2; if (v > 80) v = 80;
+    stopPlaying();
+    slider.value = v;
+    renderRiemann();
+  });
+  function stopPlaying() { playing = false; if (timer) clearInterval(timer); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+  function startPlaying() {
+    playing = true; playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    slider.value = 2;
+    timer = setInterval(function () {
+      var v = parseInt(slider.value,10) + 1;
+      if (v > 80) { stopPlaying(); return; }
+      slider.value = v;
+      renderRiemann();
+    }, 140);
+  }
+  playBtn.addEventListener('click', function () { if (playing) stopPlaying(); else startPlaying(); });
+  renderRiemann();
+})();
+
+// ══════════════ FTC: ฟังก์ชันสะสม F(x) = ∫₀ˣ t dt ══════════════
+var renderAccum;
+(function () {
+  var svgF = document.getElementById('plotAccumF');
+  var svgBig = document.getElementById('plotAccumBig');
+  var slider = document.getElementById('accumSlider');
+  var accumInput = document.getElementById('accumNumInput');
+  var formulaLive = document.getElementById('accumFormula');
+  var Pf = Plot({ xmin: 0, xmax: 4.3, ymin: -0.3, ymax: 4.3, w: 220, h: 220, pad: 28 });
+  var Pbig = Plot({ xmin: 0, xmax: 4.3, ymin: -0.3, ymax: 9, w: 220, h: 220, pad: 28 });
+  var f = function (t) { return t; };
+  var F = function (x) { return x*x/2; };
+
+  renderAccum = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var x = parseFloat(slider.value)/100;
+
+    var partsF = [Pf.axesSVG()];
+    var x0p = Pf.px(0), x1p = Pf.px(x);
+    // shaded triangle area under f(t)=t from 0 to x
+    partsF.push('<polygon class="area-fill" points="'+x0p+','+Pf.py(0)+' '+x1p+','+Pf.py(0)+' '+x1p+','+Pf.py(f(x))+'"/>');
+    partsF.push(Pf.pathD(Pf.pathFor(f, 0, 4.2, 2), 'curve-base'));
+    // requested: label the shaded area's numeric value right inside the shaded region
+    if (x > 0.5) {
+      partsF.push('<text class="plot-caption" style="font-size:.68rem;" text-anchor="middle" x="'+(x0p+ (x1p-x0p)*0.4)+'" y="'+(Pf.py(0)-10)+'">'+(lang==='en'?'Area = ':'พื้นที่ = ')+fmt(F(x),3)+'</text>');
+    }
+    partsF.push(Pf.circle(x, f(x), 4, 'pt-fillP'));
+    // requested: also label f(x) — the height — right at the point, so it's visually
+    // obvious f(x) (a length) and the shaded Area = F(x) (a region) are different things
+    partsF.push('<text class="plot-caption" style="font-size:.68rem;fill:var(--secondary);" x="'+(Pf.px(x)+8)+'" y="'+(Pf.py(f(x))-6)+'">f(x) = '+fmt(f(x),2)+'</text>');
+    svgF.innerHTML = partsF.join('');
+
+    var partsBig = [Pbig.axesSVG()];
+    partsBig.push(Pbig.pathD(Pbig.pathFor(F, 0, 4.2, 60), 'curve-base'));
+    partsBig.push(Pbig.circle(x, F(x), 4.4, 'pt-fillP'));
+    partsBig.push('<text class="plot-caption" style="font-size:.68rem;" x="'+(Pbig.px(x)+8)+'" y="'+(Pbig.py(F(x))-6)+'">F(x) = '+fmt(F(x),2)+'</text>');
+    svgBig.innerHTML = partsBig.join('');
+
+    if (document.activeElement !== accumInput) accumInput.value = fmt(x, 2);
+    formulaLive.innerHTML =
+      'x = <span class="hl">'+fmt(x,2)+'</span> &nbsp;→&nbsp; F(x) = ∫₀ˣ t dt = <span class="hlA">'+fmt(F(x),3)+'</span> &nbsp;&nbsp;' +
+      (lang==='en' ? '(shaded area on the left = the height on the right)' : '(พื้นที่แรเงาด้านซ้าย = ความสูงของจุดด้านขวา)');
+  };
+  slider.addEventListener('input', renderAccum);
+  accumInput.addEventListener('change', function () {
+    var v = parseFloat(accumInput.value);
+    if (!isFinite(v)) return;
+    if (v < 0) v = 0; if (v > 4) v = 4;
+    slider.value = Math.round(v*100);
+    renderAccum();
+  });
+  renderAccum();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

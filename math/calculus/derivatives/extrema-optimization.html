@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ค่าสุดขีดและโจทย์ค่าจัดสุด (Extrema &amp; Optimization)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.2rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .guide-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+  .guide-line.hiA { stroke: var(--accent); opacity: .95; }
+  .pt { stroke-width: 2.4; }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillB { fill: var(--secondary); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .slope-label { font-size: .64rem; fill: var(--secondary); font-weight: 700; }
+  .hit-target { fill: transparent; cursor: grab; touch-action: none; }
+  .pt.draggable { cursor: grab; touch-action: none; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+  .btn-secondary { padding: 9px 18px; border: 2px solid var(--primary); border-radius: 30px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: .88rem; font-weight: 700; background: white; color: var(--primary); transition: all .2s; }
+  .btn-secondary:hover { background: var(--primary); color: white; }
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance:none; appearance:none; width:12rem; height:5px; border-radius:3px; background: var(--border); outline:none; cursor:pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background: var(--primary); border:2px solid #fff; box-shadow:0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background: var(--primary); box-shadow:0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 4em; text-align: right; }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .check-mark-lg { font-size: 1.4rem; font-weight: 800; }
+  .rectangle-fence { fill: rgba(67,217,173,.25); stroke: var(--accent); stroke-width: 2.4; }
+  .house-wall { stroke: var(--primary); stroke-width: 5; stroke-linecap: round; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าอนุพันธ์" data-en="← Back to Derivatives">← กลับหน้าอนุพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🎯 ค่าสุดขีดและโจทย์ค่าจัดสุด" data-en="🎯 Extrema & Optimization">🎯 ค่าสุดขีดและโจทย์ค่าจัดสุด</h1>
+  <p data-th="จุดวิกฤต • การทดสอบอนุพันธ์ • โจทย์ปัญหาค่าจัดสุด" data-en="Critical points • Derivative tests • Optimization problems">จุดวิกฤต • การทดสอบอนุพันธ์ • โจทย์ปัญหาค่าจัดสุด</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="extrema" onclick="showTab('extrema', this)" data-th="🔺 ค่าสุดขีดและจุดวิกฤต" data-en="🔺 Extrema & Critical Points">🔺 ค่าสุดขีดและจุดวิกฤต</button>
+  <button class="tab-btn" data-tab="optim" onclick="showTab('optim', this)" data-th="🏡 โจทย์ปัญหาค่าจัดสุด" data-en="🏡 Optimization Problem">🏡 โจทย์ปัญหาค่าจัดสุด</button>
+</nav>
+
+<main>
+
+<section id="tab-extrema" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔺</span><span data-th="จุดวิกฤตและค่าสุดขีด" data-en="Critical Points & Extrema">จุดวิกฤตและค่าสุดขีด</span></div>
+    <p class="desc-text" data-th="จุด x = c เป็นจุดวิกฤตของ f ถ้า f′(c) = 0 หรือ f′(c) หาค่าไม่ได้ — ค่าสุดขีดเฉพาะที่ (local extrema) จะเกิดที่จุดวิกฤตเท่านั้น (แต่ไม่ใช่ทุกจุดวิกฤตจะเป็นค่าสุดขีด)" data-en="A point x = c is a critical point of f if f′(c) = 0 or f′(c) is undefined — local extrema can only occur at critical points (though not every critical point is an extremum).">จุด x = c เป็นจุดวิกฤตของ f ถ้า f′(c) = 0 หรือ f′(c) หาค่าไม่ได้ — ค่าสุดขีดเฉพาะที่ (local extrema) จะเกิดที่จุดวิกฤตเท่านั้น (แต่ไม่ใช่ทุกจุดวิกฤตจะเป็นค่าสุดขีด)</p>
+    <div class="box-info">
+      <b data-th="การทดสอบอนุพันธ์อันดับ 1:" data-en="First Derivative Test:">การทดสอบอนุพันธ์อันดับ 1:</b>
+      <span data-th="ถ้า f′ เปลี่ยนจากบวกเป็นลบที่ c → f มีค่าสูงสุดเฉพาะที่ • ถ้าเปลี่ยนจากลบเป็นบวก → ค่าต่ำสุดเฉพาะที่" data-en="If f′ changes from positive to negative at c → local maximum • If it changes from negative to positive → local minimum">ถ้า f′ เปลี่ยนจากบวกเป็นลบที่ c → f มีค่าสูงสุดเฉพาะที่ • ถ้าเปลี่ยนจากลบเป็นบวก → ค่าต่ำสุดเฉพาะที่</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🖱️</span><span data-th="ลากจุดไปตาม f(x) = x³ − 3x ดูเครื่องหมาย f′(x)" data-en="Drag along f(x) = x³ − 3x and watch the sign of f′(x)">ลากจุดไปตาม f(x) = x³ − 3x ดูเครื่องหมาย f′(x)</span></div>
+    <div class="plot-wrap"><svg id="plotExtrema" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x₀</span>
+        <input type="number" class="x0-input" id="extremaX0Input" step="0.1">
+      </div>
+      <span class="desc-text" style="font-size:.82rem;color:var(--muted);" data-th="ลากจุดบนกราฟได้ หรือพิมพ์ค่า x₀ ตรงนี้" data-en="Drag the point on the graph, or type x₀ here">ลากจุดบนกราฟได้ หรือพิมพ์ค่า x₀ ตรงนี้</span>
+    </div>
+    <div class="formula-live" id="extremaFormula"></div>
+  </div>
+</section>
+
+<section id="tab-optim" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🏡</span><span data-th="ตัวอย่าง: ล้อมรั้วให้ได้พื้นที่มากที่สุด" data-en="Example: Fencing the Largest Area">ตัวอย่าง: ล้อมรั้วให้ได้พื้นที่มากที่สุด</span></div>
+    <p class="desc-text" data-th="มีไม้ทำรั้วยาว 800 เมตร ต้องการล้อมรั้วเป็นรูปสี่เหลี่ยมผืนผ้าโดยใช้ตัวบ้านเป็นรั้วด้านหนึ่ง (ไม่ต้องใช้ไม้) จงหาพื้นที่มากที่สุดที่ล้อมรั้วได้" data-en="800 meters of fencing material will enclose a rectangular yard using the house as one side (no fence needed there). Find the largest possible enclosed area.">มีไม้ทำรั้วยาว 800 เมตร ต้องการล้อมรั้วเป็นรูปสี่เหลี่ยมผืนผ้าโดยใช้ตัวบ้านเป็นรั้วด้านหนึ่ง (ไม่ต้องใช้ไม้) จงหาพื้นที่มากที่สุดที่ล้อมรั้วได้</p>
+    <div class="steps" style="display:flex;flex-direction:column;gap:6px;">
+      <div class="formula small">2x + y = 800 &nbsp;⇒&nbsp; y = 800 − 2x</div>
+      <div class="formula small">A(x) = x·y = 800x − 2x²</div>
+      <div class="formula small">A′(x) = 800 − 4x = 0 &nbsp;⇒&nbsp; x = 200</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="plot-wrap"><svg id="plotFence" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x (m)</span>
+        <input type="range" id="xSlider" min="1" max="399" step="1" value="120">
+        <input type="number" class="x0-input" id="xNumInput" min="1" max="399" step="1" value="120">
+      </div>
+      <button class="btn-secondary" id="goMaxBtn" data-th="🏆 ไปที่ค่าสูงสุด" data-en="🏆 Go to Maximum">🏆 ไปที่ค่าสูงสุด</button>
+    </div>
+    <div class="formula-live" id="fenceFormula"></div>
+    <div class="plot-wrap" style="margin-top:.8rem;"><svg id="plotAreaCurve" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  </div>
+
+  <div class="card">
+    <div class="box-info">
+      <b data-th="สรุป:" data-en="Result:">สรุป:</b>
+      <span data-th="พื้นที่มากที่สุดที่ล้อมรั้วนี้ได้คือ A(200) = 80,000 ตารางเมตร (เมื่อ x = 200 m)" data-en="The largest enclosed area is A(200) = 80,000 square meters (when x = 200 m)">พื้นที่มากที่สุดที่ล้อมรั้วนี้ได้คือ A(200) = 80,000 ตารางเมตร (เมื่อ x = 200 m)</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : ค่าสุดขีดและโจทย์ค่าจัดสุด', en: 'Teaching Aid: Extrema & Optimization' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderExtrema==='function') renderExtrema(); if (typeof renderFence==='function') renderFence(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function invX(pxVal){ return xmin+(pxVal-pad)/(w-2*pad)*(xmax-xmin); }
+  function invY(pyVal){ return ymin+(h-pad-pyVal)/(h-2*pad)*(ymax-ymin); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function dragPoint(x,y,r,cls,id){ var cx=px(x).toFixed(2), cy=py(y).toFixed(2); return '<circle class="hit-target" data-drag="'+id+'" cx="'+cx+'" cy="'+cy+'" r="16"/><circle class="pt draggable '+cls+'" data-drag="'+id+'" cx="'+cx+'" cy="'+cy+'" r="'+r+'"/>'; }
+  function guide(x1_,y1_,x2_,y2_,cls){ return '<line class="guide-line '+(cls||'')+'" x1="'+px(x1_).toFixed(2)+'" y1="'+py(y1_).toFixed(2)+'" x2="'+px(x2_).toFixed(2)+'" y2="'+py(y2_).toFixed(2)+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,invX:invX,invY:invY,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,dragPoint:dragPoint,guide:guide,pathD:pathD};
+}
+
+function attachDrag(svg, onMove, onEnd) {
+  var active=null;
+  function toPlotXY(e){ var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var ctm=svg.getScreenCTM(); if(!ctm) return null; var loc=pt.matrixTransform(ctm.inverse()); return {px:loc.x,py:loc.y}; }
+  svg.addEventListener('pointerdown', function(e){ var id=e.target.getAttribute&&e.target.getAttribute('data-drag'); if(!id) return; active=id; try{svg.setPointerCapture(e.pointerId);}catch(err){} var loc=toPlotXY(e); if(loc) onMove(id,loc.px,loc.py); e.preventDefault(); });
+  svg.addEventListener('pointermove', function(e){ if(!active) return; var loc=toPlotXY(e); if(loc) onMove(active,loc.px,loc.py); e.preventDefault(); });
+  function end(e){ if(!active) return; var id=active; active=null; if(onEnd) onEnd(id); }
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+}
+
+// ══════════════ ค่าสุดขีด: f(x) = x³ − 3x ══════════════
+var renderExtrema;
+(function () {
+  var svg = document.getElementById('plotExtrema');
+  var formulaLive = document.getElementById('extremaFormula');
+  var P = Plot({ xmin: -2.6, xmax: 2.6, ymin: -3.2, ymax: 3.2, w: 460, h: 320, pad: 36 });
+  var f = function (x) { return x*x*x - 3*x; };
+  var fp = function (x) { return 3*x*x - 3; };
+  var x0 = -0.4;
+  var x0Input = document.getElementById('extremaX0Input');
+
+  renderExtrema = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var y0 = f(x0), slope = fp(x0);
+    var tanFn = function (x) { return y0 + slope*(x-x0); };
+
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(f, P.xmin+0.05, P.xmax-0.05, 160), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(tanFn, x0-0.7, x0+0.7, 2), 'curve-hi'));
+    parts.push(P.circle(-1, f(-1), 4.6, 'pt-fillA'));
+    parts.push(P.circle(1, f(1), 4.6, 'pt-fillA'));
+    parts.push('<text class="plot-caption" x="'+(P.px(-1)-6)+'" y="'+(P.py(f(-1))-10)+'">x=-1</text>');
+    parts.push('<text class="plot-caption" x="'+(P.px(1)-6)+'" y="'+(P.py(f(1))+18)+'">x=1</text>');
+    parts.push(P.dragPoint(x0, y0, 5, 'pt-fillP', 'X'));
+    // item 5: slope shown next to the point, small font, 2dp
+    parts.push('<text class="slope-label" x="'+(P.px(x0)+9)+'" y="'+(P.py(y0)-8)+'">m ≈ '+fmt(slope,2)+'</text>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== x0Input) x0Input.value = fmt(x0, 2);
+
+    var sign = slope > 0.02 ? '+' : (slope < -0.02 ? '−' : '0');
+    var signWord = sign === '+' ? (lang==='en'?'increasing':'ฟังก์ชันเพิ่ม') : (sign==='−' ? (lang==='en'?'decreasing':'ฟังก์ชันลด') : (lang==='en'?'critical point!':'จุดวิกฤต!'));
+    formulaLive.innerHTML =
+      'x₀ = <span class="hl">'+fmt(x0,3)+'</span> &nbsp;→&nbsp; f′(x₀) = 3x₀²−3 = <span class="hlA">'+fmt(slope,3)+'</span> ('+sign+') — <b>'+signWord+'</b><br>' +
+      (lang==='en' ? 'Marked points: x=−1 (local max, f′ changes + → −), x=1 (local min, f′ changes − → +)'
+                   : 'จุดที่ทำเครื่องหมาย: x=−1 (ค่าสูงสุดเฉพาะที่ f′ เปลี่ยน + → −), x=1 (ค่าต่ำสุดเฉพาะที่ f′ เปลี่ยน − → +)');
+  };
+
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'X') return;
+    var x = P.invX(pxv);
+    if (x < P.xmin+0.1) x = P.xmin+0.1; if (x > P.xmax-0.1) x = P.xmax-0.1;
+    x0 = x;
+    renderExtrema();
+  });
+
+  x0Input.addEventListener('change', function () {
+    var v = parseFloat(x0Input.value);
+    if (!isFinite(v)) return;
+    if (v < P.xmin+0.1) v = P.xmin+0.1; if (v > P.xmax-0.1) v = P.xmax-0.1;
+    x0 = v;
+    renderExtrema();
+  });
+
+  renderExtrema();
+})();
+
+// ══════════════ โจทย์รั้ว: A(x) = 800x − 2x² ══════════════
+var renderFence;
+(function () {
+  var fenceSvg = document.getElementById('plotFence');
+  var areaSvg = document.getElementById('plotAreaCurve');
+  var slider = document.getElementById('xSlider');
+  var xInput = document.getElementById('xNumInput');
+  var formulaLive = document.getElementById('fenceFormula');
+  var A = function (x) { return x * (800 - 2*x); };
+  var Amax = 80000;
+  var goMaxBtn = document.getElementById('goMaxBtn');
+
+  var PA = Plot({ xmin: 0, xmax: 400, ymin: 0, ymax: 90000, w: 460, h: 260, pad: 40 });
+
+  // item 6: the area-vs-x curve (axes + curve path + max marker) never changes — build it
+  // once and cache it, instead of re-tessellating a 120-point path on every drag tick.
+  var areaStaticSVG = null;
+  function areaStatic() {
+    if (areaStaticSVG) return areaStaticSVG;
+    var parts = [PA.axesSVG()];
+    parts.push(PA.pathD(PA.pathFor(A, 0.5, 399.5, 120), 'curve-base'));
+    parts.push(PA.guide(200, 0, 200, Amax, 'hiA'));
+    parts.push(PA.circle(200, Amax, 4.4, 'pt-fillA'));
+    parts.push('<text class="plot-caption" x="'+(PA.px(200)-14)+'" y="'+(PA.py(Amax)-10)+'">max</text>');
+    areaStaticSVG = parts.join('');
+    return areaStaticSVG;
+  }
+
+  renderFence = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var x = parseFloat(slider.value);
+    var y = 800 - 2*x;
+    var area = A(x);
+
+    // ── fence diagram (simple schematic, not to plot-scale) ──
+    var fw = 460, fh = 220, padF = 30;
+    var maxX = 400, maxY = 400; // y max when x->0
+    var rectW = (x / maxX) * (fw - 2*padF - 40);
+    var rectH = (y / maxY) * (fh - 2*padF - 20);
+    var rx = padF, ry = fh - padF - rectH;
+    var fparts = [];
+    fparts.push('<rect class="rectangle-fence" x="'+rx+'" y="'+ry+'" width="'+rectW+'" height="'+rectH+'"/>');
+    fparts.push('<line class="house-wall" x1="'+rx+'" y1="'+(ry+rectH)+'" x2="'+(rx+rectW)+'" y2="'+(ry+rectH)+'"/>');
+    fparts.push('<text class="plot-caption" x="'+(rx+rectW/2-10)+'" y="'+(ry+rectH+16)+'">'+(lang==='en'?'house wall':'กำแพงบ้าน')+'</text>');
+    fparts.push('<text class="plot-caption" x="'+(rx+rectW/2-6)+'" y="'+(ry-6)+'">x='+fmt(x,0)+'</text>');
+    fparts.push('<text class="plot-caption" x="'+(rx+rectW+6)+'" y="'+(ry+rectH/2)+'">y='+fmt(y,0)+'</text>');
+    fenceSvg.innerHTML = fparts.join('');
+
+    // ── area-vs-x curve: cached static background + just the moving point ──
+    areaSvg.innerHTML = areaStatic() + PA.dragPoint(x, area, 5, 'pt-fillP', 'AX');
+
+    if (document.activeElement !== xInput) xInput.value = fmt(x, 0);
+    formulaLive.innerHTML =
+      'A(' + fmt(x,0) + ') = ' + fmt(x,0) + '·(800−2·' + fmt(x,0) + ') = <span class="hl">' + fmt(area,0) + '</span> ' + (lang==='en'?'m²':'ตร.ม.') +
+      (Math.abs(x-200) < 1 ? ' &nbsp; <span class="hlA">← '+(lang==='en'?'maximum!':'ค่าสูงสุด!')+'</span>' : '');
+  };
+
+  // item 6: coalesce rapid slider/drag events into one render per animation frame
+  var rafPending = false;
+  function scheduleRender() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(function () { rafPending = false; renderFence(); });
+  }
+
+  slider.addEventListener('input', scheduleRender);
+  attachDrag(areaSvg, function (id, pxv, pyv) {
+    if (id !== 'AX') return;
+    var x = PA.invX(pxv);
+    if (x < 1) x = 1; if (x > 399) x = 399;
+    slider.value = Math.round(x);
+    scheduleRender();
+  });
+  xInput.addEventListener('change', function () {
+    var v = parseFloat(xInput.value);
+    if (!isFinite(v)) return;
+    if (v < 1) v = 1; if (v > 399) v = 399;
+    slider.value = v;
+    renderFence();
+  });
+  goMaxBtn.addEventListener('click', function () { slider.value = 200; renderFence(); });
+
+  renderFence();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

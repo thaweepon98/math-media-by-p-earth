@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ปริพันธ์ — รวมสื่อการสอน by P'Earth</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #1B3B6F;
+  --secondary: #FF6584;
+  --accent: #43D9AD;
+  --bg: #F0F4FF;
+  --card: #FFFFFF;
+  --text: #2D3748;
+  --muted: #718096;
+  --border: #E2E8F0;
+  --shadow: 0 4px 24px rgba(108,99,255,0.10);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%);
+  color: white;
+  padding: 32px 24px 28px;
+  text-align: center;
+  position: relative;
+}
+
+header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+header p { font-size: 0.95rem; opacity: 0.9; }
+.lang-toggle {
+  position: absolute;
+  top: 12px; right: 20px;
+  background: rgba(255,255,255,.15);
+  color: white;
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 2;
+}
+.lang-toggle:hover { background: rgba(255,255,255,.28); }
+
+.crumb {
+  max-width: 1000px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+}
+.crumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.crumb a:hover { text-decoration: underline; }
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(108,99,255,0.18);
+}
+
+.card .icon { font-size: 2.2rem; }
+.card .title { font-size: 1.1rem; font-weight: 700; }
+.card .desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+.card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.card .tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: #E7ECF5;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="∫ ปริพันธ์" data-en="∫ Integrals">∫ ปริพันธ์</h1>
+  <p data-th="ปฏิยานุพันธ์ เทคนิคการหาปริพันธ์ ปริพันธ์จำกัดเขต และการประยุกต์" data-en="Antiderivatives, integration techniques, definite integrals, and applications">ปฏิยานุพันธ์ เทคนิคการหาปริพันธ์ ปริพันธ์จำกัดเขต และการประยุกต์</p>
+</header>
+
+<div class="crumb"><a href="../index.html" data-th="← กลับหน้าแคลคูลัส" data-en="← Back to Calculus">← กลับหน้าแคลคูลัส</a></div>
+
+<main>
+  <div id="topicGrid" class="grid"></div>
+</main>
+
+<script>
+const PAGE_TITLE = { th: "ปริพันธ์ — รวมสื่อการสอน by P'Earth", en: "Integrals — Teaching Materials by P'Earth" };
+
+let langMemory = 'th';
+function getLang() {
+  try { return localStorage.getItem('siteLang') || 'th'; }
+  catch (e) { return langMemory; }
+}
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => {
+    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+  });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang === 'en' ? 'ไทย' : 'EN';
+  if (typeof onLangChange === 'function') onLangChange(lang);
+}
+function toggleLang() {
+  const next = getLang() === 'en' ? 'th' : 'en';
+  langMemory = next;
+  try { localStorage.setItem('siteLang', next); } catch (e) {}
+  applyLang(next);
+}
+function onLangChange(lang) { renderTopics(); }
+
+const TOPICS = [
+  { file: "antiderivative-basics.html", title_th: "ปฏิยานุพันธ์และกฎพื้นฐาน", title_en: "Antiderivatives & Basic Rules", desc_th: "นิยามปฏิยานุพันธ์ กฎพื้นฐาน และตารางสูตรปริพันธ์", desc_en: "Antiderivative definition, basic rules, and the integral formula table", icon: "∫", tags_th: ["ปฏิยานุพันธ์", "สูตร"], tags_en: ["Antiderivative", "Formulas"] },
+  { file: "techniques-substitution-parts.html", title_th: "เทคนิคการหาปริพันธ์", title_en: "Integration Techniques", desc_th: "การแทนค่า (u-substitution) และการหาปริพันธ์แบบส่วน (integration by parts)", desc_en: "u-substitution and integration by parts", icon: "🔄", tags_th: ["u-sub", "By Parts"], tags_en: ["u-sub", "By Parts"] },
+  { file: "trig-integrals-substitution.html", title_th: "ปริพันธ์ตรีโกณและการแทนค่าตรีโกณ", title_en: "Trig Integrals & Trig Substitution", desc_th: "sinⁿcosⁿ, secⁿ/cscⁿ, tanⁿ/cotⁿ และการแทนค่าตรีโกณสำหรับ √(a²±u²)", desc_en: "sinⁿcosⁿ, secⁿ/cscⁿ, tanⁿ/cotⁿ, and trig substitution for √(a²±u²)", icon: "🌀", tags_th: ["ตรีโกณ", "แทนค่า"], tags_en: ["Trig", "Substitution"] },
+  { file: "partial-fractions.html", title_th: "เศษส่วนย่อย", title_en: "Partial Fractions", desc_th: "แยกเศษส่วนย่อย 3 กรณี สำหรับปริพันธ์ของฟังก์ชันตรรกยะ", desc_en: "The 3 cases of partial-fraction decomposition for rational functions", icon: "➗", tags_th: ["เศษส่วนย่อย"], tags_en: ["Partial Fractions"] },
+  { file: "definite-integral-ftc.html", title_th: "ปริพันธ์จำกัดเขตและทฤษฎีบทหลักมูล", title_en: "Definite Integrals & the FTC", desc_th: "ผลรวมรีมันน์ ทฤษฎีบทหลักมูลของแคลคูลัส และการประมาณค่าเชิงตัวเลข", desc_en: "Riemann sums, the Fundamental Theorem of Calculus, and numerical integration", icon: "▦", tags_th: ["รีมันน์", "FTC"], tags_en: ["Riemann", "FTC"] },
+  { file: "area-volume.html", title_th: "พื้นที่และปริมาตร", title_en: "Area & Volume", desc_th: "พื้นที่ระหว่างเส้นโค้ง และปริมาตรของทรงตัน (disk/washer และ shell)", desc_en: "Area between curves, and volume of solids of revolution (disk/washer & shell)", icon: "🧊", tags_th: ["พื้นที่", "ปริมาตร"], tags_en: ["Area", "Volume"] },
+  { file: "improper-integrals.html", title_th: "ปริพันธ์ไม่ตรงแบบ", title_en: "Improper Integrals", desc_th: "ชนิดที่ 1 (ช่วงอนันต์) ชนิดที่ 2 (ไม่ต่อเนื่อง) และชนิดผสม — ลู่เข้าหรือลู่ออก", desc_en: "Type 1 (infinite interval), Type 2 (discontinuous), and mixed — convergent or divergent", icon: "♾️", tags_th: ["ไม่ตรงแบบ", "ลู่เข้า/ออก"], tags_en: ["Improper", "Convergence"] }
+];
+
+function renderTopics() {
+  const lang = getLang();
+  const grid = document.getElementById("topicGrid");
+  grid.innerHTML = TOPICS.map(t => `
+    <a class="card" href="./${t.file}">
+      <div class="icon">${t.icon}</div>
+      <div class="title">${lang === 'en' ? t.title_en : t.title_th}</div>
+      <div class="desc">${lang === 'en' ? t.desc_en : t.desc_th}</div>
+      <div class="tags">${(lang === 'en' ? t.tags_en : t.tags_th).map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+    </a>
+  `).join("");
+}
+
+renderTopics();
+applyLang(getLang());
+</script>
+
+</body>
+</html>

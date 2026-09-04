@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ปริพันธ์ตรีโกณและการแทนค่าตรีโกณ (Trig Integrals &amp; Substitution)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.15rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; }
+  .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+  .rule-card .expr { font-size: .96rem; color: var(--primary); font-weight: 700; }
+  .btn { font-family:'Sarabun',sans-serif; border:none; cursor:pointer; border-radius:999px; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; background:var(--card); color:var(--text); border:1px solid var(--border); }
+  .btn:disabled { opacity:.35; cursor:not-allowed; }
+  .btn-play { background: var(--primary); color:#fff; border-color: var(--primary); }
+  .transport { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: 10px; }
+  .round-indicator { font-size: .9rem; color: var(--muted); font-weight: 600; min-width: 6.5em; text-align: center; }
+  .step-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .step-row { padding: 12px 16px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); font-size: 1rem; opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .4s ease; }
+  .step-row.shown { opacity: 1; transform: translateY(0); }
+  .step-row .tag { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-right: 8px; }
+  .step-row.result { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: #fff; border: none; font-weight: 700; }
+  .step-row.result .tag { color: rgba(255,255,255,.75); }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .tri-line { stroke: var(--primary); stroke-width: 3; stroke-linecap: round; fill: none; }
+  .tri-hyp { stroke: var(--secondary); stroke-width: 3; stroke-linecap: round; }
+  .tri-label { font-size: 13px; fill: var(--text); font-weight: 700; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .tri-arc { stroke: var(--accent); stroke-width: 2; fill: none; }
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance:none; appearance:none; width:12rem; height:5px; border-radius:3px; background: var(--border); outline:none; cursor:pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background: var(--primary); border:2px solid #fff; box-shadow:0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background: var(--primary); box-shadow:0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 3.4em; text-align: right; }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าปริพันธ์" data-en="← Back to Integrals">← กลับหน้าปริพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🌀 ปริพันธ์ตรีโกณและการแทนค่าตรีโกณ" data-en="🌀 Trig Integrals & Trig Substitution">🌀 ปริพันธ์ตรีโกณและการแทนค่าตรีโกณ</h1>
+  <p data-th="sinⁿcosⁿ, secⁿ/cscⁿ, tanⁿ/cotⁿ • การแทนค่าตรีโกณ" data-en="sinⁿcosⁿ, secⁿ/cscⁿ, tanⁿ/cotⁿ • Trig substitution">sinⁿcosⁿ, secⁿ/cscⁿ, tanⁿ/cotⁿ • การแทนค่าตรีโกณ</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="power" onclick="showTab('power', this)" data-th="🌊 ปริพันธ์ตรีโกณกำลัง" data-en="🌊 Trig Power Integrals">🌊 ปริพันธ์ตรีโกณกำลัง</button>
+  <button class="tab-btn" data-tab="sub" onclick="showTab('sub', this)" data-th="📐 การแทนค่าตรีโกณ" data-en="📐 Trig Substitution">📐 การแทนค่าตรีโกณ</button>
+</nav>
+
+<main>
+
+<section id="tab-power" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span><span data-th="เอกลักษณ์ที่ใช้บ่อย" data-en="Frequently Used Identities">เอกลักษณ์ที่ใช้บ่อย</span></div>
+    <div class="rule-grid">
+      <div class="rule-card"><div class="expr">sin²θ = <span class="frac"><span class="num">1−cos2θ</span><span class="den">2</span></span></div></div>
+      <div class="rule-card"><div class="expr">cos²θ = <span class="frac"><span class="num">1+cos2θ</span><span class="den">2</span></span></div></div>
+      <div class="rule-card"><div class="expr">1 + tan²θ = sec²θ</div></div>
+      <div class="rule-card"><div class="expr">1 + cot²θ = csc²θ</div></div>
+    </div>
+    <div class="box-info">
+      <b data-th="กลยุทธ์:" data-en="Strategy:">กลยุทธ์:</b>
+      <span data-th="∫sinᵐθ cosⁿθ dθ — ถ้า m หรือ n เป็นเลขคี่ ให้แยกออกมาหนึ่งตัวไว้จับคู่กับ dθ แล้วเปลี่ยนตัวที่เหลือด้วย sin²+cos²=1 แล้วแทนค่า u" data-en="∫sinᵐθ cosⁿθ dθ — if m or n is odd, peel off one factor to pair with dθ, rewrite the rest using sin²+cos²=1, then substitute u.">∫sinᵐθ cosⁿθ dθ — ถ้า m หรือ n เป็นเลขคี่ ให้แยกออกมาหนึ่งตัวไว้จับคู่กับ dθ แล้วเปลี่ยนตัวที่เหลือด้วย sin²+cos²=1 แล้วแทนค่า u</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ตัวอย่าง: ∫ sin³θ cos²θ dθ" data-en="Example: ∫ sin³θ cos²θ dθ">ตัวอย่าง: ∫ sin³θ cos²θ dθ</span></div>
+    <div id="powerSteps" class="step-list"></div>
+    <div class="transport">
+      <button class="btn" id="powerPrev">‹</button>
+      <button class="btn btn-play" id="powerNext">›</button>
+      <span class="round-indicator" id="powerIndicator"></span>
+      <button class="btn" id="powerReset">↺</button>
+    </div>
+  </div>
+</section>
+
+<section id="tab-sub" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span><span data-th="การแทนค่าตรีโกณ" data-en="Trig Substitution">การแทนค่าตรีโกณ</span></div>
+    <p class="desc-text" data-th="ใช้เมื่อเจอรูป √(a²−u²), √(a²+u²), √(u²−a²) — เปลี่ยนตัวแปรด้วยฟังก์ชันตรีโกณให้กรณฑ์หายไปโดยใช้เอกลักษณ์พีทาโกรัส แนวคิดมาจากรูปสามเหลี่ยมมุมฉาก" data-en="Used for √(a²−u²), √(a²+u²), √(u²−a²) — substitute a trig function so the Pythagorean identity clears the square root. The idea comes straight from a right triangle.">ใช้เมื่อเจอรูป √(a²−u²), √(a²+u²), √(u²−a²) — เปลี่ยนตัวแปรด้วยฟังก์ชันตรีโกณให้กรณฑ์หายไปโดยใช้เอกลักษณ์พีทาโกรัส แนวคิดมาจากรูปสามเหลี่ยมมุมฉาก</p>
+    <div class="rule-grid">
+      <div class="rule-card"><div class="expr">√(a²−u²) → u = a·sinθ</div></div>
+      <div class="rule-card"><div class="expr">√(a²+u²) → u = a·tanθ</div></div>
+      <div class="rule-card"><div class="expr">√(u²−a²) → u = a·secθ</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span><span data-th="ลาก θ ดูรูปสามเหลี่ยมสำหรับ √(a²−x²), x = a·sinθ" data-en="Drag θ to see the triangle for √(a²−x²), x = a·sinθ">ลาก θ ดูรูปสามเหลี่ยมสำหรับ √(a²−x²), x = a·sinθ</span></div>
+    <div class="plot-wrap"><svg id="plotTriangle" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">θ</span>
+        <input type="range" id="thetaSlider" min="2" max="88" step="1" value="35">
+        <input type="number" class="x0-input" id="thetaNumInput" min="2" max="88" step="1" value="35">
+        <span class="mode-label">°</span>
+      </div>
+    </div>
+    <div class="formula-live" id="triFormula"></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : ปริพันธ์ตรีโกณและการแทนค่าตรีโกณ', en: 'Teaching Aid: Trig Integrals & Substitution' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderPower==='function') renderPower(); if (typeof renderTriangle==='function') renderTriangle(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function StepRevealer(containerId, prevId, nextId, resetId, indicatorId, stepsByLang) {
+  var container = document.getElementById(containerId);
+  var prevBtn = document.getElementById(prevId);
+  var nextBtn = document.getElementById(nextId);
+  var resetBtn = document.getElementById(resetId);
+  var indicator = document.getElementById(indicatorId);
+  var shown = 1;
+  function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var steps = stepsByLang[lang];
+    container.innerHTML = steps.map(function (s, i) {
+      var cls = 'step-row' + (i < shown ? ' shown' : '') + (s.result ? ' result' : '');
+      return '<div class="'+cls+'"><span class="tag">'+s.tag+'</span>'+s.html+'</div>';
+    }).join('');
+    indicator.textContent = shown + ' / ' + steps.length;
+    prevBtn.disabled = shown <= 1;
+    nextBtn.disabled = shown >= steps.length;
+  }
+  prevBtn.addEventListener('click', function () { if (shown > 1) { shown--; render(); } });
+  nextBtn.addEventListener('click', function () { if (shown < stepsByLang.th.length) { shown++; render(); } });
+  resetBtn.addEventListener('click', function () { shown = 1; render(); });
+  render();
+  return render;
+}
+
+var renderPower = StepRevealer('powerSteps', 'powerPrev', 'powerNext', 'powerReset', 'powerIndicator', {
+  th: [
+    { tag: 'แยกคี่ออก', html: '∫ sin³θ cos²θ dθ = ∫ sin²θ cos²θ · sinθ dθ' },
+    { tag: 'ใช้เอกลักษณ์', html: '= ∫ (1−cos²θ) cos²θ · sinθ dθ' },
+    { tag: 'ตั้ง u', html: 'u = cosθ &nbsp;⇒&nbsp; du = −sinθ dθ' },
+    { tag: 'แทนค่า', html: '= −∫ (1−u²)u² du = −∫ (u²−u⁴) du' },
+    { tag: 'หาปริพันธ์', html: '= <span class="frac"><span class="num">−u³</span><span class="den">3</span></span> + <span class="frac"><span class="num">u⁵</span><span class="den">5</span></span> + C' },
+    { tag: 'ผลลัพธ์', html: '= <span class="frac"><span class="num">−cos³θ</span><span class="den">3</span></span> + <span class="frac"><span class="num">cos⁵θ</span><span class="den">5</span></span> + C', result: true }
+  ],
+  en: [
+    { tag: 'Peel off odd', html: '∫ sin³θ cos²θ dθ = ∫ sin²θ cos²θ · sinθ dθ' },
+    { tag: 'Use identity', html: '= ∫ (1−cos²θ) cos²θ · sinθ dθ' },
+    { tag: 'Let', html: 'u = cosθ &nbsp;⇒&nbsp; du = −sinθ dθ' },
+    { tag: 'Substitute', html: '= −∫ (1−u²)u² du = −∫ (u²−u⁴) du' },
+    { tag: 'Integrate', html: '= <span class="frac"><span class="num">−u³</span><span class="den">3</span></span> + <span class="frac"><span class="num">u⁵</span><span class="den">5</span></span> + C' },
+    { tag: 'Result', html: '= <span class="frac"><span class="num">−cos³θ</span><span class="den">3</span></span> + <span class="frac"><span class="num">cos⁵θ</span><span class="den">5</span></span> + C', result: true }
+  ]
+});
+
+var renderTriangle;
+(function () {
+  var svg = document.getElementById('plotTriangle');
+  var slider = document.getElementById('thetaSlider');
+  var thetaInput = document.getElementById('thetaNumInput');
+  var formulaLive = document.getElementById('triFormula');
+  var a = 90;
+  var ox = 60, oy = 220;
+
+  renderTriangle = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var deg = parseFloat(slider.value);
+    var rad = deg * Math.PI / 180;
+    var opp = a * Math.sin(rad);
+    var adj = a * Math.cos(rad);
+    var px2 = ox + adj, py2 = oy;
+    var px3 = ox + adj, py3 = oy - opp;
+
+    var parts = [];
+    parts.push('<line class="tri-line" x1="'+ox+'" y1="'+oy+'" x2="'+px2+'" y2="'+py2+'"/>');
+    parts.push('<line class="tri-line" x1="'+px2+'" y1="'+py2+'" x2="'+px3+'" y2="'+py3+'"/>');
+    parts.push('<line class="tri-hyp" x1="'+ox+'" y1="'+oy+'" x2="'+px3+'" y2="'+py3+'"/>');
+    parts.push('<path class="tri-arc" d="M '+(ox+28)+' '+oy+' A 28 28 0 0 0 '+(ox+28*Math.cos(rad))+' '+(oy-28*Math.sin(rad))+'"/>');
+    parts.push('<text class="tri-label" x="'+(ox+18)+'" y="'+(oy-10)+'">θ</text>');
+    parts.push('<text class="tri-label" x="'+((ox+px3)/2-34)+'" y="'+((oy+py3)/2)+'">a (=90)</text>');
+    parts.push('<text class="tri-label" x="'+((ox+px2)/2-14)+'" y="'+(oy+18)+'">√(a²−x²)</text>');
+    parts.push('<text class="tri-label" x="'+(px2+6)+'" y="'+((py2+py3)/2)+'">x</text>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== thetaInput) thetaInput.value = fmt(deg,0);
+    formulaLive.innerHTML =
+      'x = a·sinθ = 90·sin(' + fmt(deg,0) + '°) = <span class="hl">' + fmt(opp,2) + '</span> &nbsp;&nbsp;' +
+      '√(a²−x²) = a·cosθ = <span class="hlA">' + fmt(adj,2) + '</span>';
+  };
+  slider.addEventListener('input', renderTriangle);
+  thetaInput.addEventListener('change', function () {
+    var v = parseFloat(thetaInput.value);
+    if (!isFinite(v)) return;
+    if (v < 2) v = 2; if (v > 88) v = 88;
+    slider.value = v;
+    renderTriangle();
+  });
+  renderTriangle();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

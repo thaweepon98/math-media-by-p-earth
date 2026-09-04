@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : พื้นที่และปริมาตร (Area &amp; Volume)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.15rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; align-items: start; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .solid-fill { fill: rgba(27,59,111,.14); stroke: var(--primary); stroke-width: 1.4; }
+  .strip-fill { fill: rgba(255,101,132,.4); stroke: var(--secondary); stroke-width: 1; }
+  .disk-fill { fill: rgba(67,217,173,.35); stroke: var(--accent); stroke-width: 2; }
+  .x0-input { width: 4.6em; padding: 5px 7px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .x0-input:focus { outline: none; border-color: var(--primary); }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 .25em; font-size: .9em; line-height: 1.35; }
+  .frac .num, .frac .den { padding: 0 .25em; white-space: nowrap; }
+  .frac .num { border-bottom: 1.6px solid currentColor; padding-bottom: .1em; }
+  .frac .den { padding-top: .1em; }
+  .pt { stroke-width: 2.4; }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .round-limit { display: flex; align-items: center; gap: .7rem; }
+  .round-limit input[type="range"] { -webkit-appearance:none; appearance:none; width:12rem; height:5px; border-radius:3px; background: var(--border); outline:none; cursor:pointer; }
+  .round-limit input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background: var(--primary); border:2px solid #fff; box-shadow:0 0 0 1px var(--primary); }
+  .round-limit input[type="range"]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background: var(--primary); box-shadow:0 0 0 1px var(--primary); }
+  .round-limit .val { font-weight: 700; color: var(--primary); min-width: 3em; text-align: right; }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .mode-toggle { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .mode-btn { padding: 9px 18px; border: 2px solid var(--border); border-radius: 30px; cursor: pointer; font-family:'Sarabun',sans-serif; font-size: .9rem; font-weight: 700; background: white; color: var(--muted); transition: all .2s; }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าปริพันธ์" data-en="← Back to Integrals">← กลับหน้าปริพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="🧊 พื้นที่และปริมาตร" data-en="🧊 Area & Volume">🧊 พื้นที่และปริมาตร</h1>
+  <p data-th="พื้นที่ระหว่างเส้นโค้ง • ปริมาตรของทรงตัน (disk/washer และ shell)" data-en="Area between curves • Volume of solids of revolution (disk/washer & shell)">พื้นที่ระหว่างเส้นโค้ง • ปริมาตรของทรงตัน (disk/washer และ shell)</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="area" onclick="showTab('area', this)" data-th="📐 พื้นที่ระหว่างเส้นโค้ง" data-en="📐 Area Between Curves">📐 พื้นที่ระหว่างเส้นโค้ง</button>
+  <button class="tab-btn" data-tab="volume" onclick="showTab('volume', this)" data-th="🧊 ปริมาตร" data-en="🧊 Volume">🧊 ปริมาตร</button>
+</nav>
+
+<main>
+
+<section id="tab-area" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span><span data-th="พื้นที่ระหว่างเส้นโค้ง" data-en="Area Between Curves">พื้นที่ระหว่างเส้นโค้ง</span></div>
+    <p class="desc-text" data-th="พื้นที่ระหว่าง f(x) กับ g(x) บน [a,b] (เมื่อ f(x) ≥ g(x)) หาได้จากผลรวมของแถบบางๆ สูง f(x)−g(x) กว้าง dx" data-en="The area between f(x) and g(x) on [a,b] (where f(x) ≥ g(x)) comes from summing thin strips of height f(x)−g(x) and width dx.">พื้นที่ระหว่าง f(x) กับ g(x) บน [a,b] (เมื่อ f(x) ≥ g(x)) หาได้จากผลรวมของแถบบางๆ สูง f(x)−g(x) กว้าง dx</p>
+    <div class="formula small">A = ∫<sub>a</sub><sup>b</sup> [f(x) − g(x)] dx</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🖱️</span><span data-th="ลาก x ดูแถบสูง f(x)−g(x) — พื้นที่ระหว่าง y=x และ y=x² บน [0,1]" data-en="Drag x to see the strip of height f(x)−g(x) — area between y=x and y=x² on [0,1]">ลาก x ดูแถบสูง f(x)−g(x) — พื้นที่ระหว่าง y=x และ y=x² บน [0,1]</span></div>
+    <div class="plot-wrap"><svg id="plotArea" viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x</span>
+        <input type="range" id="areaSlider" min="0" max="100" step="1" value="50">
+        <input type="number" class="x0-input" id="areaNumInput" min="0" max="1" step="0.01" value="0.5">
+      </div>
+    </div>
+    <div class="formula-live" id="areaFormula"></div>
+  </div>
+</section>
+
+<section id="tab-volume" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🧊</span><span data-th="ปริมาตรของทรงตันจากการหมุน" data-en="Volume of a Solid of Revolution">ปริมาตรของทรงตันจากการหมุน</span></div>
+    <div class="mode-toggle" style="margin-bottom:10px;">
+      <button class="mode-btn active" id="modeDisk" data-th="วิธีแผ่นกลม (Disk)" data-en="Disk Method">วิธีแผ่นกลม (Disk)</button>
+      <button class="mode-btn" id="modeShell" data-th="วิธีเปลือกทรงกระบอก (Shell)" data-en="Shell Method">วิธีเปลือกทรงกระบอก (Shell)</button>
+    </div>
+    <p class="desc-text" id="volumeDesc"></p>
+    <div class="formula small" id="volumeFormula"></div>
+  </div>
+
+  <div class="card">
+    <div class="two-col">
+      <div class="plot-wrap"><svg id="plotVolMain" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="plot-wrap"><svg id="plotVolCross" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    </div>
+    <div class="sim-controls" style="margin-top:1rem;">
+      <div class="round-limit">
+        <span class="mode-label">x</span>
+        <input type="range" id="volSlider" min="5" max="400" step="1" value="200">
+        <input type="number" class="x0-input" id="volNumInput" min="0.05" max="4" step="0.01" value="2">
+      </div>
+    </div>
+    <div class="formula-live" id="volLiveFormula"></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : พื้นที่และปริมาตร', en: 'Teaching Aid: Area & Volume' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderArea==='function') renderArea(); if (typeof renderVolume==='function') renderVolume(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,pathD:pathD};
+}
+
+// ══════════════ พื้นที่ระหว่างเส้นโค้ง: y=x, y=x² บน [0,1] ══════════════
+var renderArea;
+(function () {
+  var svg = document.getElementById('plotArea');
+  var slider = document.getElementById('areaSlider');
+  var areaInput = document.getElementById('areaNumInput');
+  var formulaLive = document.getElementById('areaFormula');
+  var P = Plot({ xmin: -0.2, xmax: 1.3, ymin: -0.2, ymax: 1.3, w: 460, h: 300, pad: 36 });
+  var f = function (x) { return x; };
+  var g = function (x) { return x*x; };
+  var exact = 1/6;
+
+  renderArea = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var x = parseFloat(slider.value)/100;
+    var h = f(x) - g(x);
+
+    var parts = [P.axesSVG()];
+    // shade the whole region between the curves lightly
+    var poly = 'M ' + P.px(0) + ' ' + P.py(0);
+    for (var i=0;i<=40;i++){ var xi=i/40; poly += ' L ' + P.px(xi) + ' ' + P.py(f(xi)); }
+    for (var i=40;i>=0;i--){ var xi=i/40; poly += ' L ' + P.px(xi) + ' ' + P.py(g(xi)); }
+    poly += ' Z';
+    parts.push('<path class="solid-fill" d="'+poly+'"/>');
+    parts.push(P.pathD(P.pathFor(f, 0, 1, 2), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(g, 0, 1, 40), 'curve-hi'));
+    // strip
+    var xw = 0.012;
+    var stripPoly = 'M '+P.px(x-xw)+' '+P.py(g(x))+' L '+P.px(x+xw)+' '+P.py(g(x))+' L '+P.px(x+xw)+' '+P.py(f(x))+' L '+P.px(x-xw)+' '+P.py(f(x))+' Z';
+    parts.push('<path class="strip-fill" d="'+stripPoly+'"/>');
+    svg.innerHTML = parts.join('');
+
+    if (document.activeElement !== areaInput) areaInput.value = fmt(x, 2);
+    formulaLive.innerHTML =
+      'f('+fmt(x,2)+')−g('+fmt(x,2)+') = '+fmt(f(x),3)+' − '+fmt(g(x),3)+' = <span class="hl">'+fmt(h,3)+'</span> &nbsp;&nbsp;' +
+      (lang==='en' ? 'Total area' : 'พื้นที่รวม') + ' = ∫₀¹(x−x²)dx = <span class="hlA">'+fmt(exact,4)+'</span>';
+  };
+  slider.addEventListener('input', renderArea);
+  areaInput.addEventListener('change', function () {
+    var v = parseFloat(areaInput.value);
+    if (!isFinite(v)) return;
+    if (v < 0) v = 0; if (v > 1) v = 1;
+    slider.value = Math.round(v*100);
+    renderArea();
+  });
+  renderArea();
+})();
+
+// ══════════════ ปริมาตร: y=√x บน [0,4] หมุนรอบแกน x ══════════════
+var renderVolume;
+(function () {
+  var svgMain = document.getElementById('plotVolMain');
+  var svgCross = document.getElementById('plotVolCross');
+  var slider = document.getElementById('volSlider');
+  var volInput = document.getElementById('volNumInput');
+  var formulaLive = document.getElementById('volLiveFormula');
+  var descEl = document.getElementById('volumeDesc');
+  var formulaEl = document.getElementById('volumeFormula');
+  var modeDiskBtn = document.getElementById('modeDisk');
+  var modeShellBtn = document.getElementById('modeShell');
+  var mode = 'disk';
+  var Pm = Plot({ xmin: -0.3, xmax: 4.6, ymin: -2.6, ymax: 2.6, w: 320, h: 260, pad: 30 });
+  var Pc = Plot({ xmin: -2.6, xmax: 2.6, ymin: -2.6, ymax: 2.6, w: 160, h: 160, pad: 20 });
+  var f = function (x) { return Math.sqrt(Math.max(0,x)); };
+  var Vexact = 8 * Math.PI;
+
+  var DESC = {
+    disk: { th: 'หมุนพื้นที่ใต้ y=√x บน [0,4] รอบแกน X — แต่ละแผ่นบางๆ เป็นแผ่นกลมรัศมี f(x) หนา dx', en: 'Rotate the area under y=√x on [0,4] about the x-axis — each thin slice is a disk of radius f(x) and thickness dx.' },
+    shell: { th: 'มองเป็นเปลือกทรงกระบอกบางๆ รัศมี x สูง f(x) หนา dx แทนที่จะตัดเป็นแผ่นกลม', en: 'View it as thin cylindrical shells of radius x, height f(x), and thickness dx instead of slicing into disks.' }
+  };
+  var FORM = {
+    disk: 'V = π∫₀⁴ [f(x)]² dx = π∫₀⁴ x dx = 8π',
+    shell: 'V = 2π∫₀⁴ x·f(x) dx = 2π∫₀⁴ x<sup>3/2</sup> dx = <span class="frac"><span class="num">64π</span><span class="den">5</span></span>'
+  };
+
+  renderVolume = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var x = parseFloat(slider.value)/100;
+    var r = f(x);
+
+    var parts = [Pm.axesSVG()];
+    var solidPoly = 'M ' + Pm.px(0.02) + ' ' + Pm.py(0);
+    for (var i=1;i<=40;i++){ var xi=0.02+(4.5-0.02)*i/40; solidPoly += ' L ' + Pm.px(xi) + ' ' + Pm.py(f(xi)); }
+    for (var i=40;i>=1;i--){ var xi=0.02+(4.5-0.02)*i/40; solidPoly += ' L ' + Pm.px(xi) + ' ' + Pm.py(-f(xi)); }
+    solidPoly += ' Z';
+    parts.push('<path class="solid-fill" d="'+solidPoly+'"/>');
+    parts.push(Pm.pathD(Pm.pathFor(f, 0, 4.5, 60), 'curve-base'));
+    parts.push(Pm.pathD(Pm.pathFor(function(xx){return -f(xx);}, 0, 4.5, 60), 'curve-base'));
+    if (mode === 'disk') {
+      parts.push('<line x1="'+Pm.px(x)+'" y1="'+Pm.py(-r)+'" x2="'+Pm.px(x)+'" y2="'+Pm.py(r)+'" stroke="var(--secondary)" stroke-width="3"/>');
+    } else {
+      var shellW = 0.06;
+      parts.push('<rect class="strip-fill" x="'+Pm.px(x-shellW)+'" y="'+Pm.py(r)+'" width="'+(Pm.px(x+shellW)-Pm.px(x-shellW))+'" height="'+(Pm.py(-r)-Pm.py(r))+'"/>');
+    }
+    svgMain.innerHTML = parts.join('');
+
+    var crossParts = [];
+    if (mode === 'disk') {
+      crossParts.push('<circle class="disk-fill" cx="80" cy="80" r="'+(r*22).toFixed(1)+'"/>');
+      crossParts.push('<text class="plot-caption" x="70" y="16">'+(lang==='en'?'disk cross-section':'หน้าตัดแผ่นกลม')+'</text>');
+    } else {
+      crossParts.push('<circle class="disk-fill" cx="80" cy="80" r="'+(r*20).toFixed(1)+'" fill="none" stroke="var(--accent)" stroke-width="2"/>');
+      crossParts.push('<circle cx="80" cy="80" r="'+(x*20).toFixed(1)+'" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-dasharray="4 3"/>');
+      crossParts.push('<text class="plot-caption" x="65" y="16">'+(lang==='en'?'shell radius = x':'เปลือกรัศมี = x')+'</text>');
+    }
+    svgCross.innerHTML = crossParts.join('');
+
+    if (document.activeElement !== volInput) volInput.value = fmt(x, 2);
+    descEl.textContent = DESC[mode][lang];
+    formulaEl.innerHTML = FORM[mode];
+    if (mode === 'disk') {
+      formulaLive.innerHTML = 'x = <span class="hl">'+fmt(x,2)+'</span> &nbsp;→&nbsp; dV = π[f(x)]²dx = π('+fmt(r,3)+')²dx';
+    } else {
+      formulaLive.innerHTML = 'x = <span class="hl">'+fmt(x,2)+'</span> &nbsp;→&nbsp; dV = 2πx·f(x)dx = 2π('+fmt(x,2)+')('+fmt(r,3)+')dx';
+    }
+  };
+
+  modeDiskBtn.addEventListener('click', function () { mode='disk'; modeDiskBtn.classList.add('active'); modeShellBtn.classList.remove('active'); renderVolume(); });
+  modeShellBtn.addEventListener('click', function () { mode='shell'; modeShellBtn.classList.add('active'); modeDiskBtn.classList.remove('active'); renderVolume(); });
+  slider.addEventListener('input', renderVolume);
+  volInput.addEventListener('change', function () {
+    var v = parseFloat(volInput.value);
+    if (!isFinite(v)) return;
+    if (v < 0.05) v = 0.05; if (v > 4) v = 4;
+    slider.value = Math.round(v*100);
+    renderVolume();
+  });
+  renderVolume();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>

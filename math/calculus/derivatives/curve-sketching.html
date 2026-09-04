@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สื่อการสอน : ความเว้าและการร่างกราฟ (Concavity &amp; Curve Sketching)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+  :root { --primary:#1B3B6F; --secondary:#FF6584; --accent:#43D9AD; --warning:#FFB347; --bg:#F0F4FF; --card:#FFFFFF; --text:#2D3748; --muted:#718096; --border:#E2E8F0; --shadow:0 4px 24px rgba(27,59,111,0.10); --radius:16px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1B3B6F 0%, #2C5F8A 100%); color: white; padding: 16px 40px 12px; text-align: center; position: relative; overflow: hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:rgba(255,255,255,0.07); border-radius:50%; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+  header p { font-size: .88rem; opacity: .85; margin-top: 2px; }
+  .back-link { position: absolute; top: 12px; left: 20px; color: white; text-decoration: none; font-size: .85rem; font-weight: 600; opacity: .9; z-index: 2; }
+  .back-link:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { position: absolute; top: 12px; right: 20px; background: rgba(255,255,255,.15); color: white; border: 1.5px solid rgba(255,255,255,.5); border-radius: 20px; padding: 5px 14px; font-family:'Sarabun',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+  .lang-toggle:hover { background: rgba(255,255,255,.28); }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 10px 24px 0; background: white; border-bottom: 3px solid var(--border); }
+  .tab-btn { padding: 10px 20px; border: none; background: transparent; border-radius: 10px 10px 0 0; font-family:'Sarabun',sans-serif; font-size: .92rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .25s; border-bottom: 3px solid transparent; margin-bottom: -3px; }
+  .tab-btn:hover { color: var(--primary); background: #E7ECF5; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #E7ECF5; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 20px 40px; }
+  .tab-panel { display: none; animation: fadeIn .35s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; }
+  .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { font-size: 1.4rem; }
+  .desc-text { font-size: .98rem; line-height: 1.7; color: var(--text); margin-top: 2px; }
+  .box-info { background: #EEF2FF; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; font-size: .92rem; line-height: 1.7; color: var(--text); }
+  .box-info b { color: var(--primary); }
+  .formula { background: linear-gradient(135deg,#1B3B6F,#2C5F8A); color: white; border-radius: 12px; padding: 16px 24px; text-align: center; font-size: 1.2rem; font-weight: 700; margin: 16px 0; letter-spacing: .5px; }
+  .formula.small { font-size: 1rem; padding: 12px 18px; }
+  .plot-wrap { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: .7rem; margin-top: .8rem; }
+  .plot-wrap svg { display: block; width: 100%; height: auto; }
+  .grid-line { stroke: var(--border); stroke-width: 1; }
+  .axis-line { stroke: var(--muted); stroke-width: 1.5; }
+  .axis-arrow { fill: var(--muted); }
+  .axis-letter { font-size: 11px; fill: var(--text); font-weight: 700; }
+  .tick-label { font-size: 9.5px; fill: var(--muted); }
+  .curve-base { fill: none; stroke: var(--primary); stroke-width: 2.6; stroke-linecap: round; }
+  .curve-hi { fill: none; stroke: var(--secondary); stroke-width: 2.4; stroke-linecap: round; }
+  .curve-asym { fill: none; stroke: var(--warning); stroke-width: 1.8; stroke-dasharray: 6 4; }
+  .guide-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+  .pt { stroke-width: 2.4; }
+  .pt-fillA { fill: var(--accent); stroke: #fff; }
+  .pt-fillB { fill: var(--secondary); stroke: #fff; }
+  .pt-fillP { fill: var(--primary); stroke: #fff; }
+  .plot-caption { font-size: .78rem; fill: var(--text); font-weight: 600; }
+  .hit-target { fill: transparent; cursor: grab; touch-action: none; }
+  .pt.draggable { cursor: grab; touch-action: none; }
+  .mode-toggle { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .mode-btn { padding: 9px 18px; border: 2px solid var(--border); border-radius: 30px; cursor: pointer; font-family:'Sarabun',sans-serif; font-size: .9rem; font-weight: 700; background: white; color: var(--muted); transition: all .2s; }
+  .mode-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .mode-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+  .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
+  .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
+  .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link" data-th="← กลับหน้าอนุพันธ์" data-en="← Back to Derivatives">← กลับหน้าอนุพันธ์</a>
+  <button id="langToggle" class="lang-toggle" onclick="toggleLang()">EN</button>
+  <h1 data-th="📈 ความเว้าและการร่างกราฟ" data-en="📈 Concavity & Curve Sketching">📈 ความเว้าและการร่างกราฟ</h1>
+  <p data-th="ความเว้า • จุดเปลี่ยนเว้า • เส้นกำกับ • ตัวอย่างร่างกราฟเต็มรูปแบบ" data-en="Concavity • Inflection points • Asymptotes • A full sketching example">ความเว้า • จุดเปลี่ยนเว้า • เส้นกำกับ • ตัวอย่างร่างกราฟเต็มรูปแบบ</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="concavity" onclick="showTab('concavity', this)" data-th="🌗 ความเว้าและเส้นกำกับ" data-en="🌗 Concavity & Asymptotes">🌗 ความเว้าและเส้นกำกับ</button>
+  <button class="tab-btn" data-tab="example" onclick="showTab('example', this)" data-th="🗺️ ตัวอย่างร่างกราฟ" data-en="🗺️ Sketching Example">🗺️ ตัวอย่างร่างกราฟ</button>
+</nav>
+
+<main>
+
+<section id="tab-concavity" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="icon">🌗</span><span data-th="ความเว้าและจุดเปลี่ยนเว้า" data-en="Concavity & Inflection Points">ความเว้าและจุดเปลี่ยนเว้า</span></div>
+    <p class="desc-text" data-th="f″(x) > 0 บนช่วง (a,b) ⇒ กราฟเว้าขึ้น (concave up) &nbsp;•&nbsp; f″(x) < 0 ⇒ กราฟเว้าลง (concave down) — จุดที่ความเว้าเปลี่ยนเรียกว่า จุดเปลี่ยนเว้า (inflection point) ซึ่งมักเกิดที่ f″(x) = 0" data-en="f″(x) > 0 on (a,b) ⇒ concave up &nbsp;•&nbsp; f″(x) < 0 ⇒ concave down — a point where concavity switches is called an inflection point, typically where f″(x) = 0.">f″(x) > 0 บนช่วง (a,b) ⇒ กราฟเว้าขึ้น (concave up) &nbsp;•&nbsp; f″(x) < 0 ⇒ กราฟเว้าลง (concave down) — จุดที่ความเว้าเปลี่ยนเรียกว่า จุดเปลี่ยนเว้า (inflection point) ซึ่งมักเกิดที่ f″(x) = 0</p>
+    <div class="plot-wrap"><svg id="plotConcavity" viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b>f(x) = x³/3 − x</b> <span data-th="(ลากจุดสีน้ำเงินเข้ม)" data-en="(drag the dark-blue point)">(ลากจุดสีน้ำเงินเข้ม)</span></div>
+    <div class="formula-live" id="concavityFormula"></div>
+    <div class="box-info" style="margin-top:.6rem;">
+      <b data-th="ข้อควรระวัง:" data-en="Careful:">ข้อควรระวัง:</b>
+      <span data-th="x=−1 และ x=1 ที่ทำเครื่องหมายไว้เป็นจุดสูงสุด/ต่ำสุดเฉพาะที่ (f′=0) ของกราฟตัวอย่างนี้เท่านั้น ไม่ใช่จุดเปลี่ยนเว้า — จุดเปลี่ยนเว้าที่แท้จริง (จุดที่ f″ เปลี่ยนเครื่องหมาย) อยู่ที่ x=0 (จุดสีชมพู) เท่านั้น" data-en="The x=−1 and x=1 marks are this example's local max/min (f′=0), not inflection points — the true inflection point (where f″ changes sign) is only at x=0 (the pink dot).">x=−1 และ x=1 ที่ทำเครื่องหมายไว้เป็นจุดสูงสุด/ต่ำสุดเฉพาะที่ (f′=0) ของกราฟตัวอย่างนี้เท่านั้น ไม่ใช่จุดเปลี่ยนเว้า — จุดเปลี่ยนเว้าที่แท้จริง (จุดที่ f″ เปลี่ยนเครื่องหมาย) อยู่ที่ x=0 (จุดสีชมพู) เท่านั้น</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📍</span><span data-th="เส้นกำกับ (Asymptotes)" data-en="Asymptotes">เส้นกำกับ (Asymptotes)</span></div>
+    <p class="desc-text" data-th="เส้นกำกับแนวดิ่ง x = a เกิดเมื่อ lim ที่ x→a⁺ หรือ x→a⁻ ของ f(x) เป็น ±∞ • เส้นกำกับแนวราบ y = L เกิดเมื่อ lim ที่ x→±∞ ของ f(x) = L" data-en="A vertical asymptote x = a occurs when lim as x→a⁺ or x→a⁻ of f(x) is ±∞ • A horizontal asymptote y = L occurs when lim as x→±∞ of f(x) = L">เส้นกำกับแนวดิ่ง x = a เกิดเมื่อ lim ที่ x→a⁺ หรือ x→a⁻ ของ f(x) เป็น ±∞ • เส้นกำกับแนวราบ y = L เกิดเมื่อ lim ที่ x→±∞ ของ f(x) = L</p>
+    <div class="plot-wrap"><svg id="plotAsym" viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="fn-tag"><span data-th="กราฟของฟังก์ชัน" data-en="Graph of the function">กราฟของฟังก์ชัน</span> <b>f(x) = 1/(x−1)</b></div>
+  </div>
+</section>
+
+<section id="tab-example" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🗺️</span><span data-th="ตัวอย่าง: จงวิเคราะห์และร่างกราฟ f(x) = (x²+x)/(x−2)" data-en="Example: Analyze and Sketch f(x) = (x²+x)/(x−2)">ตัวอย่าง: จงวิเคราะห์และร่างกราฟ f(x) = (x²+x)/(x−2)</div>
+    <p class="desc-text" data-th="กดปุ่มด้านล่างเพื่อเปิดแต่ละลักษณะทีละอย่าง ดูว่าลักษณะเหล่านี้ประกอบกันเป็นกราฟทั้งหมดได้อย่างไร" data-en="Click the buttons below to reveal each feature one at a time, and see how they build up into the complete graph.">กดปุ่มด้านล่างเพื่อเปิดแต่ละลักษณะทีละอย่าง ดูว่าลักษณะเหล่านี้ประกอบกันเป็นกราฟทั้งหมดได้อย่างไร</p>
+
+    <div class="mode-toggle" style="margin-top:10px;">
+      <button class="mode-btn active" id="layerCurve" data-th="เส้นโค้ง" data-en="Curve">เส้นโค้ง</button>
+      <button class="mode-btn" id="layerAsym" data-th="เส้นกำกับ" data-en="Asymptotes">เส้นกำกับ</button>
+      <button class="mode-btn" id="layerIntercept" data-th="จุดตัดแกน" data-en="Intercepts">จุดตัดแกน</button>
+      <button class="mode-btn" id="layerCritical" data-th="จุดสูงสุด-ต่ำสุด" data-en="Max / Min">จุดสูงสุด-ต่ำสุด</button>
+    </div>
+
+    <div class="plot-wrap" style="margin-top:1rem;"><svg id="plotExample" viewBox="0 0 460 340" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="box-info" id="exampleInfo"></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const PAGE_TITLE = { th: 'สื่อการสอน : ความเว้าและการร่างกราฟ', en: 'Teaching Aid: Concavity & Curve Sketching' };
+let langMemory = 'th';
+function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } catch(e){ return langMemory; } }
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.title = PAGE_TITLE[lang];
+  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
+  if (typeof onLangChange==='function') onLangChange(lang);
+}
+function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
+function onLangChange(lang) { if (typeof renderConcavity==='function') renderConcavity(); if (typeof renderAsym==='function') renderAsym(); if (typeof renderExample==='function') renderExample(); }
+
+function showTab(id, btnEl) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const btn = btnEl || document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+}
+
+function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
+
+function Plot(opts) {
+  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
+  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
+  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
+  function invX(pxVal){ return xmin+(pxVal-pad)/(w-2*pad)*(xmax-xmin); }
+  function invY(pyVal){ return ymin+(h-pad-pyVal)/(h-2*pad)*(ymax-ymin); }
+  function axesSVG() {
+    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
+    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
+    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
+    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
+    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
+    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
+    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
+    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
+    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
+    return parts.join('');
+  }
+  function pathFor(fn, x0, x1, steps) {
+    var d='', started=false, i, x, y;
+    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
+    return d;
+  }
+  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
+  function dragPoint(x,y,r,cls,id){ var cx=px(x).toFixed(2), cy=py(y).toFixed(2); return '<circle class="hit-target" data-drag="'+id+'" cx="'+cx+'" cy="'+cy+'" r="16"/><circle class="pt draggable '+cls+'" data-drag="'+id+'" cx="'+cx+'" cy="'+cy+'" r="'+r+'"/>'; }
+  function guide(x1_,y1_,x2_,y2_,cls){ return '<line class="guide-line '+(cls||'')+'" x1="'+px(x1_).toFixed(2)+'" y1="'+py(y1_).toFixed(2)+'" x2="'+px(x2_).toFixed(2)+'" y2="'+py(y2_).toFixed(2)+'"/>'; }
+  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
+  return {px:px,py:py,invX:invX,invY:invY,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,dragPoint:dragPoint,guide:guide,pathD:pathD};
+}
+
+function attachDrag(svg, onMove, onEnd) {
+  var active=null;
+  function toPlotXY(e){ var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; var ctm=svg.getScreenCTM(); if(!ctm) return null; var loc=pt.matrixTransform(ctm.inverse()); return {px:loc.x,py:loc.y}; }
+  svg.addEventListener('pointerdown', function(e){ var id=e.target.getAttribute&&e.target.getAttribute('data-drag'); if(!id) return; active=id; try{svg.setPointerCapture(e.pointerId);}catch(err){} var loc=toPlotXY(e); if(loc) onMove(id,loc.px,loc.py); e.preventDefault(); });
+  svg.addEventListener('pointermove', function(e){ if(!active) return; var loc=toPlotXY(e); if(loc) onMove(active,loc.px,loc.py); e.preventDefault(); });
+  function end(e){ if(!active) return; var id=active; active=null; if(onEnd) onEnd(id); }
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+}
+
+// ══════════════ ความเว้า: f(x) = x³/3 − x ══════════════
+var renderConcavity;
+(function () {
+  var svg = document.getElementById('plotConcavity');
+  var formulaLive = document.getElementById('concavityFormula');
+  var P = Plot({ xmin: -2.6, xmax: 2.6, ymin: -2.2, ymax: 2.2, w: 460, h: 300, pad: 36 });
+  var f = function (x) { return x*x*x/3 - x; };
+  var fpp = function (x) { return 2*x; };
+  var x0 = -2; // deliberately NOT at x=-1 (a local extremum of this curve) — starting there
+               // made the two humps look like "the special points" instead of the actual
+               // inflection point at x=0; see the clarifying note below the graph.
+
+  renderConcavity = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var y0 = f(x0), c = fpp(x0);
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(f, P.xmin+0.05, P.xmax-0.05, 160), 'curve-base'));
+    parts.push(P.circle(0, f(0), 4.6, 'pt-fillB'));
+    parts.push('<text class="plot-caption" x="'+(P.px(0)+6)+'" y="'+(P.py(f(0))-6)+'">'+(lang==='en'?'inflection':'จุดเปลี่ยนเว้า')+'</text>');
+    // item 7: explicitly label the two humps as extrema (not inflection) right on the graph
+    parts.push('<text class="plot-caption" style="font-size:.66rem;fill:var(--muted);" x="'+(P.px(-1)-18)+'" y="'+(P.py(f(-1))-10)+'">'+(lang==='en'?'(local max, not inflection)':'(จุดสูงสุด ไม่ใช่จุดเปลี่ยนเว้า)')+'</text>');
+    parts.push('<text class="plot-caption" style="font-size:.66rem;fill:var(--muted);" x="'+(P.px(1)-18)+'" y="'+(P.py(f(1))+22)+'">'+(lang==='en'?'(local min, not inflection)':'(จุดต่ำสุด ไม่ใช่จุดเปลี่ยนเว้า)')+'</text>');
+    parts.push(P.dragPoint(x0, y0, 5, 'pt-fillP', 'C'));
+    svg.innerHTML = parts.join('');
+
+    var word = c > 0.05 ? (lang==='en'?'concave up':'เว้าขึ้น') : (c < -0.05 ? (lang==='en'?'concave down':'เว้าลง') : (lang==='en'?'inflection point':'จุดเปลี่ยนเว้า'));
+    formulaLive.innerHTML = 'x₀ = <span class="hl">'+fmt(x0,3)+'</span> &nbsp;→&nbsp; f″(x₀) = 2x₀ = <span class="hlA">'+fmt(c,3)+'</span> — <b>'+word+'</b>';
+  };
+  attachDrag(svg, function (id, pxv, pyv) {
+    if (id !== 'C') return;
+    var x = P.invX(pxv);
+    if (x < P.xmin+0.1) x = P.xmin+0.1; if (x > P.xmax-0.1) x = P.xmax-0.1;
+    x0 = x; renderConcavity();
+  });
+  renderConcavity();
+})();
+
+// ══════════════ เส้นกำกับ: f(x) = 1/(x−1) ══════════════
+var renderAsym;
+(function () {
+  var svg = document.getElementById('plotAsym');
+  var P = Plot({ xmin: -4, xmax: 6, ymin: -5, ymax: 5, w: 460, h: 300, pad: 36 });
+  var f = function (x) { return 1/(x-1); };
+  renderAsym = function render() {
+    var parts = [P.axesSVG()];
+    parts.push(P.pathD(P.pathFor(f, P.xmin+0.05, 1-0.08, 60), 'curve-base'));
+    parts.push(P.pathD(P.pathFor(f, 1+0.08, P.xmax-0.05, 60), 'curve-base'));
+    parts.push('<line class="curve-asym" x1="'+P.px(1)+'" y1="'+P.py(P.ymin)+'" x2="'+P.px(1)+'" y2="'+P.py(P.ymax)+'"/>');
+    parts.push('<line class="curve-asym" x1="'+P.px(P.xmin)+'" y1="'+P.py(0)+'" x2="'+P.px(P.xmax)+'" y2="'+P.py(0)+'"/>');
+    parts.push('<text class="plot-caption" x="'+(P.px(1)+4)+'" y="'+(P.py(P.ymax)+12)+'">x=1</text>');
+    parts.push('<text class="plot-caption" x="'+(P.px(P.xmax)-30)+'" y="'+(P.py(0)-6)+'">y=0</text>');
+    svg.innerHTML = parts.join('');
+  };
+  renderAsym();
+})();
+
+// ══════════════ ตัวอย่างร่างกราฟ: f(x) = (x²+x)/(x−2) ══════════════
+var renderExample;
+(function () {
+  var svg = document.getElementById('plotExample');
+  var info = document.getElementById('exampleInfo');
+  var P = Plot({ xmin: -6, xmax: 12, ymin: -10, ymax: 16, w: 460, h: 340, pad: 38 });
+  var f = function (x) { return (x*x + x) / (x - 2); };
+  var oblique = function (x) { return x + 3; };
+  var sq6 = Math.sqrt(6);
+  var critMax = { x: 2 - sq6, y: 5 - 2*sq6 };
+  var critMin = { x: 2 + sq6, y: 5 + 2*sq6 };
+
+  var layers = { curve: true, asym: false, intercept: false, critical: false };
+  var btns = { curve: document.getElementById('layerCurve'), asym: document.getElementById('layerAsym'), intercept: document.getElementById('layerIntercept'), critical: document.getElementById('layerCritical') };
+
+  function INFO(lang) {
+    return lang === 'en'
+      ? 'f(x) = (x²+x)/(x−2) &nbsp;•&nbsp; Vertical asymptote: x = 2 &nbsp;•&nbsp; Oblique asymptote: y = x+3 &nbsp;•&nbsp; Local max (' + fmt(critMax.x,2) + ', ' + fmt(critMax.y,2) + ') &nbsp;•&nbsp; Local min (' + fmt(critMin.x,2) + ', ' + fmt(critMin.y,2) + ')'
+      : 'f(x) = (x²+x)/(x−2) &nbsp;•&nbsp; เส้นกำกับแนวดิ่ง: x = 2 &nbsp;•&nbsp; เส้นกำกับเฉียง: y = x+3 &nbsp;•&nbsp; จุดสูงสุดเฉพาะที่ (' + fmt(critMax.x,2) + ', ' + fmt(critMax.y,2) + ') &nbsp;•&nbsp; จุดต่ำสุดเฉพาะที่ (' + fmt(critMin.x,2) + ', ' + fmt(critMin.y,2) + ')';
+  }
+
+  renderExample = function render() {
+    var lang = getLang()==='en' ? 'en':'th';
+    var parts = [P.axesSVG()];
+    if (layers.curve) {
+      parts.push(P.pathD(P.pathFor(f, P.xmin+0.05, 2-0.06, 120), 'curve-base'));
+      parts.push(P.pathD(P.pathFor(f, 2+0.06, P.xmax-0.05, 120), 'curve-base'));
+    }
+    if (layers.asym) {
+      parts.push('<line class="curve-asym" x1="'+P.px(2)+'" y1="'+P.py(P.ymin)+'" x2="'+P.px(2)+'" y2="'+P.py(P.ymax)+'"/>');
+      parts.push(P.pathD(P.pathFor(oblique, P.xmin+0.05, P.xmax-0.05, 2), 'curve-asym'));
+      parts.push('<text class="plot-caption" x="'+(P.px(2)+4)+'" y="'+(P.py(P.ymax)+12)+'">x=2</text>');
+    }
+    if (layers.intercept) {
+      parts.push(P.circle(0, 0, 4.4, 'pt-fillB'));
+      parts.push(P.circle(-1, 0, 4.4, 'pt-fillB'));
+      parts.push('<text class="plot-caption" x="'+(P.px(0)+4)+'" y="'+(P.py(0)-8)+'">(0,0)</text>');
+      parts.push('<text class="plot-caption" x="'+(P.px(-1)-24)+'" y="'+(P.py(0)-8)+'">(-1,0)</text>');
+    }
+    if (layers.critical) {
+      parts.push(P.circle(critMax.x, critMax.y, 4.8, 'pt-fillA'));
+      parts.push(P.circle(critMin.x, critMin.y, 4.8, 'pt-fillA'));
+      parts.push('<text class="plot-caption" x="'+(P.px(critMax.x)-14)+'" y="'+(P.py(critMax.y)+20)+'">'+(lang==='en'?'local max':'สูงสุด')+'</text>');
+      parts.push('<text class="plot-caption" x="'+(P.px(critMin.x)+6)+'" y="'+(P.py(critMin.y)+16)+'">'+(lang==='en'?'local min':'ต่ำสุด')+'</text>');
+    }
+    svg.innerHTML = parts.join('');
+    info.innerHTML = INFO(lang);
+  };
+
+  Object.keys(btns).forEach(function (key) {
+    btns[key].addEventListener('click', function () {
+      layers[key] = !layers[key];
+      btns[key].classList.toggle('active', layers[key]);
+      renderExample();
+    });
+  });
+
+  renderExample();
+})();
+
+applyLang(getLang());
+</script>
+
+</body>
+</html>
