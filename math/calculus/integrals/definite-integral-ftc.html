@@ -574,9 +574,11 @@ var renderProofFig1, renderProofFigStrip;
     var hOut = document.getElementById('figHVal');
     var out = document.getElementById('figSqueeze');
 
-    var f = function (t) { return 1 + 1.1 * Math.sin(t); };
-    var Fint = function (t) { return t - 1.1 * Math.cos(t); };   // ปฏิยานุพันธ์แม่นตรงของ f
     var a = 0.25, x0 = 1.15, XMAX = 4.2, YMAX = 2.5;
+    // เลือกแอมพลิจูดให้ f(x) = 2 พอดี ตัวเลขในบรรทัดสรุปจะได้อ่านง่าย
+    var AMP = 1 / Math.sin(x0);
+    var f = function (t) { return 1 + AMP * Math.sin(t); };
+    var Fint = function (t) { return t - AMP * Math.cos(t); };   // ปฏิยานุพันธ์แม่นตรงของ f
     var G = Fig(svg, { xmin: 0, xmax: XMAX, ymax: YMAX, w: 340, h: 220, f: f });
 
     // ค่าต่ำสุด/สูงสุดของ f บนช่วงปิด [t0, t1] พร้อมตำแหน่งที่มันเกิด
@@ -619,10 +621,11 @@ var renderProofFig1, renderProofFigStrip;
       // ถ้าจุดต่ำสุด/สูงสุดตรงกับปลายช่วงพอดี ให้บอกไปเลยว่ามันคือ f(x) หรือ f(x+h)
       if (mLeft) parts.push(G.labelPx(mm.atM, mm.m, -8, -10, 'f(x)', 'gm', 'end'));
       else if (mRight) parts.push(G.labelPx(mm.atM, mm.m, 6, 15, 'f(x+h)', 'gm', 'start'));
+      else parts.push(G.labelPx(mm.atM, mm.m, 6, 15, 'm', 'gm', 'start'));
       if (MLeft) parts.push(G.labelPx(mm.atX, mm.M, -6, -15, 'f(x)', 'gM', 'end'));
       else if (MRight) parts.push(G.labelPx(mm.atX, mm.M, 6, -15, 'f(x+h)', 'gM', 'start'));
+      else parts.push(G.labelPx(mm.atX, mm.M, 6, -15, 'M', 'gM', 'start'));
       parts.push(G.label((a + x0) / 2, f((a + x0) / 2) * 0.36, 'F(x)', 'dim'));
-      parts.push(G.label(x0 + h + 0.06, mm.m * 0.62, 'm', 'gm', 'start'));
       G.paint(parts);
 
       hOut.textContent = 'h = ' + fmt(h, 2);
