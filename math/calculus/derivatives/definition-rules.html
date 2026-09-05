@@ -418,10 +418,10 @@ var renderOrigin;
 
   var TXT = {
     th: function (Qy, Py, h, m) {
-      return 'ความชันเส้นตัด PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>เมื่อ h → 0 : f′(1) → <span class="hlA">2</span>';
+      return 'ความชันเส้นตัด PQ = ' + frac('f(x+h) − f(x)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>เมื่อ h → 0 : f′(1) → <span class="hlA">2</span>';
     },
     en: function (Qy, Py, h, m) {
-      return 'Secant slope PQ = ' + frac('f(x₀+h) − f(x₀)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>As h → 0 : f′(1) → <span class="hlA">2</span>';
+      return 'Secant slope PQ = ' + frac('f(x+h) − f(x)', 'h') + '&nbsp;&nbsp;=&nbsp;&nbsp;' + frac(fmt(Qy) + ' − ' + fmt(Py), fmt(h)) + '&nbsp;=&nbsp;<span class="hl">' + fmt(m) + '</span><br>As h → 0 : f′(1) → <span class="hlA">2</span>';
     }
   };
 
@@ -448,12 +448,15 @@ var renderOrigin;
     parts.push(P.guide(Qx, Py, Qx, Qy, 'hiB'));
     parts.push(P.circle(Px, Py, 4.8, 'pt-fillP'));
     parts.push(P.dragPoint(Qx, Qy, 4.8, 'pt-fillB', 'Q'));
-    parts.push('<text class="plot-caption" x="' + (P.px(Px) - 4) + '" y="' + (P.py(Py) + 16) + '">P</text>');
-    parts.push('<text class="plot-caption" x="' + (P.px(Qx) + 6) + '" y="' + (P.py(Qy) - 6) + '">Q</text>');
+    // point labels named after the function values they represent, f(x) at P and f(x+h) at Q
+    // f(x) sits above-left of P so it never collides with the "h = ..." label on the dashed line below, even when h is tiny and Q sits right next to P
+    parts.push('<text class="plot-caption" text-anchor="end" x="' + (P.px(Px) - 6) + '" y="' + (P.py(Py) - 8) + '">f(x)</text>');
+    // f(x+h) is wider than a single letter — flip it to the left of Q once it would run past the right edge
+    var qLabelX = P.px(Qx) + 6, qLabelAnchor = 'start';
+    if (qLabelX + 48 > P.w) { qLabelX = P.px(Qx) - 6; qLabelAnchor = 'end'; }
+    parts.push('<text class="plot-caption" text-anchor="' + qLabelAnchor + '" x="' + qLabelX + '" y="' + (P.py(Qy) - 6) + '">f(x+h)</text>');
     // item 1: h annotated directly on the graph, on the horizontal leg PQ
     parts.push('<text class="slope-label" text-anchor="middle" x="' + ((P.px(Px) + P.px(Qx)) / 2) + '" y="' + (P.py(Py) + 15) + '">h = ' + fmt(h, 2) + '</text>');
-    // item 5: slope shown next to the point too (small font, 2dp)
-    parts.push('<text class="slope-label" x="' + (P.px(Qx) + 8) + '" y="' + (P.py(Qy) + 12) + '">m ≈ ' + fmt(m, 2) + '</text>');
     svg.innerHTML = parts.join('');
 
     if (document.activeElement !== hInput) hInput.value = fmt(h, 3);
