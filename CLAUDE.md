@@ -52,6 +52,13 @@ math-media-by-p-earth\
 
 ## Deploy workflow
 
+**เริ่มงานทุกครั้งให้ `git fetch origin` แล้วเช็คว่าตามหลังไหมก่อนแก้ไฟล์** — repo นี้ถูก push จากหลายที่ (หลาย session) เคยเกิดจริงว่าเว็บที่ deploy แล้วใหม่กว่าไฟล์ในเครื่อง 2 commit ถ้าแก้ทับแล้ว commit ไปเลยจะย้อนงานที่ขึ้นเว็บไปแล้วทิ้ง
+
+```
+git fetch origin && git status -sb   # ดูว่า behind กี่ commit
+git merge --ff-only origin/main      # ถ้า behind และยังไม่ได้แก้อะไร
+```
+
 Repo root ของ git คือโฟลเดอร์นี้เอง (`math-media-by-p-earth\`) — ไม่ต้อง clone/copy เหมือนโปรเจกต์ `แอปสอบบรรจุ` เพราะเป็น repo ใหม่ ไม่มี history เดิมต้อง merge
 
 ```

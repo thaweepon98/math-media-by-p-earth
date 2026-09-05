@@ -89,7 +89,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🎚️</span><span data-th="เพิ่ม t ดู ∫₁ᵗ (1/x²)dx เข้าใกล้ค่าลู่เข้า" data-en="Increase t and watch ∫₁ᵗ (1/x²)dx approach its convergent value">เพิ่ม t ดู ∫₁ᵗ (1/x²)dx เข้าใกล้ค่าลู่เข้า</span></div>
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="เพิ่ม t ดู ∫₁ᵗ <span class='frac'><span class='num'>1</span><span class='den'>x²</span></span> dx เข้าใกล้ค่าลู่เข้า" data-en="Increase t and watch ∫₁ᵗ <span class='frac'><span class='num'>1</span><span class='den'>x²</span></span> dx approach its convergent value">เพิ่ม t ดู ∫₁ᵗ <span class='frac'><span class='num'>1</span><span class='den'>x²</span></span> dx เข้าใกล้ค่าลู่เข้า</span></div>
     <div class="plot-wrap"><svg id="plotType1" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
     <div class="sim-controls" style="margin-top:1rem;">
       <div class="round-limit">
@@ -113,7 +113,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🎚️</span><span data-th="ลด ε ดู ∫_ε¹ (1/√x)dx เข้าใกล้ค่าลู่เข้า" data-en="Decrease ε and watch ∫_ε¹ (1/√x)dx approach its convergent value">ลด ε ดู ∫_ε¹ (1/√x)dx เข้าใกล้ค่าลู่เข้า</span></div>
+    <div class="card-title"><span class="icon">🎚️</span><span data-th="ลด ε ดู ∫_ε¹ <span class='frac'><span class='num'>1</span><span class='den'>√x</span></span> dx เข้าใกล้ค่าลู่เข้า" data-en="Decrease ε and watch ∫_ε¹ <span class='frac'><span class='num'>1</span><span class='den'>√x</span></span> dx approach its convergent value">ลด ε ดู ∫_ε¹ <span class='frac'><span class='num'>1</span><span class='den'>√x</span></span> dx เข้าใกล้ค่าลู่เข้า</span></div>
     <div class="plot-wrap"><svg id="plotType2" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
     <div class="sim-controls" style="margin-top:1rem;">
       <div class="round-limit">
@@ -142,7 +142,8 @@ function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } ca
 function applyLang(lang) {
   document.documentElement.lang = lang;
   document.title = PAGE_TITLE[lang];
-  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  // ค่าใน data-th / data-en ถือเป็น HTML (ดู docs/adr/0002) เพื่อให้ใส่เศษส่วนบน/ล่างในประโยคที่แปลภาษาได้
+  document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
   document.querySelectorAll('[data-th-title]').forEach(el => { el.title = (lang==='en'&&el.dataset.enTitle)?el.dataset.enTitle:el.dataset.thTitle; });
   const btn = document.getElementById('langToggle');
   if (btn) btn.textContent = lang==='en'?'ไทย':'EN';

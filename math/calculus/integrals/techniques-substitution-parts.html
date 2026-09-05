@@ -114,7 +114,8 @@ function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } ca
 function applyLang(lang) {
   document.documentElement.lang = lang;
   document.title = PAGE_TITLE[lang];
-  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  // ค่าใน data-th / data-en ถือเป็น HTML (ดู docs/adr/0002) เพื่อให้ใส่เศษส่วนบน/ล่างในประโยคที่แปลภาษาได้
+  document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
   const btn = document.getElementById('langToggle');
   if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
   if (typeof onLangChange==='function') onLangChange(lang);

@@ -61,10 +61,49 @@
   .formula-live { font-size: 1rem; line-height: 2; color: var(--text); margin-top: .8rem; }
   .formula-live .hl { background:#FFE3E9; color: var(--secondary); padding:.05em .4em; border-radius:6px; font-weight:800; }
   .formula-live .hlA { background:#E1F8EF; color:#12805F; padding:.05em .4em; border-radius:6px; font-weight:800; }
-  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 10px; }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 10px; align-items: start; }
   .rule-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
   .rule-card .expr { font-size: 1rem; color: var(--primary); font-weight: 700; }
-  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } }
+  .rule-card.pickable { cursor: pointer; transition: border-color .18s, box-shadow .18s, transform .18s; }
+  .rule-card.pickable:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(28,59,34,.12); }
+  .rule-card.pickable:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+  /* ── ช่องพิมพ์สมการหาปริพันธ์ ── */
+  .calc-row { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-top: 12px; }
+  .calc-row .int-sign { font-size: 1.9rem; color: var(--primary); font-weight: 700; line-height: 1; }
+  .calc-row .dx { font-size: 1.05rem; color: var(--primary); font-weight: 700; }
+  .fn-input { flex: 1 1 15rem; min-width: 10rem; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 1.02rem; font-weight: 600; color: var(--primary); background: #fff; }
+  .fn-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(28,59,34,.10); }
+  .go-btn { font-family: 'Sarabun', sans-serif; font-size: .94rem; font-weight: 700; padding: 9px 20px; border-radius: 999px; border: none; background: var(--primary); color: #fff; cursor: pointer; transition: opacity .15s, transform .15s; }
+  .go-btn:hover { opacity: .88; }
+  .go-btn:active { transform: translateY(1px); }
+  .go-btn.ghost { background: #fff; color: var(--primary); border: 1.5px solid var(--border); }
+  .go-btn.ghost:hover { border-color: var(--primary); }
+
+  .bounds-row { display: flex; align-items: center; gap: .6rem .9rem; flex-wrap: wrap; margin-top: 10px; font-size: .92rem; color: var(--muted); }
+  .bounds-row label { display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; font-weight: 600; }
+  .bounds-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+  .bound-input { width: 5.4em; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: .92rem; font-weight: 700; color: var(--primary); text-align: center; }
+  .bound-input:focus { outline: none; border-color: var(--primary); }
+
+  .calc-hint { font-size: .82rem; color: var(--muted); margin-top: 10px; line-height: 1.8; }
+  .calc-hint code { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: .05em .4em; font-family: 'Sarabun', sans-serif; font-weight: 700; color: var(--primary); }
+
+  .calc-out { margin-top: 14px; }
+  .calc-answer { background: linear-gradient(135deg,#1C3B22,#2E5936); color: #fff; border-radius: 12px; padding: 14px 20px; text-align: center; font-size: 1.15rem; font-weight: 700; line-height: 2.1; }
+  .calc-steps { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-top: 10px; }
+  .calc-steps .step { font-size: .96rem; line-height: 2; }
+  .calc-steps .step b { color: var(--primary); }
+  .calc-steps .used-rule { color: var(--muted); font-size: .84rem; }
+  .calc-error { background: #FFF4E8; border-left: 4px solid var(--secondary); border-radius: 10px; padding: 14px 18px; font-size: .94rem; line-height: 1.9; }
+  .calc-error b { color: #C05621; }
+  .check-box { background: #E1F8EF; border-left: 4px solid #12805F; border-radius: 10px; padding: 12px 18px; margin-top: 10px; font-size: .92rem; line-height: 1.9; }
+  .check-box b { color: #12805F; }
+  .check-table { width: 100%; border-collapse: collapse; font-size: .86rem; margin-top: 8px; }
+  .check-table th, .check-table td { padding: .3rem .5rem; text-align: right; border-bottom: 1px solid rgba(18,128,95,.2); }
+  .check-table th { color: var(--muted); font-weight: 600; font-size: .76rem; }
+
+  @media (max-width: 600px) { header h1 { font-size: 1.2rem; } .card { padding: 16px 14px; } .tab-btn { font-size: .82rem; padding: 8px 12px; } .calc-answer { font-size: 1rem; padding: 12px 14px; } }
 </style>
 </head>
 <body>
@@ -91,36 +130,49 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span class="icon">🎚️</span><span data-th="ลาก C ดูตระกูลของปฏิยานุพันธ์ของ f(x) = x²" data-en="Drag C to see the family of antiderivatives of f(x) = x²">ลาก C ดูตระกูลของปฏิยานุพันธ์ของ f(x) = x²</span></div>
-    <p class="desc-text" style="font-size:.9rem;color:var(--muted);" data-th="ทุกเส้นในตระกูลนี้มีความชันเท่ากันที่ x เดียวกันเสมอ (เพราะอนุพันธ์เท่ากับ f(x) = x² เหมือนกันหมด) ต่างกันแค่เลื่อนขึ้นลงตามค่า C" data-en="Every curve in this family has the same slope at any given x (since they all share the derivative f(x) = x²) — they only differ by a vertical shift of C.">ทุกเส้นในตระกูลนี้มีความชันเท่ากันที่ x เดียวกันเสมอ (เพราะอนุพันธ์เท่ากับ f(x) = x² เหมือนกันหมด) ต่างกันแค่เลื่อนขึ้นลงตามค่า C</p>
-    <div class="plot-wrap"><svg id="plotFamily" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
-    <div class="sim-controls" style="margin-top:1rem;">
-      <div class="round-limit">
-        <span class="mode-label">C</span>
-        <input type="range" id="cSlider" min="-30" max="30" step="1" value="0">
-        <input type="number" class="x0-input" id="cNumInput" min="-3" max="3" step="0.1" value="0">
-      </div>
+    <div class="card-title"><span class="icon">🧮</span><span data-th="ลองพิมพ์สมการเอง แล้วให้หาปริพันธ์ให้" data-en="Type your own f(x) and let it integrate">ลองพิมพ์สมการเอง แล้วให้หาปริพันธ์ให้</span></div>
+    <p class="desc-text" style="font-size:.92rem;color:var(--muted);" data-th="พิมพ์ f(x) ลงในช่อง แล้วกดปุ่ม — จะได้คำตอบพร้อมขั้นตอนว่าแต่ละพจน์ใช้สูตรไหนในตารางสูตร (แท็บถัดไป)" data-en="Type f(x) in the box and press the button — you get the answer plus which formula from the table (next tab) each term used.">พิมพ์ f(x) ลงในช่อง แล้วกดปุ่ม — จะได้คำตอบพร้อมขั้นตอนว่าแต่ละพจน์ใช้สูตรไหนในตารางสูตร (แท็บถัดไป)</p>
+
+    <div class="calc-row">
+      <span class="int-sign" id="intSign">∫</span>
+      <input type="text" class="fn-input" id="fnInput" value="3x^2 - 4x + 5" autocomplete="off" spellcheck="false" aria-label="f(x)">
+      <span class="dx">dx</span>
+      <button type="button" class="go-btn" id="goBtn" data-th="หาปริพันธ์" data-en="Integrate">หาปริพันธ์</button>
     </div>
-    <div class="formula-live" id="familyFormula"></div>
+
+    <div class="bounds-row">
+      <label><input type="checkbox" id="useBounds"><span data-th="คิดเป็นปริพันธ์จำกัดเขต" data-en="As a definite integral">คิดเป็นปริพันธ์จำกัดเขต</span></label>
+      <span id="boundsFields" hidden>
+        <span data-th="จาก a =" data-en="from a =">จาก a =</span>
+        <input type="text" class="bound-input" id="aInput" value="0" autocomplete="off" spellcheck="false" aria-label="a">
+        <span data-th="ถึง b =" data-en="to b =">ถึง b =</span>
+        <input type="text" class="bound-input" id="bInput" value="2" autocomplete="off" spellcheck="false" aria-label="b">
+      </span>
+    </div>
+
+    <p class="calc-hint" data-th="พิมพ์ได้: <code>3x^2</code> <code>1/x</code> <code>e^x</code> <code>2^x</code> <code>sin(2x)</code> <code>sec(x)^2</code> <code>sec(x)tan(x)</code> <code>sqrt(x)</code> <code>1/(1+x^2)</code> — ตัวในวงเล็บของฟังก์ชันต้องเป็นเชิงเส้น (เช่น <code>3x+1</code>) เท่านั้น" data-en="You can type: <code>3x^2</code> <code>1/x</code> <code>e^x</code> <code>2^x</code> <code>sin(2x)</code> <code>sec(x)^2</code> <code>sec(x)tan(x)</code> <code>sqrt(x)</code> <code>1/(1+x^2)</code> — the argument inside a function must be linear (e.g. <code>3x+1</code>).">พิมพ์ได้: <code>3x^2</code> <code>1/x</code> <code>e^x</code> <code>2^x</code> <code>sin(2x)</code> <code>sec(x)^2</code> <code>sec(x)tan(x)</code> <code>sqrt(x)</code> <code>1/(1+x^2)</code> — ตัวในวงเล็บของฟังก์ชันต้องเป็นเชิงเส้น (เช่น <code>3x+1</code>) เท่านั้น</p>
+
+    <div class="calc-out" id="calcOut"></div>
   </div>
 </section>
 
 <section id="tab-table" class="tab-panel">
   <div class="card">
     <div class="card-title"><span class="icon">📋</span><span data-th="ตารางสูตรปริพันธ์พื้นฐาน" data-en="Basic Integral Formula Table">ตารางสูตรปริพันธ์พื้นฐาน</span></div>
+    <p class="calc-hint" style="margin-top:0;" data-th="👆 กดการ์ดสูตรใบไหนก็ได้ ระบบจะเติมตัวอย่างลงในช่องพิมพ์สมการ (แท็บแรก) แล้วคำนวณให้ทันที" data-en="👆 Tap any formula card — it fills an example into the input box on the first tab and computes it right away">👆 กดการ์ดสูตรใบไหนก็ได้ ระบบจะเติมตัวอย่างลงในช่องพิมพ์สมการ (แท็บแรก) แล้วคำนวณให้ทันที</p>
     <div class="rule-grid">
-      <div class="rule-card"><div class="expr">∫ k dx = kx + C</div></div>
-      <div class="rule-card"><div class="expr">∫ xⁿ dx = <span class="frac"><span class="num">x<sup>n+1</sup></span><span class="den">n+1</span></span> + C &nbsp;(n≠−1)</div></div>
-      <div class="rule-card"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">x</span></span> dx = ln|x| + C</div></div>
-      <div class="rule-card"><div class="expr">∫ eˣ dx = eˣ + C</div></div>
-      <div class="rule-card"><div class="expr">∫ aˣ dx = <span class="frac"><span class="num">aˣ</span><span class="den">ln(a)</span></span> + C</div></div>
-      <div class="rule-card"><div class="expr">∫ sin x dx = −cos x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ cos x dx = sin x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ sec²x dx = tan x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ csc²x dx = −cot x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ secx·tanx dx = sec x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">√(1−x²)</span></span> dx = arcsin x + C</div></div>
-      <div class="rule-card"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">1+x²</span></span> dx = arctan x + C</div></div>
+      <div class="rule-card pickable" data-fill="5" tabindex="0" role="button"><div class="expr">∫ k dx = kx + C</div></div>
+      <div class="rule-card pickable" data-fill="x^4" tabindex="0" role="button"><div class="expr">∫ xⁿ dx = <span class="frac"><span class="num">x<sup>n+1</sup></span><span class="den">n+1</span></span> + C &nbsp;(n≠−1)</div></div>
+      <div class="rule-card pickable" data-fill="1/x" tabindex="0" role="button"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">x</span></span> dx = ln|x| + C</div></div>
+      <div class="rule-card pickable" data-fill="e^x" tabindex="0" role="button"><div class="expr">∫ eˣ dx = eˣ + C</div></div>
+      <div class="rule-card pickable" data-fill="2^x" tabindex="0" role="button"><div class="expr">∫ aˣ dx = <span class="frac"><span class="num">aˣ</span><span class="den">ln(a)</span></span> + C</div></div>
+      <div class="rule-card pickable" data-fill="sin(x)" tabindex="0" role="button"><div class="expr">∫ sin x dx = −cos x + C</div></div>
+      <div class="rule-card pickable" data-fill="cos(x)" tabindex="0" role="button"><div class="expr">∫ cos x dx = sin x + C</div></div>
+      <div class="rule-card pickable" data-fill="sec(x)^2" tabindex="0" role="button"><div class="expr">∫ sec²x dx = tan x + C</div></div>
+      <div class="rule-card pickable" data-fill="csc(x)^2" tabindex="0" role="button"><div class="expr">∫ csc²x dx = −cot x + C</div></div>
+      <div class="rule-card pickable" data-fill="sec(x)tan(x)" tabindex="0" role="button"><div class="expr">∫ secx·tanx dx = sec x + C</div></div>
+      <div class="rule-card pickable" data-fill="1/sqrt(1-x^2)" tabindex="0" role="button"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">√(1−x²)</span></span> dx = arcsin x + C</div></div>
+      <div class="rule-card pickable" data-fill="1/(1+x^2)" tabindex="0" role="button"><div class="expr">∫ <span class="frac"><span class="num">1</span><span class="den">1+x²</span></span> dx = arctan x + C</div></div>
     </div>
     <div class="box-info" style="margin-top:14px;">
       <b data-th="กฎที่ใช้บ่อย:" data-en="Frequently used laws:">กฎที่ใช้บ่อย:</b>
@@ -138,13 +190,14 @@ function getLang() { try { return localStorage.getItem('siteLang') || 'th'; } ca
 function applyLang(lang) {
   document.documentElement.lang = lang;
   document.title = PAGE_TITLE[lang];
-  document.querySelectorAll('[data-th]').forEach(el => { el.textContent = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
+  // ค่าใน data-th / data-en ถือเป็น HTML (ดู docs/adr/0002) เพื่อให้ใส่เศษส่วนบน/ล่างในประโยคที่แปลภาษาได้
+  document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = (lang==='en'&&el.dataset.en)?el.dataset.en:el.dataset.th; });
   const btn = document.getElementById('langToggle');
   if (btn) btn.textContent = lang==='en'?'ไทย':'EN';
   if (typeof onLangChange==='function') onLangChange(lang);
 }
 function toggleLang() { const next = getLang()==='en'?'th':'en'; langMemory=next; try{localStorage.setItem('siteLang',next);}catch(e){} applyLang(next); }
-function onLangChange(lang) { if (typeof renderFamily==='function') renderFamily(); }
+function onLangChange(lang) { if (typeof renderCalc==='function') renderCalc(); }
 
 function showTab(id, btnEl) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
@@ -156,74 +209,612 @@ function showTab(id, btnEl) {
 
 function fmt(n, d) { if (d===undefined) d=3; if (!isFinite(n)) return '—'; var s=n.toFixed(d); if (s.indexOf('.')>-1){ s=s.replace(/0+$/,'').replace(/\.$/,''); } if (s==='-0') s='0'; return s; }
 
-function Plot(opts) {
-  var xmin=opts.xmin, xmax=opts.xmax, ymin=opts.ymin, ymax=opts.ymax, w=opts.w, h=opts.h, pad=opts.pad||34;
-  function px(x){ return pad+(x-xmin)/(xmax-xmin)*(w-2*pad); }
-  function py(y){ return h-pad-(y-ymin)/(ymax-ymin)*(h-2*pad); }
-  function axesSVG() {
-    var parts=[]; var x0=Math.ceil(xmin), x1=Math.floor(xmax), y0=Math.ceil(ymin), y1=Math.floor(ymax), gx, gy;
-    for (gx=x0; gx<=x1; gx++) parts.push('<line class="grid-line" x1="'+px(gx)+'" y1="'+py(ymin)+'" x2="'+px(gx)+'" y2="'+py(ymax)+'"/>');
-    for (gy=y0; gy<=y1; gy++) parts.push('<line class="grid-line" x1="'+px(xmin)+'" y1="'+py(gy)+'" x2="'+px(xmax)+'" y2="'+py(gy)+'"/>');
-    parts.push('<line class="axis-line" x1="'+px(xmin)+'" y1="'+py(0)+'" x2="'+(px(xmax)+8)+'" y2="'+py(0)+'"/>');
-    parts.push('<line class="axis-line" x1="'+px(0)+'" y1="'+py(ymin)+'" x2="'+px(0)+'" y2="'+(py(ymax)-8)+'"/>');
-    parts.push('<polygon class="axis-arrow" points="'+(px(xmax)+8)+','+py(0)+' '+(px(xmax)-1)+','+(py(0)-3.5)+' '+(px(xmax)-1)+','+(py(0)+3.5)+'"/>');
-    parts.push('<polygon class="axis-arrow" points="'+px(0)+','+(py(ymax)-8)+' '+(px(0)-3.5)+','+(py(ymax)+1)+' '+(px(0)+3.5)+','+(py(ymax)+1)+'"/>');
-    parts.push('<text class="axis-letter" x="'+(px(xmax)+10)+'" y="'+(py(0)+4)+'">X</text>');
-    parts.push('<text class="axis-letter" x="'+(px(0)+6)+'" y="'+(py(ymax)-9)+'">Y</text>');
-    for (gx=x0; gx<=x1; gx++){ if(gx===0) continue; parts.push('<text class="tick-label" text-anchor="middle" x="'+px(gx)+'" y="'+(py(0)+13)+'">'+gx+'</text>'); }
-    for (gy=y0; gy<=y1; gy++){ if(gy===0) continue; parts.push('<text class="tick-label" text-anchor="end" x="'+(px(0)-6)+'" y="'+(py(gy)+3)+'">'+gy+'</text>'); }
-    return parts.join('');
-  }
-  function pathFor(fn, x0, x1, steps) {
-    var d='', started=false, i, x, y;
-    for (i=0; i<=steps; i++){ x=x0+(x1-x0)*i/steps; y=fn(x); if(y===null||y===undefined||!isFinite(y)){started=false;continue;} d+=(started?' L ':'M ')+px(x).toFixed(2)+' '+py(y).toFixed(2); started=true; }
-    return d;
-  }
-  function circle(x,y,r,cls){ return '<circle class="pt '+cls+'" cx="'+px(x).toFixed(2)+'" cy="'+py(y).toFixed(2)+'" r="'+r+'"/>'; }
-  function pathD(dStr,cls){ return '<path class="'+cls+'" d="'+dStr+'"/>'; }
-  return {px:px,py:py,w:w,h:h,xmin:xmin,xmax:xmax,ymin:ymin,ymax:ymax,axesSVG:axesSVG,pathFor:pathFor,circle:circle,pathD:pathD};
-}
-
-var renderFamily;
+/* ══════════════════════════════════════════════════════════════════
+   เครื่องหาปริพันธ์: tokenizer + parser + integrator เขียนเองในไฟล์
+   ขอบเขต = ตารางสูตรปริพันธ์พื้นฐานในแท็บถัดไป + บวก/ลบ + คูณค่าคงที่
+            + อาร์กิวเมนต์ภายในที่เป็นเชิงเส้น (ax+b)
+   นอกขอบเขตต้องแจ้งผู้ใช้เสมอ ห้ามตอบผิดเงียบๆ — ดู docs/adr/0001
+   ══════════════════════════════════════════════════════════════════ */
+var renderCalc;
 (function () {
-  var svg = document.getElementById('plotFamily');
-  var slider = document.getElementById('cSlider');
-  var cInput = document.getElementById('cNumInput');
-  var formulaLive = document.getElementById('familyFormula');
-  var P = Plot({ xmin: -3.2, xmax: 3.2, ymin: -6, ymax: 8, w: 460, h: 320, pad: 36 });
-  var x0 = 1.5;
 
-  renderFamily = function render() {
-    var lang = getLang()==='en' ? 'en':'th';
-    var C = parseFloat(slider.value)/10;
-    var F = function (x) { return x*x*x/3 + C; };
-    var ghostCs = [-6,-4,-2,0,2,4,6];
+  function frac(n, d) { return '<span class="frac"><span class="num">' + n + '</span><span class="den">' + d + '</span></span>'; }
 
-    var parts = [P.axesSVG()];
-    ghostCs.forEach(function (gc) {
-      var gF = function (x) { return x*x*x/3 + gc; };
-      parts.push(P.pathD(P.pathFor(gF, P.xmin+0.05, P.xmax-0.05, 60), 'curve-family'));
+  var NAMES = ['arcsin', 'arctan', 'asin', 'atan', 'sqrt', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'ln', 'log', 'pi', 'x', 'e'];
+  var SUPMAP = { '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁰': '0' };
+
+  function CalcError(thMsg, enMsg) { this.th = thMsg; this.en = enMsg; }
+
+  /* ── 1. ปรับข้อความให้เป็นรูปมาตรฐานก่อนแยกโทเคน ── */
+  function normalize(s) {
+    s = String(s || '');
+    s = s.replace(/−/g, '-');
+    s = s.replace(/[×·∙*]/g, '*').replace(/÷/g, '/');
+    s = s.replace(/√/g, 'sqrt').replace(/π/g, 'pi');
+    s = s.replace(/[¹²³⁴⁵⁶⁷⁸⁹⁰]+/g, function (m) {
+      var out = '', i;
+      for (i = 0; i < m.length; i++) out += SUPMAP[m.charAt(i)];
+      return '^' + out;
     });
-    parts.push(P.pathD(P.pathFor(F, P.xmin+0.05, P.xmax-0.05, 60), 'curve-base'));
-    parts.push(P.circle(x0, F(x0), 4.8, 'pt-fillP'));
-    svg.innerHTML = parts.join('');
+    s = s.replace(/\|/g, '');
+    return s.trim();
+  }
 
-    if (document.activeElement !== cInput) cInput.value = fmt(C, 1);
-    formulaLive.innerHTML =
-      'F(x) = x³/3 + <span class="hl">'+fmt(C,1)+'</span> &nbsp;&nbsp;' +
-      (lang==='en' ? "F′(x) = x² for every value of C" : 'F′(x) = x² เท่ากันทุกค่าของ C');
+  /* ── 2. แยกโทเคน ── */
+  function tokenize(src) {
+    var t = [], i = 0, s = src;
+    while (i < s.length) {
+      var c = s.charAt(i);
+      if (c === ' ') { i++; continue; }
+      if ((c >= '0' && c <= '9') || c === '.') {
+        var j = i;
+        while (j < s.length && ((s.charAt(j) >= '0' && s.charAt(j) <= '9') || s.charAt(j) === '.')) j++;
+        var v = parseFloat(s.slice(i, j));
+        if (!isFinite(v)) throw new CalcError('อ่านตัวเลข "' + s.slice(i, j) + '" ไม่ออก', 'Cannot read the number "' + s.slice(i, j) + '"');
+        t.push({ k: 'num', v: v }); i = j; continue;
+      }
+      if (/[A-Za-z]/.test(c)) {
+        var j2 = i;
+        while (j2 < s.length && /[A-Za-z]/.test(s.charAt(j2))) j2++;
+        var word = s.slice(i, j2).toLowerCase(), p = 0;
+        while (p < word.length) {
+          var hit = null, q;
+          for (q = 0; q < NAMES.length; q++) {
+            if (word.substr(p, NAMES[q].length) === NAMES[q]) { hit = NAMES[q]; break; }
+          }
+          if (!hit) throw new CalcError('ไม่รู้จักสัญลักษณ์ "' + word.slice(p) + '"', 'Unknown symbol "' + word.slice(p) + '"');
+          t.push({ k: 'name', v: hit }); p += hit.length;
+        }
+        i = j2; continue;
+      }
+      if ('+-*/^'.indexOf(c) > -1) { t.push({ k: 'op', v: c }); i++; continue; }
+      if (c === '(' || c === ')') { t.push({ k: c }); i++; continue; }
+      throw new CalcError('ใช้เครื่องหมาย "' + c + '" ไม่ได้', 'The character "' + c + '" is not allowed');
+    }
+    return t;
+  }
+
+  /* ── 3. แปลงเป็นต้นไม้นิพจน์ ── */
+  function parse(tokens) {
+    var i = 0;
+    function peek() { return tokens[i]; }
+    function isOp(v) { var t = peek(); return !!t && t.k === 'op' && t.v === v; }
+    function startsAtom() { var t = peek(); return !!t && (t.k === 'num' || t.k === 'name' || t.k === '('); }
+
+    function expr() {
+      var n = term();
+      while (isOp('+') || isOp('-')) { var o = tokens[i++].v; n = { t: o === '+' ? 'add' : 'sub', a: n, b: term() }; }
+      return n;
+    }
+    function term() {
+      var n = unary();
+      for (;;) {
+        if (isOp('*') || isOp('/')) { var o = tokens[i++].v; n = { t: o === '*' ? 'mul' : 'div', a: n, b: unary() }; }
+        else if (startsAtom()) { n = { t: 'mul', a: n, b: unary() }; }
+        else return n;
+      }
+    }
+    function unary() {
+      if (isOp('-')) { i++; return { t: 'neg', a: unary() }; }
+      if (isOp('+')) { i++; return unary(); }
+      return power();
+    }
+    function power() {
+      var b = atom();
+      if (isOp('^')) { i++; return { t: 'pow', b: b, e: unary() }; }
+      return b;
+    }
+    function atom() {
+      var t = peek();
+      if (!t) throw new CalcError('สมการยังไม่จบ', 'The expression ends unexpectedly');
+      if (t.k === 'num') { i++; return { t: 'num', v: t.v }; }
+      if (t.k === '(') {
+        i++;
+        var inner = expr();
+        if (!peek() || peek().k !== ')') throw new CalcError('วงเล็บปิดไม่ครบ', 'A closing bracket is missing');
+        i++; return inner;
+      }
+      if (t.k === 'name') {
+        i++;
+        if (t.v === 'x') return { t: 'x' };
+        if (t.v === 'e') return { t: 'const', v: 'e' };
+        if (t.v === 'pi') return { t: 'const', v: 'pi' };
+        var pw = null;
+        if (isOp('^')) {
+          i++;
+          var et = peek();
+          if (!et || et.k !== 'num') throw new CalcError('หลัง ^ ของฟังก์ชันต้องเป็นตัวเลข เช่น sec^2(x)', 'A plain number must follow ^ on a function, e.g. sec^2(x)');
+          i++; pw = et.v;
+        }
+        var arg;
+        if (peek() && (peek().k === '(' || peek().k === 'name')) arg = atom();
+        else if (peek() && peek().k === 'num') {
+          throw new CalcError('เขียน ' + t.v + ' ' + peek().v + '… กำกวม — ใส่วงเล็บให้ชัด เช่น ' + t.v + '(' + peek().v + 'x)',
+            'Writing ' + t.v + ' ' + peek().v + '… is ambiguous — use brackets, e.g. ' + t.v + '(' + peek().v + 'x)');
+        } else throw new CalcError('ฟังก์ชัน ' + t.v + ' ยังไม่มีตัวถูกดำเนินการ', 'Function ' + t.v + ' has no argument');
+        var node = { t: 'fn', name: t.v, arg: arg };
+        return pw === null ? node : { t: 'pow', b: node, e: { t: 'num', v: pw } };
+      }
+      throw new CalcError('อ่านสมการตรงนี้ไม่ออก', 'Cannot read the expression here');
+    }
+
+    var out = expr();
+    if (i < tokens.length) throw new CalcError('มีส่วนเกินหลังสมการ', 'There is leftover input after the expression');
+    return out;
+  }
+
+  /* ── 4. คำนวณค่าเชิงตัวเลข ── */
+  function ev(n, x) {
+    switch (n.t) {
+      case 'num': return n.v;
+      case 'x': return x;
+      case 'const': return n.v === 'e' ? Math.E : Math.PI;
+      case 'neg': return -ev(n.a, x);
+      case 'add': return ev(n.a, x) + ev(n.b, x);
+      case 'sub': return ev(n.a, x) - ev(n.b, x);
+      case 'mul': return ev(n.a, x) * ev(n.b, x);
+      case 'div': return ev(n.a, x) / ev(n.b, x);
+      case 'pow': return Math.pow(ev(n.b, x), ev(n.e, x));
+      case 'fn': {
+        var u = ev(n.arg, x);
+        switch (n.name) {
+          case 'sin': return Math.sin(u);
+          case 'cos': return Math.cos(u);
+          case 'tan': return Math.tan(u);
+          case 'sec': return 1 / Math.cos(u);
+          case 'csc': return 1 / Math.sin(u);
+          case 'cot': return Math.cos(u) / Math.sin(u);
+          case 'ln': case 'log': return Math.log(Math.abs(u));
+          case 'exp': return Math.exp(u);
+          case 'sqrt': return Math.sqrt(u);
+          case 'arcsin': case 'asin': return Math.asin(u);
+          case 'arctan': case 'atan': return Math.atan(u);
+        }
+        return NaN;
+      }
+    }
+    return NaN;
+  }
+
+  function hasX(n) {
+    if (n.t === 'x') return true;
+    if (n.t === 'num' || n.t === 'const') return false;
+    if (n.t === 'fn') return hasX(n.arg);
+    if (n.t === 'neg') return hasX(n.a);
+    if (n.t === 'pow') return hasX(n.b) || hasX(n.e);
+    return hasX(n.a) || hasX(n.b);
+  }
+  function constVal(n) { return hasX(n) ? null : ev(n, 0); }
+
+  /* ── 5. แสดงผลเป็น HTML ── */
+  function ratio(v) {
+    var sign = v < 0 ? -1 : 1, a = Math.abs(v), q, p;
+    for (q = 1; q <= 5000; q++) {
+      p = a * q;
+      if (Math.abs(p - Math.round(p)) < 1e-9) return { p: sign * Math.round(p), q: q };
+    }
+    return null;
+  }
+  function minus(s) { return s.replace(/^-/, '−'); }   // ใช้ขีดลบคณิตศาสตร์ในการแสดงผล
+  function numStr(v) {
+    if (!isFinite(v)) return '—';
+    if (Math.abs(v - Math.round(v)) < 1e-10) return minus(String(Math.round(v)));
+    var r = ratio(v);
+    if (r) return r.q === 1 ? minus(String(r.p)) : frac(minus(String(r.p)), String(r.q));
+    return minus(String(Math.round(v * 1e6) / 1e6));
+  }
+  var PREC = { add: 1, sub: 1, mul: 2, div: 2, neg: 1, pow: 4 };
+  function toHtml(n, parentPrec) {
+    parentPrec = parentPrec || 0;
+    var s, myPrec = PREC[n.t] || 5;
+    switch (n.t) {
+      case 'num': s = numStr(n.v); break;
+      case 'x': s = 'x'; break;
+      case 'const': s = n.v === 'e' ? 'e' : 'π'; break;
+      case 'neg': s = '−' + toHtml(n.a, 2); break;
+      case 'add': s = toHtml(n.a, 1) + ' + ' + toHtml(n.b, 1); break;
+      case 'sub': s = toHtml(n.a, 1) + ' − ' + toHtml(n.b, 2); break;
+      case 'mul': {
+        // ตัวเลขนำหน้าเขียนติดกันแบบคณิตศาสตร์ (3x ไม่ใช่ 3·x) ที่เหลือใส่จุดคูณ
+        var A = toHtml(n.a, 2), B = toHtml(n.b, 2);
+        s = (n.a.t === 'num' && !/^[0-9]/.test(B.replace(/<[^>]+>/g, ''))) ? A + B : A + '·' + B;
+        break;
+      }
+      case 'div': return frac(toHtml(n.a, 0), toHtml(n.b, 0));
+      case 'pow': s = toHtml(n.b, 5) + '<sup>' + toHtml(n.e, 0) + '</sup>'; break;
+      case 'fn':
+        if (n.name === 'sqrt') return '√(' + toHtml(n.arg, 0) + ')';
+        return (n.name === 'log' ? 'ln' : n.name) + '(' + toHtml(n.arg, 0) + ')';
+    }
+    return myPrec < parentPrec ? '(' + s + ')' : s;
+  }
+
+  /* ── 6. แยกพจน์และดึงสัมประสิทธิ์ ── */
+  function termsOf(n, sign, out) {
+    sign = sign || 1; out = out || [];
+    if (n.t === 'add') { termsOf(n.a, sign, out); termsOf(n.b, sign, out); }
+    else if (n.t === 'sub') { termsOf(n.a, sign, out); termsOf(n.b, -sign, out); }
+    else if (n.t === 'neg') { termsOf(n.a, -sign, out); }
+    else out.push({ sign: sign, node: n });
+    return out;
+  }
+  function splitCoef(n, acc) {
+    acc = acc || { c: 1, fs: [] };
+    if (n.t === 'mul') { splitCoef(n.a, acc); splitCoef(n.b, acc); return acc; }
+    if (n.t === 'neg') { acc.c *= -1; splitCoef(n.a, acc); return acc; }
+    if (n.t === 'div') {
+      splitCoef(n.a, acc);
+      var d = constVal(n.b);
+      if (d !== null) {
+        if (d === 0) throw new CalcError('มีการหารด้วยศูนย์', 'Division by zero');
+        acc.c /= d;
+      } else acc.fs.push({ t: 'pow', b: n.b, e: { t: 'num', v: -1 } });
+      return acc;
+    }
+    var v = constVal(n);
+    if (v !== null) acc.c *= v; else acc.fs.push(n);
+    return acc;
+  }
+
+  /* ── 7. เชิงเส้น a·x + b ── */
+  function lin(n) {
+    var p, q, e, bb;
+    switch (n.t) {
+      case 'num': return { a: 0, b: n.v };
+      case 'const': return { a: 0, b: ev(n, 0) };
+      case 'x': return { a: 1, b: 0 };
+      case 'neg': p = lin(n.a); return p ? { a: -p.a, b: -p.b } : null;
+      case 'add': p = lin(n.a); q = lin(n.b); return (p && q) ? { a: p.a + q.a, b: p.b + q.b } : null;
+      case 'sub': p = lin(n.a); q = lin(n.b); return (p && q) ? { a: p.a - q.a, b: p.b - q.b } : null;
+      case 'mul':
+        p = lin(n.a); q = lin(n.b);
+        if (!p || !q || (p.a !== 0 && q.a !== 0)) return null;
+        return { a: p.a * q.b + q.a * p.b, b: p.b * q.b };
+      case 'div':
+        p = lin(n.a); q = lin(n.b);
+        if (!p || !q || q.a !== 0 || q.b === 0) return null;
+        return { a: p.a / q.b, b: p.b / q.b };
+      case 'pow':
+        e = constVal(n.e);
+        if (e === null) return null;
+        if (e === 1) return lin(n.b);
+        if (e === 0) return { a: 0, b: 1 };
+        bb = lin(n.b);
+        return (bb && bb.a === 0) ? { a: 0, b: Math.pow(bb.b, e) } : null;
+    }
+    return null;
+  }
+  function wrapArg(node, L) { return (L.a === 1 && L.b === 0) ? 'x' : '(' + toHtml(node, 0) + ')'; }
+
+  /* ── 8. สูตรจากตารางในแท็บถัดไป ── */
+  var R = {
+    k:      { th: 'ค่าคงที่',             en: 'Constant',            f: '∫ k dx = kx + C' },
+    pow:    { th: 'กฎกำลัง',              en: 'Power rule',          f: '∫ xⁿ dx = ' + frac('x<sup>n+1</sup>', 'n+1') + ' + C' },
+    recip:  { th: 'ส่วนกลับ',             en: 'Reciprocal',          f: '∫ ' + frac('1', 'x') + ' dx = ln|x| + C' },
+    ex:     { th: 'เลขชี้กำลังฐาน e',      en: 'Exponential, base e', f: '∫ eˣ dx = eˣ + C' },
+    ax:     { th: 'เลขชี้กำลังฐาน a',      en: 'Exponential, base a', f: '∫ aˣ dx = ' + frac('aˣ', 'ln(a)') + ' + C' },
+    sin:    { th: 'ปริพันธ์ของ sin',       en: 'Integral of sin',     f: '∫ sin x dx = −cos x + C' },
+    cos:    { th: 'ปริพันธ์ของ cos',       en: 'Integral of cos',     f: '∫ cos x dx = sin x + C' },
+    sec2:   { th: 'ปริพันธ์ของ sec²',      en: 'Integral of sec²',    f: '∫ sec²x dx = tan x + C' },
+    csc2:   { th: 'ปริพันธ์ของ csc²',      en: 'Integral of csc²',    f: '∫ csc²x dx = −cot x + C' },
+    sectan: { th: 'ปริพันธ์ของ sec·tan',   en: 'Integral of sec·tan', f: '∫ secx·tanx dx = sec x + C' },
+    csccot: { th: 'ปริพันธ์ของ csc·cot',   en: 'Integral of csc·cot', f: '∫ cscx·cotx dx = −csc x + C' },
+    asin:   { th: 'ได้ arcsin',            en: 'Gives arcsin',        f: '∫ ' + frac('1', '√(1−x²)') + ' dx = arcsin x + C' },
+    atan:   { th: 'ได้ arctan',            en: 'Gives arctan',        f: '∫ ' + frac('1', '1+x²') + ' dx = arctan x + C' }
   };
-  slider.addEventListener('input', renderFamily);
-  cInput.addEventListener('change', function () {
-    var v = parseFloat(cInput.value);
-    if (!isFinite(v)) return;
-    if (v < -3) v = -3; if (v > 3) v = 3;
-    slider.value = Math.round(v*10);
-    renderFamily();
-  });
-  renderFamily();
-})();
+  var CHAIN = { th: ' + ตัวในเป็นเชิงเส้น จึงหารด้วย a', en: ' + linear inner, so divide by a' };
 
+  /* ── 9. หาปริพันธ์ของแกนพจน์ ── */
+  function sqOfLin(node) {
+    var la, lb;
+    if (node.t === 'pow' && constVal(node.e) === 2) { la = lin(node.b); return la ? { L: la, node: node.b } : null; }
+    if (node.t === 'mul') {
+      la = lin(node.a); lb = lin(node.b);
+      if (la && lb && la.a === lb.a && la.b === lb.b && la.a !== 0) return { L: la, node: node.a };
+    }
+    return null;
+  }
+  function oneMinusSq(node) {
+    if (node.t !== 'sub' || constVal(node.a) !== 1) return null;
+    return sqOfLin(node.b);
+  }
+  function onePlusSq(node) {
+    if (node.t !== 'add') return null;
+    if (constVal(node.a) === 1) return sqOfLin(node.b);
+    if (constVal(node.b) === 1) return sqOfLin(node.a);
+    return null;
+  }
+
+  // ยุบกำลังที่ซ้อนกันให้เหลือ ฐาน + เลขชี้กำลังคงที่ตัวเดียว
+  function collapsePow(n) {
+    var acc = 1, cur = n, e;
+    while (cur.t === 'pow') {
+      e = constVal(cur.e);
+      if (e === null) return null;
+      acc *= e; cur = cur.b;
+    }
+    if (cur.t === 'fn' && cur.name === 'sqrt') { acc *= 0.5; cur = cur.arg; }
+    return { base: cur, e: acc };
+  }
+
+  function integrateCore(core) {
+    var L, e, base, m, den;
+
+    // (ก) เลขชี้กำลัง k^(เชิงเส้น) และ exp(เชิงเส้น)
+    if (core.t === 'pow') {
+      var bc = constVal(core.b);
+      if (bc !== null && hasX(core.e)) {
+        L = lin(core.e);
+        if (!L || L.a === 0 || bc <= 0) return null;
+        var isE = Math.abs(bc - Math.E) < 1e-12;
+        var expNode = core.e;
+        return {
+          k: 1 / L.a,
+          symDen: isE ? null : { html: 'ln(' + numStr(bc) + ')', val: Math.log(bc) },
+          expr: (isE ? 'e' : numStr(bc)) + '<sup>' + toHtml(expNode, 0) + '</sup>',
+          fv: function (x) { return Math.pow(bc, ev(expNode, x)); },
+          rule: isE ? R.ex : R.ax, chain: L.a !== 1
+        };
+      }
+    }
+    if (core.t === 'fn' && core.name === 'exp') {
+      L = lin(core.arg);
+      if (!L || L.a === 0) return null;
+      var ea = core.arg;
+      return {
+        k: 1 / L.a, symDen: null, expr: 'e<sup>' + toHtml(ea, 0) + '</sup>',
+        fv: function (x) { return Math.exp(ev(ea, x)); }, rule: R.ex, chain: L.a !== 1
+      };
+    }
+
+    // (ข) 1/√(1−u²) → arcsin , 1/(1+u²) → arctan
+    if (core.t === 'pow' && constVal(core.e) === -1) {
+      den = core.b;
+      if (den.t === 'fn' && den.name === 'sqrt') {
+        m = oneMinusSq(den.arg);
+        if (m && m.L.a !== 0) {
+          var mn = m.node;
+          return {
+            k: 1 / m.L.a, symDen: null, expr: 'arcsin(' + toHtml(mn, 0) + ')',
+            fv: function (x) { return Math.asin(ev(mn, x)); }, rule: R.asin, chain: m.L.a !== 1
+          };
+        }
+      }
+      m = onePlusSq(den);
+      if (m && m.L.a !== 0) {
+        var mn2 = m.node;
+        return {
+          k: 1 / m.L.a, symDen: null, expr: 'arctan(' + toHtml(mn2, 0) + ')',
+          fv: function (x) { return Math.atan(ev(mn2, x)); }, rule: R.atan, chain: m.L.a !== 1
+        };
+      }
+    }
+
+    // (ค) แยกฐานกับเลขชี้กำลังคงที่ — ยุบกำลังซ้อนด้วย เช่น (x²)⁻¹ → x⁻²  และ √u → u^(1/2)
+    var col = collapsePow(core);
+    if (!col) return null;
+    base = col.base; e = col.e;
+
+    // (ง) ฐานเป็นเชิงเส้น → กฎกำลัง / ส่วนกลับ
+    L = lin(base);
+    if (L && L.a !== 0) {
+      var bn = base;
+      if (Math.abs(e + 1) < 1e-12) {
+        return {
+          k: 1 / L.a, symDen: null, expr: 'ln|' + toHtml(bn, 0) + '|',
+          fv: function (x) { return Math.log(Math.abs(ev(bn, x))); },
+          rule: R.recip, chain: L.a !== 1
+        };
+      }
+      var ne = e + 1;
+      return {
+        k: 1 / (L.a * ne), symDen: null, expr: wrapArg(bn, L) + '<sup>' + numStr(ne) + '</sup>',
+        fv: function (x) { return Math.pow(ev(bn, x), ne); },
+        rule: R.pow, chain: L.a !== 1
+      };
+    }
+
+    // (จ) ตรีโกณที่ตัวในเป็นเชิงเส้น
+    if (base.t === 'fn') {
+      L = lin(base.arg);
+      if (L && L.a !== 0) {
+        var aw = wrapArg(base.arg, L), an = base.arg, nm = base.name;
+        if (nm === 'sin' && e === 1) return { k: -1 / L.a, symDen: null, expr: 'cos' + aw, fv: function (x) { return Math.cos(ev(an, x)); }, rule: R.sin, chain: L.a !== 1 };
+        if (nm === 'cos' && e === 1) return { k: 1 / L.a, symDen: null, expr: 'sin' + aw, fv: function (x) { return Math.sin(ev(an, x)); }, rule: R.cos, chain: L.a !== 1 };
+        if (nm === 'sec' && e === 2) return { k: 1 / L.a, symDen: null, expr: 'tan' + aw, fv: function (x) { return Math.tan(ev(an, x)); }, rule: R.sec2, chain: L.a !== 1 };
+        if (nm === 'csc' && e === 2) return { k: -1 / L.a, symDen: null, expr: 'cot' + aw, fv: function (x) { return Math.cos(ev(an, x)) / Math.sin(ev(an, x)); }, rule: R.csc2, chain: L.a !== 1 };
+      }
+    }
+    return null;
+  }
+
+  function integratePair(f1, f2) {
+    function nameOf(n) { return n.t === 'fn' ? n.name : null; }
+    var pairs = [['sec', 'tan', 1, R.sectan, 'sec'], ['csc', 'cot', -1, R.csccot, 'csc']], i;
+    for (i = 0; i < pairs.length; i++) {
+      var P = pairs[i], A = null, B = null;
+      if (nameOf(f1) === P[0] && nameOf(f2) === P[1]) { A = f1; B = f2; }
+      else if (nameOf(f2) === P[0] && nameOf(f1) === P[1]) { A = f2; B = f1; }
+      if (!A) continue;
+      var la = lin(A.arg), lb = lin(B.arg);
+      if (!la || !lb || la.a === 0 || la.a !== lb.a || la.b !== lb.b) continue;
+      var aw = wrapArg(A.arg, la), an = A.arg, isSec = P[4] === 'sec';
+      return {
+        k: P[2] / la.a, symDen: null, expr: P[4] + aw,
+        fv: function (x) { var u = ev(an, x); return isSec ? 1 / Math.cos(u) : 1 / Math.sin(u); },
+        rule: P[3], chain: la.a !== 1
+      };
+    }
+    return null;
+  }
+
+  /* ── 10. ประกอบคำตอบ ── */
+  function renderCoef(c, symDen, expr) {
+    var r = ratio(c), p, q;
+    if (r) { p = r.p; q = r.q; } else { p = c; q = 1; }
+    var neg = p < 0, ap = Math.abs(p);
+    var head = (Math.abs(ap - 1) < 1e-12) ? '' : (r ? String(ap) : String(Math.round(ap * 1e6) / 1e6));
+    var num = head ? head + expr : expr;
+    var den = null;
+    if (q !== 1 && symDen) den = q + '·' + symDen.html;
+    else if (q !== 1) den = String(q);
+    else if (symDen) den = symDen.html;
+    return { neg: neg, html: den ? frac(num, den) : num };
+  }
+
+  function integrate(ast) {
+    var terms = termsOf(ast), parts = [], i;
+    for (i = 0; i < terms.length; i++) {
+      var sc = splitCoef(terms[i].node), c = terms[i].sign * sc.c, res;
+      if (sc.fs.length === 0) res = { k: 1, symDen: null, expr: 'x', fv: function (x) { return x; }, rule: R.k, chain: false };
+      else if (sc.fs.length === 1) res = integrateCore(sc.fs[0]);
+      else if (sc.fs.length === 2) res = integratePair(sc.fs[0], sc.fs[1]);
+      else res = null;
+
+      if (!res) {
+        var bad = toHtml(terms[i].node, 0);
+        throw new CalcError(
+          'พจน์ <b>' + bad + '</b> อยู่นอกขอบเขตที่เครื่องนี้ทำได้ — รองรับเฉพาะสูตรในตารางสูตร บวก/ลบพจน์ คูณด้วยค่าคงที่ และตัวในวงเล็บที่เป็นเชิงเส้น (ax+b) เท่านั้น',
+          'The term <b>' + bad + '</b> is outside what this tool can do — it only handles the formula table, sums and differences, constant multiples, and linear inner arguments (ax+b).');
+      }
+      parts.push({ c: c, res: res, src: terms[i] });
+    }
+    return parts;
+  }
+
+  function answerHtml(parts) {
+    var out = '', i;
+    for (i = 0; i < parts.length; i++) {
+      var r = renderCoef(parts[i].c * parts[i].res.k, parts[i].res.symDen, parts[i].res.expr);
+      if (i === 0) out += (r.neg ? '−' : '') + r.html;
+      else out += (r.neg ? ' − ' : ' + ') + r.html;
+    }
+    return out;
+  }
+  function Fof(parts) {
+    return function (x) {
+      var s = 0, i;
+      for (i = 0; i < parts.length; i++) {
+        var p = parts[i], d = p.res.symDen ? p.res.symDen.val : 1;
+        s += p.c * p.res.k / d * p.res.fv(x);
+      }
+      return s;
+    };
+  }
+
+  /* ── 11. ตรวจคำตอบด้วยการดิฟกลับ ── */
+  function verify(ast, F) {
+    var cand = [0.3, 0.7, 1.3, 1.9, 2.4, -0.4, -1.2, 0.55, 1.05], rows = [], h = 1e-5, i, j;
+    for (i = 0; i < cand.length && rows.length < 5; i++) {
+      var x = cand[i], want = ev(ast, x), got = (F(x + h) - F(x - h)) / (2 * h);
+      if (!isFinite(want) || !isFinite(got) || Math.abs(want) > 1e3) continue;
+      var err = Math.abs(got - want) / Math.max(1, Math.abs(want));
+      rows.push({ x: x, want: want, got: got, ok: err < 1e-4 });
+    }
+    var allOk = rows.length >= 3;
+    for (j = 0; j < rows.length; j++) if (!rows[j].ok) allOk = false;
+    return { rows: rows, ok: allOk };
+  }
+
+  /* ── 12. ต่อสายกับหน้าเว็บ ── */
+  var inp = document.getElementById('fnInput');
+  var goBtn = document.getElementById('goBtn');
+  var outEl = document.getElementById('calcOut');
+  var useB = document.getElementById('useBounds');
+  var bFields = document.getElementById('boundsFields');
+  var aIn = document.getElementById('aInput');
+  var bIn = document.getElementById('bInput');
+
+  function n3(v) {
+    if (!isFinite(v)) return '—';
+    var s = v.toFixed(4);
+    if (s.indexOf('.') > -1) s = s.replace(/0+$/, '').replace(/\.$/, '');
+    return s === '-0' ? '0' : s;
+  }
+  function evalBound(txt, label) {
+    var node = parse(tokenize(normalize(txt)));
+    if (hasX(node)) throw new CalcError('ขอบเขต ' + label + ' ต้องเป็นตัวเลข ห้ามมี x', 'Bound ' + label + ' must be a number and cannot contain x');
+    return ev(node, 0);
+  }
+
+  function run() {
+    var lang = getLang() === 'en' ? 'en' : 'th';
+    try {
+      var ast = parse(tokenize(normalize(inp.value)));
+      var parts = integrate(ast);
+      var F = Fof(parts);
+      var core = answerHtml(parts);
+      var html = '', i, q;
+
+      if (useB.checked) {
+        var a = evalBound(aIn.value, 'a'), b = evalBound(bIn.value, 'b');
+        var Fa = F(a), Fb = F(b);
+        html += '<div class="calc-answer">∫<sub>' + n3(a) + '</sub><sup>' + n3(b) + '</sup> ' + toHtml(ast, 0) + ' dx' +
+          ' = [ ' + core + ' ]<sub>' + n3(a) + '</sub><sup>' + n3(b) + '</sup><br>' +
+          '= ' + n3(Fb) + ' − (' + n3(Fa) + ') = <b>' + n3(Fb - Fa) + '</b></div>';
+        if (!isFinite(Fb - Fa)) {
+          html += '<div class="calc-error">' + (lang === 'en'
+            ? '<b>Careful:</b> the antiderivative is undefined somewhere on this interval — the definite integral may not exist.'
+            : '<b>ระวัง:</b> ปฏิยานุพันธ์หาค่าไม่ได้ที่บางจุดในช่วงนี้ — ปริพันธ์จำกัดเขตอาจไม่มีค่า') + '</div>';
+        }
+      } else {
+        html += '<div class="calc-answer">∫ ' + toHtml(ast, 0) + ' dx = ' + core + ' + C</div>';
+      }
+
+      html += '<div class="calc-steps">';
+      for (i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        var r = renderCoef(p.c * p.res.k, p.res.symDen, p.res.expr);
+        html += '<div class="step">' + '①②③④⑤⑥⑦⑧⑨'.charAt(Math.min(i, 8)) + ' ∫ ' +
+          (p.src.sign < 0 ? '(−)' : '') + toHtml(p.src.node, 0) + ' dx = ' + (r.neg ? '−' : '') + r.html +
+          ' &nbsp; <span class="used-rule">— ' + p.res.rule[lang] + (p.res.chain ? CHAIN[lang] : '') + ' &nbsp; ' + p.res.rule.f + '</span></div>';
+      }
+      html += '<div class="step"><b>' + (lang === 'en' ? 'Then add the constant of integration: + C' : 'แล้วบวกค่าคงตัวของการหาปริพันธ์: + C') +
+        '</b> &nbsp; <span class="used-rule">' + (lang === 'en'
+          ? '— any two antiderivatives differ only by a constant'
+          : '— ปฏิยานุพันธ์สองตัวใดๆ ต่างกันได้แค่ค่าคงที่') + '</span></div></div>';
+
+      var v = verify(ast, F);
+      html += '<div class="check-box"><b>' + (v.ok ? '✓ ' : '⚠ ') +
+        (lang === 'en' ? 'Check by differentiating back' : 'ตรวจคำตอบด้วยการดิฟกลับ') + '</b> — ' +
+        (lang === 'en' ? 'differentiating F(x) should give f(x) again at every x (checked numerically):'
+                       : 'ดิฟ F(x) กลับต้องได้ f(x) เดิมที่ทุกค่า x (ตรวจแบบตัวเลข):') +
+        '<table class="check-table"><thead><tr><th>x</th><th>F′(x)</th><th>f(x)</th><th></th></tr></thead><tbody>';
+      for (q = 0; q < v.rows.length; q++) {
+        var rw = v.rows[q];
+        html += '<tr><td>' + n3(rw.x) + '</td><td>' + n3(rw.got) + '</td><td>' + n3(rw.want) + '</td><td>' + (rw.ok ? '✓' : '✗') + '</td></tr>';
+      }
+      html += '</tbody></table></div>';
+      outEl.innerHTML = html;
+    } catch (err) {
+      var msg = (err instanceof CalcError) ? err[lang] : (lang === 'en' ? 'Cannot read this expression.' : 'อ่านสมการนี้ไม่ออก');
+      outEl.innerHTML = '<div class="calc-error"><b>' + (lang === 'en' ? 'Not supported: ' : 'ยังทำให้ไม่ได้: ') + '</b>' + msg + '<br>' +
+        (lang === 'en' ? 'Try for example: <b>3x^2 - 4x + 5</b> , <b>sin(2x)</b> , <b>1/x</b> , <b>e^(3x)</b> , <b>sec(x)^2</b>'
+                       : 'ลองพิมพ์เช่น: <b>3x^2 - 4x + 5</b> , <b>sin(2x)</b> , <b>1/x</b> , <b>e^(3x)</b> , <b>sec(x)^2</b>') + '</div>';
+    }
+  }
+
+  goBtn.addEventListener('click', run);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+  aIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+  bIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+  useB.addEventListener('change', function () { bFields.hidden = !useB.checked; run(); });
+
+  // กดการ์ดสูตรในตาราง → เติมตัวอย่างลงช่องพิมพ์แล้วคำนวณให้ทันที
+  [].slice.call(document.querySelectorAll('.rule-card.pickable')).forEach(function (card) {
+    function fill() {
+      inp.value = card.dataset.fill;
+      showTab('def');
+      run();
+      inp.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    card.addEventListener('click', fill);
+    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fill(); } });
+  });
+
+  renderCalc = run;
+  run();
+})();
 applyLang(getLang());
 </script>
 
