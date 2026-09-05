@@ -103,6 +103,8 @@
   .squeeze .q { background: #E3F3D8; color: var(--primary); font-weight: 800; padding: .05em .45em; border-radius: 6px; }
   .squeeze .M { color: #C05621; font-weight: 800; }
   .squeeze .gap { display: block; color: var(--muted); font-size: .82rem; }
+  .squeeze .case { display: block; margin-top: 4px; font-size: .82rem; font-weight: 700; color: #C05621; }
+  .squeeze .case.ends { color: #2F855A; }
 
   .fig-axis { stroke: var(--muted); stroke-width: 1.2; }
   .fig-curve { fill: none; stroke: var(--primary); stroke-width: 2.2; stroke-linecap: round; }
@@ -612,12 +614,27 @@ var renderProofFig1, renderProofFigStrip;
       G.paint(parts);
 
       hOut.textContent = 'h = ' + fmt(h, 2);
+      // ตอนนี้อยู่กรณีไหน: f เพิ่ม/ลดตลอดช่วง (m, M อยู่ปลายช่วง) หรือมียอด/ท้องอยู่ข้างใน
+      var fL = f(x0), fR = f(x0 + h), tol = 1e-6;
+      var mLeft = Math.abs(mm.m - fL) < tol, mRight = Math.abs(mm.m - fR) < tol;
+      var MLeft = Math.abs(mm.M - fL) < tol, MRight = Math.abs(mm.M - fR) < tol;
+      var caseTxt;
+      if (mLeft && MRight) caseTxt = (lang === 'en'
+        ? 'f increases across this whole strip → here m = f(x) and M = f(x+h) exactly'
+        : 'ช่วงนี้ f เพิ่มขึ้นตลอด → ตรงนี้ m = f(x) และ M = f(x+h) พอดี');
+      else if (MLeft && mRight) caseTxt = (lang === 'en'
+        ? 'f decreases across this whole strip → m = f(x+h) and M = f(x), the other way round'
+        : 'ช่วงนี้ f ลดลงตลอด → m = f(x+h) และ M = f(x) สลับกัน');
+      else caseTxt = (lang === 'en'
+        ? 'f turns around inside this strip → m or M is NOT an endpoint value'
+        : 'ช่วงนี้ f มียอดหรือท้องอยู่ข้างใน → m หรือ M ไม่ได้อยู่ที่ปลายช่วง');
       var atMinTxt = (lang === 'en' ? 'min at t = ' : 'ต่ำสุดที่ t = ') + fmt(mm.atM, 2);
       var atMaxTxt = (lang === 'en' ? 'max at t = ' : 'สูงสุดที่ t = ') + fmt(mm.atX, 2);
       out.innerHTML =
         '<span class="m">m = ' + fmt(mm.m, 3) + '</span> &nbsp;≤&nbsp; ' +
         '<span class="q">' + frac('F(x+h) − F(x)', 'h') + ' = ' + fmt(q, 3) + '</span>' +
         ' &nbsp;≤&nbsp; <span class="M">M = ' + fmt(mm.M, 3) + '</span>' +
+        '<span class="case' + ((mLeft && MRight) || (MLeft && mRight) ? ' ends' : '') + '">' + caseTxt + '</span>' +
         '<span class="gap">' + atMinTxt + ' &nbsp;•&nbsp; ' + atMaxTxt + ' &nbsp;•&nbsp; x = ' + fmt(x0, 2) + '</span>' +
         '<span class="gap">' + (lang === 'en'
           ? 'gap M − m = ' + fmt(mm.M - mm.m, 3) + ' &nbsp;•&nbsp; target f(x) = ' + fmt(fx, 3)
