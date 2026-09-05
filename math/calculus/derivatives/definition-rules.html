@@ -446,6 +446,13 @@ var renderOrigin;
     parts.push(P.pathD(secant, 'curve-hi'));
     parts.push(P.guide(Px, Py, Qx, Py, 'hiB'));
     parts.push(P.guide(Qx, Py, Qx, Qy, 'hiB'));
+    // drop lines from P and Q straight down to the x-axis, labelled x and x+h
+    parts.push(P.guide(Px, 0, Px, Py, ''));
+    parts.push(P.guide(Qx, 0, Qx, Qy, ''));
+    // when h is small the two drop lines sit right next to each other — split the labels apart (x to the left, x+h to the right) instead of letting them run into each other
+    var dropsClose = (P.px(Qx) - P.px(Px)) < 40;
+    parts.push('<text class="plot-caption" text-anchor="' + (dropsClose ? 'end' : 'middle') + '" x="' + (dropsClose ? P.px(Px) - 3 : P.px(Px)) + '" y="' + (P.py(0) + 27) + '">x</text>');
+    parts.push('<text class="plot-caption" text-anchor="' + (dropsClose ? 'start' : 'middle') + '" x="' + (dropsClose ? P.px(Qx) + 3 : P.px(Qx)) + '" y="' + (P.py(0) + 27) + '">x+h</text>');
     parts.push(P.circle(Px, Py, 4.8, 'pt-fillP'));
     parts.push(P.dragPoint(Qx, Qy, 4.8, 'pt-fillB', 'Q'));
     // point labels named after the function values they represent, f(x) at P and f(x+h) at Q
