@@ -126,7 +126,7 @@
 
   <div class="card">
     <div class="card-title"><span class="icon">📐</span><span data-th="ลาก θ ดูรูปสามเหลี่ยมสำหรับ √(a²−x²), x = a·sinθ" data-en="Drag θ to see the triangle for √(a²−x²), x = a·sinθ">ลาก θ ดูรูปสามเหลี่ยมสำหรับ √(a²−x²), x = a·sinθ</span></div>
-    <div class="plot-wrap"><svg id="plotTriangle" viewBox="0 0 460 260" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="plot-wrap"><svg id="plotTriangle" viewBox="0 0 300 275" xmlns="http://www.w3.org/2000/svg"></svg></div>
     <div class="sim-controls" style="margin-top:1rem;">
       <div class="round-limit">
         <span class="mode-label">θ</span>
@@ -216,8 +216,9 @@ var renderTriangle;
   var slider = document.getElementById('thetaSlider');
   var thetaInput = document.getElementById('thetaNumInput');
   var formulaLive = document.getElementById('triFormula');
-  var a = 90;
-  var ox = 60, oy = 220;
+  var a = 90;              // ค่า a ทางคณิตศาสตร์ (ใช้ในสูตรด้านล่างกราฟ)
+  var S = 2.3;             // สเกลสำหรับวาดเท่านั้น — ทำให้รูปสามเหลี่ยมเต็มกรอบ
+  var ox = 55, oy = 240;
 
   renderTriangle = function render() {
     var lang = getLang()==='en' ? 'en':'th';
@@ -225,18 +226,18 @@ var renderTriangle;
     var rad = deg * Math.PI / 180;
     var opp = a * Math.sin(rad);
     var adj = a * Math.cos(rad);
-    var px2 = ox + adj, py2 = oy;
-    var px3 = ox + adj, py3 = oy - opp;
+    var px2 = ox + adj * S, py2 = oy;
+    var px3 = ox + adj * S, py3 = oy - opp * S;
 
     var parts = [];
     parts.push('<line class="tri-line" x1="'+ox+'" y1="'+oy+'" x2="'+px2+'" y2="'+py2+'"/>');
     parts.push('<line class="tri-line" x1="'+px2+'" y1="'+py2+'" x2="'+px3+'" y2="'+py3+'"/>');
     parts.push('<line class="tri-hyp" x1="'+ox+'" y1="'+oy+'" x2="'+px3+'" y2="'+py3+'"/>');
-    parts.push('<path class="tri-arc" d="M '+(ox+28)+' '+oy+' A 28 28 0 0 0 '+(ox+28*Math.cos(rad))+' '+(oy-28*Math.sin(rad))+'"/>');
-    parts.push('<text class="tri-label" x="'+(ox+18)+'" y="'+(oy-10)+'">θ</text>');
-    parts.push('<text class="tri-label" x="'+((ox+px3)/2-34)+'" y="'+((oy+py3)/2)+'">a (=90)</text>');
-    parts.push('<text class="tri-label" x="'+((ox+px2)/2-14)+'" y="'+(oy+18)+'">√(a²−x²)</text>');
-    parts.push('<text class="tri-label" x="'+(px2+6)+'" y="'+((py2+py3)/2)+'">x</text>');
+    parts.push('<path class="tri-arc" d="M '+(ox+42)+' '+oy+' A 42 42 0 0 0 '+(ox+42*Math.cos(rad))+' '+(oy-42*Math.sin(rad))+'"/>');
+    parts.push('<text class="tri-label" x="'+(ox+22)+'" y="'+(oy-14)+'">θ</text>');
+    parts.push('<text class="tri-label" text-anchor="end" x="'+((ox+px3)/2-8)+'" y="'+((oy+py3)/2-8)+'">a (=90)</text>');
+    parts.push('<text class="tri-label" text-anchor="middle" x="'+((ox+px2)/2)+'" y="'+(oy+22)+'">√(a²−x²)</text>');
+    parts.push('<text class="tri-label" x="'+(px2+9)+'" y="'+((py2+py3)/2+5)+'">x</text>');
     svg.innerHTML = parts.join('');
 
     if (document.activeElement !== thetaInput) thetaInput.value = fmt(deg,0);
