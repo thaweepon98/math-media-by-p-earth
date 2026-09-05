@@ -554,12 +554,16 @@ var renderProofFig1, renderProofFigStrip;
       return '<text class="fig-t ' + (cls || '') + '" text-anchor="' + (anchor || 'middle') + '" x="' + px(x).toFixed(2) + '" y="' + py(y).toFixed(2) + '">' + s + '</text>';
     }
     // ป้ายกำกับที่ไม่ยอมให้ล้นขอบซ้าย/ขวาของกรอบ
+    // ป้ายที่เลื่อนจากจุดบนกราฟเป็นหน่วยพิกเซล (สองแกนสเกลไม่เท่ากัน จึงเลื่อนเป็นข้อมูลไม่ได้)
+    function labelPx(x, y, dx, dy, s, cls, anchor) {
+      return '<text class="fig-t ' + (cls || '') + '" text-anchor="' + (anchor || 'middle') + '" x="' + (px(x) + dx).toFixed(2) + '" y="' + (py(y) + dy).toFixed(2) + '">' + s + '</text>';
+    }
     function labelClamped(x, y, s, cls, halfWidth) {
       var X = Math.min(Math.max(px(x), padL + halfWidth), w - padR - halfWidth);
       return '<text class="fig-t ' + (cls || '') + '" text-anchor="middle" x="' + X.toFixed(2) + '" y="' + py(y).toFixed(2) + '">' + s + '</text>';
     }
     function paint(parts) { svg.innerHTML = parts.join(''); }
-    return { px: px, py: py, w: w, axes: axes, curve: curve, area: area, drop: drop, box: box, dot: dot, tick: tick, tickPair: tickPair, label: label, labelClamped: labelClamped, paint: paint };
+    return { px: px, py: py, w: w, axes: axes, curve: curve, area: area, drop: drop, box: box, dot: dot, tick: tick, tickPair: tickPair, label: label, labelClamped: labelClamped, labelPx: labelPx, paint: paint };
   }
 
   /* ── ภาค 1: แถบ [x, x+h] ถูกหนีบด้วยสี่เหลี่ยม m·h และ M·h ── */
@@ -592,6 +596,10 @@ var renderProofFig1, renderProofFigStrip;
       var mm = minMaxOn(x0, x0 + h);
       var q = (Fint(x0 + h) - Fint(x0)) / h;      // ผลหารเชิงผลต่างของ F
       var fx = f(x0);
+      // ตอนนี้อยู่กรณีไหน: f เพิ่ม/ลดตลอดช่วง (m, M อยู่ปลายช่วง) หรือมียอด/ท้องอยู่ข้างใน
+      var fL = f(x0), fR = f(x0 + h), tol = 1e-6;
+      var mLeft = Math.abs(mm.m - fL) < tol, mRight = Math.abs(mm.m - fR) < tol;
+      var MLeft = Math.abs(mm.M - fL) < tol, MRight = Math.abs(mm.M - fR) < tol;
 
       var parts = [];
       parts.push(G.box(x0, x0 + h, mm.M, 'fig-rect-M'));           // กรอบสูง M
@@ -608,16 +616,17 @@ var renderProofFig1, renderProofFigStrip;
       // จุดบนเส้นโค้งที่ค่าต่ำสุดและค่าสูงสุดเกิดขึ้นจริง
       parts.push(G.dot(mm.atM, mm.m, 'fig-dot-m'));
       parts.push(G.dot(mm.atX, mm.M, 'fig-dot-M'));
+      // ถ้าจุดต่ำสุด/สูงสุดตรงกับปลายช่วงพอดี ให้บอกไปเลยว่ามันคือ f(x) หรือ f(x+h)
+      if (mLeft) parts.push(G.labelPx(mm.atM, mm.m, -6, 15, 'f(x)', 'gm', 'end'));
+      else if (mRight) parts.push(G.labelPx(mm.atM, mm.m, 6, 15, 'f(x+h)', 'gm', 'start'));
+      if (MLeft) parts.push(G.labelPx(mm.atX, mm.M, -6, -15, 'f(x)', 'gM', 'end'));
+      else if (MRight) parts.push(G.labelPx(mm.atX, mm.M, 6, -15, 'f(x+h)', 'gM', 'start'));
       parts.push(G.label((a + x0) / 2, f((a + x0) / 2) * 0.36, 'F(x)', 'dim'));
       parts.push(G.label(x0 + h + 0.06, mm.M, 'M', 'gM', 'start'));
       parts.push(G.label(x0 + h + 0.06, mm.m * 0.62, 'm', 'gm', 'start'));
       G.paint(parts);
 
       hOut.textContent = 'h = ' + fmt(h, 2);
-      // ตอนนี้อยู่กรณีไหน: f เพิ่ม/ลดตลอดช่วง (m, M อยู่ปลายช่วง) หรือมียอด/ท้องอยู่ข้างใน
-      var fL = f(x0), fR = f(x0 + h), tol = 1e-6;
-      var mLeft = Math.abs(mm.m - fL) < tol, mRight = Math.abs(mm.m - fR) < tol;
-      var MLeft = Math.abs(mm.M - fL) < tol, MRight = Math.abs(mm.M - fR) < tol;
       var caseTxt;
       if (mLeft && MRight) caseTxt = (lang === 'en'
         ? 'f increases across this whole strip → here m = f(x) and M = f(x+h) exactly'
@@ -630,10 +639,12 @@ var renderProofFig1, renderProofFigStrip;
         : 'ช่วงนี้ f มียอดหรือท้องอยู่ข้างใน → m หรือ M ไม่ได้อยู่ที่ปลายช่วง');
       var atMinTxt = (lang === 'en' ? 'min at t = ' : 'ต่ำสุดที่ t = ') + fmt(mm.atM, 2);
       var atMaxTxt = (lang === 'en' ? 'max at t = ' : 'สูงสุดที่ t = ') + fmt(mm.atX, 2);
+      var mName = mLeft ? ' = f(x)' : (mRight ? ' = f(x+h)' : '');
+      var MName = MLeft ? ' = f(x)' : (MRight ? ' = f(x+h)' : '');
       out.innerHTML =
-        '<span class="m">m = ' + fmt(mm.m, 3) + '</span> &nbsp;≤&nbsp; ' +
+        '<span class="m">m' + mName + ' = ' + fmt(mm.m, 3) + '</span> &nbsp;≤&nbsp; ' +
         '<span class="q">' + frac('F(x+h) − F(x)', 'h') + ' = ' + fmt(q, 3) + '</span>' +
-        ' &nbsp;≤&nbsp; <span class="M">M = ' + fmt(mm.M, 3) + '</span>' +
+        ' &nbsp;≤&nbsp; <span class="M">M' + MName + ' = ' + fmt(mm.M, 3) + '</span>' +
         '<span class="case' + ((mLeft && MRight) || (MLeft && mRight) ? ' ends' : '') + '">' + caseTxt + '</span>' +
         '<span class="gap">' + atMinTxt + ' &nbsp;•&nbsp; ' + atMaxTxt + ' &nbsp;•&nbsp; x = ' + fmt(x0, 2) + '</span>' +
         '<span class="gap">' + (lang === 'en'
