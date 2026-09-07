@@ -11,6 +11,7 @@
     --primary: #1C3B22;
     --secondary: #FF8A3D;
     --accent: #68EF3F;
+    --accent-2: #3FA82E;
     --warning: #FFB347;
     --bg: #F3F7EC;
     --card: #FFFFFF;
@@ -130,7 +131,7 @@
   .card-title .icon { font-size: 1.5rem; }
 
   /* ── Fraction display ── */
-  .fraction {
+  .frac {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
@@ -139,15 +140,45 @@
     vertical-align: middle;
     margin: 0 4px;
   }
-  .fraction .num { font-size: 1.3em; border-bottom: 3px solid currentColor; padding-bottom: 2px; min-width: 24px; text-align: center; }
-  .fraction .den { font-size: 1.3em; padding-top: 4px; min-width: 24px; text-align: center; }
+  .frac .num { font-size: 1.3em; border-bottom: 3px solid currentColor; padding-bottom: 2px; min-width: 24px; text-align: center; white-space: nowrap; }
+  .frac .den { font-size: 1.3em; padding-top: 4px; min-width: 24px; text-align: center; white-space: nowrap; }
+  .frac-sm .num, .frac-sm .den { font-size: 1em; }
   .frac-lg .num, .frac-lg .den { font-size: 1.8em; }
   .frac-xl .num, .frac-xl .den { font-size: 2.2em; }
+  /* จำนวนคละ: จำนวนเต็มวางชิดหน้าเศษส่วน ไม่ให้หลุดบรรทัดจากกัน */
+  .mixed { display: inline-flex; align-items: center; gap: .1em; font-weight: 700; vertical-align: middle; }
 
   /* ── Pizza / Pie visual ── */
-  .pie-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: center; margin: 20px 0; }
-  .pie-wrap { text-align: center; }
-  .pie-wrap svg { display: block; margin: 0 auto; }
+  .pie-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; justify-content: center; margin: 20px 0; }
+  .pie-wrap { text-align: center; max-width: 220px; }
+  .pie-wrap svg, .pie-wrap canvas { display: block; margin: 0 auto; max-width: 100%; }
+  .pie-form { margin-top: 10px; min-height: 46px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── บล็อกที่ปิดไว้ก่อน แล้วกดเปิด ── */
+  .reveal > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: .95rem;
+  }
+  .reveal > summary::-webkit-details-marker { display: none; }
+  .reveal[open] > summary { background: #E3F3D8; color: var(--primary); }
+
+  /* ── ช่องกรอกเศษส่วนแบบบน-ล่าง ── */
+  .type-controls { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; justify-content: center; margin: 20px 0 6px; }
+  .ctrl-label { font-weight: 700; font-size: .9rem; margin-bottom: 6px; text-align: center; }
+  .frac-input { text-align: center; }
+  .frac-input input { width: 56px; padding: 6px; border: 2px solid var(--border); border-radius: 8px; font-size: 1.05rem; text-align: center; font-family: 'Sarabun', sans-serif; }
+  .frac-input .bar { height: 3px; margin: 3px 0; border-radius: 2px; }
+  .type-hint { text-align: center; color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+  #pizzaCanvas { max-width: 100%; height: auto; }
   .pie-label { margin-top: 8px; font-weight: 600; font-size: 1.05rem; }
 
   /* ── Number line ── */
@@ -179,7 +210,7 @@
   .box-info  { background: #EEF7E6; border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
   .box-warn  { background: #FFF7ED; border-left: 4px solid var(--warning); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
   .box-ok    { background: #ECFDF5; border-left: 4px solid var(--accent);  border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
-  .box-pink  { background: #FFF0F3; border-left: 4px solid var(--secondary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+  .box-pink  { background: #FFF4EC; border-left: 4px solid var(--secondary); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
 
   /* ── Formula ── */
   .formula {
@@ -218,8 +249,12 @@
     background: white;
   }
   .quiz-opt:hover { border-color: var(--primary); color: var(--primary); }
+  /* ตัวเลือกที่เป็นเศษส่วนบน/ล่างสูงกว่าตัวหนังสือ — บีบขนาดลงและลดพาดดิงบน-ล่างให้ปุ่มไม่บวม */
+  .quiz-opt { min-height: 54px; display: inline-flex; align-items: center; padding: 6px 20px; }
+  .quiz-opt .frac .num, .quiz-opt .frac .den { font-size: 1.05em; min-width: 18px; }
+  .quiz-opt .frac .num { border-bottom-width: 2px; }
   .quiz-opt.correct { border-color: var(--accent); background: #ECFDF5; color: #047857; }
-  .quiz-opt.wrong   { border-color: var(--secondary); background: #FFF0F3; color: #BE185D; }
+  .quiz-opt.wrong   { border-color: var(--secondary); background: #FFF4EC; color: #BE185D; }
   .quiz-feedback { font-weight: 700; font-size: 1rem; min-height: 24px; }
   .quiz-feedback.ok  { color: #047857; }
   .quiz-feedback.err { color: #BE185D; }
@@ -236,7 +271,7 @@
     cursor: pointer;
     transition: background .2s;
   }
-  .btn-next:hover { background: #142B52; }
+  .btn-next:hover { background: #142B1A; }
 
   /* ── Score badge ── */
   .score-badge {
@@ -252,9 +287,17 @@
   /* ── Compare visual ── */
   .compare-bar-wrap { margin: 10px 0; }
   .bar-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
-  .bar-label { min-width: 60px; font-weight: 700; text-align: right; font-size: 1.1rem; }
-  .bar-track { flex: 1; background: #EEF7E6; border-radius: 30px; height: 32px; overflow: hidden; }
-  .bar-fill  { height: 100%; border-radius: 30px; display: flex; align-items: center; padding-left: 12px; color: white; font-weight: 700; font-size: .95rem; transition: width .5s ease; }
+  .bar-label { min-width: 56px; font-weight: 700; text-align: right; font-size: 1rem; display: flex; justify-content: flex-end; }
+  .bar-track { position: relative; flex: 1; background: #EEF7E6; border-radius: 8px; height: 38px; overflow: hidden; }
+  .bar-fill  { height: 100%; display: flex; align-items: center; padding-left: 12px; color: white; font-weight: 700; font-size: .95rem; transition: width .5s ease; }
+  /* ขีดแบ่งช่องตาม LCM — วางทับรางเพื่อให้นับช่องได้ทั้งส่วนที่ระบายและไม่ระบาย */
+  .bar-ticks { position: absolute; inset: 0; display: flex; pointer-events: none; }
+  .bar-ticks span { flex: 1; border-right: 1.5px solid rgba(255,255,255,.75); }
+  .bar-ticks span:last-child { border-right: none; }
+  /* เส้นแบ่ง "1 หน่วยเต็ม" ตอนเปรียบเทียบเศษเกิน */
+  .bar-unit { position: absolute; top: 0; bottom: 0; width: 2.5px; background: var(--text); opacity: .55; }
+  .bar-scale { display: flex; margin: 2px 0 10px 68px; font-size: .8rem; color: var(--muted); }
+  .bar-scale span { text-align: right; }
 
   /* ── Responsive ── */
   @media (max-width: 600px) {
@@ -291,14 +334,14 @@
     <div class="card-title"><span class="icon">🍕</span><span data-th="เศษส่วนคืออะไร?" data-en="What is a Fraction?">เศษส่วนคืออะไร?</span></div>
     <p class="i18n-th" style="font-size:1.05rem; line-height:1.8;">
       <strong>เศษส่วน</strong> คือจำนวนที่แสดงส่วนย่อยของสิ่งทั้งหมด เขียนในรูป
-      <span class="fraction" style="color:var(--primary)">
+      <span class="frac" style="color:var(--primary)">
         <span class="num">a</span><span class="den">b</span>
       </span>
       โดยที่ <strong>a</strong> เรียกว่า <em>เศษ (Numerator)</em> และ <strong>b</strong> เรียกว่า <em>ส่วน (Denominator)</em>
     </p>
     <p class="i18n-en" hidden style="font-size:1.05rem; line-height:1.8;">
       A <strong>fraction</strong> is a number that shows a part of a whole, written as
-      <span class="fraction" style="color:var(--primary)">
+      <span class="frac" style="color:var(--primary)">
         <span class="num">a</span><span class="den">b</span>
       </span>
       where <strong>a</strong> is called the <em>Numerator</em> and <strong>b</strong> is called the <em>Denominator</em>
@@ -315,15 +358,16 @@
     <div class="card-title"><span class="icon">🎨</span><span data-th="เห็นภาพด้วยพิซซ่า" data-en="Visualize with Pizza">เห็นภาพด้วยพิซซ่า</span></div>
     <p data-th="ลองเลื่อนสไลด์ดูว่า เศษส่วนแต่ละตัวหน้าตาเป็นอย่างไร" data-en="Drag the sliders to see what each fraction looks like">ลองเลื่อนสไลด์ดูว่า เศษส่วนแต่ละตัวหน้าตาเป็นอย่างไร</p>
 
+    <!-- เศษอยู่แถวบน ส่วนอยู่แถวล่าง ให้เรียงตรงกับที่ตาอ่านเศษส่วนบน/ล่าง -->
     <div class="slider-row" style="margin-top:18px;">
+      <label data-th="เศษ (a):" data-en="Numerator (a):">เศษ (a):</label>
+      <input type="range" id="numSlider" min="1" max="24" value="3" oninput="drawPizza()">
+      <span class="slider-val" id="numVal">3</span>
+    </div>
+    <div class="slider-row">
       <label data-th="ส่วน (b):" data-en="Denominator (b):">ส่วน (b):</label>
       <input type="range" id="denSlider" min="2" max="12" value="4" oninput="drawPizza()">
       <span class="slider-val" id="denVal">4</span>
-    </div>
-    <div class="slider-row">
-      <label data-th="เศษ (a):" data-en="Numerator (a):">เศษ (a):</label>
-      <input type="range" id="numSlider" min="1" max="12" value="3" oninput="drawPizza()">
-      <span class="slider-val" id="numVal">3</span>
     </div>
 
     <div style="text-align:center; margin:20px 0;">
@@ -336,64 +380,83 @@
 
   <div class="card">
     <div class="card-title"><span class="icon">📏</span><span data-th="ประเภทของเศษส่วน" data-en="Types of Fractions">ประเภทของเศษส่วน</span></div>
-    <div class="pie-row">
-      <div class="pie-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="54" fill="#EEF7E6" stroke="#6C63FF" stroke-width="2"/>
-          <!-- 3/4 filled -->
-          <path d="M60,60 L114,60 A54,54 0 1,0 60,6 Z" fill="#6C63FF" opacity=".85"/>
-          <text x="60" y="66" text-anchor="middle" font-size="22" font-weight="bold" fill="white">¾</text>
-        </svg>
-        <div class="pie-label i18n-th" style="color:var(--primary)">เศษแท้<br><small>เศษ &lt; ส่วน</small></div>
-        <div class="pie-label i18n-en" style="color:var(--primary)" hidden>Proper Fraction<br><small>numerator &lt; denominator</small></div>
+    <!-- ปิดภาพไว้ก่อน ให้ครูถามนักเรียนได้ก่อนเฉลยด้วยภาพ
+         ทั้งสามช่องใช้ภาษาภาพเดียวกับการ์ดพิซซ่าด้านบน จะได้เทียบกันตรงๆ ว่าอันไหนเกิน 1 ถาด
+         ช่องเศษเกินกับจำนวนคละใช้เศษส่วนตัวเดียวกันเสมอ ภาพจึงเหมือนกันเป๊ะ ต่างแค่วิธีเขียน -->
+    <details class="reveal" id="typeReveal" ontoggle="drawTypeVisuals()">
+      <summary data-th="🖼️ กดดูภาพประกอบ" data-en="🖼️ Show the pictures">🖼️ กดดูภาพประกอบ</summary>
+
+      <div class="type-controls">
+        <div>
+          <div class="ctrl-label" style="color:var(--primary)" data-th="เศษแท้" data-en="Proper">เศษแท้</div>
+          <div class="frac-input">
+            <input type="number" id="propNum" value="3" min="1" max="11" oninput="drawTypeVisuals()">
+            <div class="bar" style="background:var(--primary)"></div>
+            <input type="number" id="propDen" value="4" min="2" max="12" oninput="drawTypeVisuals()">
+          </div>
+        </div>
+        <div>
+          <div class="ctrl-label" style="color:var(--secondary)" data-th="เศษเกิน = จำนวนคละ" data-en="Improper = Mixed">เศษเกิน = จำนวนคละ</div>
+          <div class="frac-input">
+            <input type="number" id="impNum" value="5" min="2" max="36" oninput="drawTypeVisuals()">
+            <div class="bar" style="background:var(--secondary)"></div>
+            <input type="number" id="impDen" value="2" min="2" max="12" oninput="drawTypeVisuals()">
+          </div>
+        </div>
       </div>
-      <div class="pie-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="54" fill="#FFF0F3" stroke="#FF8A3D" stroke-width="2"/>
-          <path d="M60,60 L60,6 A54,54 0 1,1 60,114 Z" fill="#FF8A3D" opacity=".85"/>
-          <text x="60" y="66" text-anchor="middle" font-size="18" font-weight="bold" fill="white">5/4</text>
-        </svg>
-        <div class="pie-label i18n-th" style="color:var(--secondary)">เศษเกิน<br><small>เศษ &gt; ส่วน</small></div>
-        <div class="pie-label i18n-en" style="color:var(--secondary)" hidden>Improper Fraction<br><small>numerator &gt; denominator</small></div>
+      <div class="type-hint i18n-th">ลองเปลี่ยนตัวเลขดู — ช่องซ้ายบังคับให้เศษน้อยกว่าส่วนเสมอ ช่องขวาบังคับให้เศษมากกว่าส่วนเสมอ</div>
+      <div class="type-hint i18n-en" hidden>Try changing the numbers — the left one always keeps numerator &lt; denominator, the right one always keeps numerator &gt; denominator</div>
+
+      <div class="pie-row">
+        <div class="pie-wrap">
+          <canvas id="typeProper" width="80" height="80"></canvas>
+          <div class="pie-form" id="typeProperLabel"></div>
+          <div class="pie-label i18n-th" style="color:var(--primary)">เศษแท้<br><small>เศษ &lt; ส่วน → ไม่ถึง 1 ถาด</small></div>
+          <div class="pie-label i18n-en" style="color:var(--primary)" hidden>Proper Fraction<br><small>numerator &lt; denominator → under one whole</small></div>
+        </div>
+        <div class="pie-wrap">
+          <canvas id="typeImproper" width="248" height="80"></canvas>
+          <div class="pie-form" id="typeImproperLabel"></div>
+          <div class="pie-label i18n-th" style="color:var(--secondary)">เศษเกิน<br><small>เศษ &gt; ส่วน → เกิน 1 ถาด</small></div>
+          <div class="pie-label i18n-en" style="color:var(--secondary)" hidden>Improper Fraction<br><small>numerator &gt; denominator → more than one whole</small></div>
+        </div>
+        <div class="pie-wrap">
+          <canvas id="typeMixed" width="248" height="80"></canvas>
+          <div class="pie-form" id="typeMixedLabel"></div>
+          <div class="pie-label i18n-th" style="color:var(--accent-2)">จำนวนคละ<br><small>จำนวนเต็ม + เศษแท้</small></div>
+          <div class="pie-label i18n-en" style="color:var(--accent-2)" hidden>Mixed Number<br><small>whole number + proper fraction</small></div>
+        </div>
       </div>
-      <div class="pie-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <rect x="8" y="30" width="44" height="60" rx="6" fill="#ECFDF5" stroke="#68EF3F" stroke-width="2"/>
-          <rect x="8" y="30" width="44" height="60" rx="6" fill="#68EF3F" opacity=".3"/>
-          <text x="30" y="66" text-anchor="middle" font-size="22" font-weight="bold" fill="#047857">2</text>
-          <rect x="68" y="30" width="44" height="60" rx="6" fill="#ECFDF5" stroke="#68EF3F" stroke-width="2"/>
-          <rect x="68" y="56" width="44" height="34" rx="0 0 6 6" fill="#68EF3F" opacity=".85"/>
-          <text x="90" y="66" text-anchor="middle" font-size="20" font-weight="bold" fill="white">½</text>
-          <text x="60" y="108" text-anchor="middle" font-size="14" fill="#047857" font-weight="700">2½</text>
-        </svg>
-        <div class="pie-label i18n-th" style="color:#047857">จำนวนคละ<br><small>จำนวนเต็ม + เศษแท้</small></div>
-        <div class="pie-label i18n-en" style="color:#047857" hidden>Mixed Number<br><small>whole number + proper fraction</small></div>
-      </div>
-    </div>
+
+      <div class="box-ok i18n-th" style="text-align:center;" id="typeSameNote"></div>
+      <div class="box-ok i18n-en" hidden style="text-align:center;" id="typeSameNoteEn"></div>
+    </details>
 
     <div class="box-warn i18n-th">
       <strong>🔄 แปลงระหว่างกัน:</strong><br>
       เศษเกิน → จำนวนคละ: หารเศษด้วยส่วน (ผลหาร = จำนวนเต็ม, เศษเหลือ = เศษใหม่)<br>
-      จำนวนคละ → เศษเกิน: (จำนวนเต็ม × ส่วน + เศษ) / ส่วน
+      จำนวนคละ → เศษเกิน:
+      <span class="frac frac-sm"><span class="num">จำนวนเต็ม × ส่วน + เศษ</span><span class="den">ส่วน</span></span>
     </div>
     <div class="box-warn i18n-en" hidden>
       <strong>🔄 Converting between them:</strong><br>
       Improper → Mixed: divide numerator by denominator (quotient = whole number, remainder = new numerator)<br>
-      Mixed → Improper: (whole number × denominator + numerator) / denominator
+      Mixed → Improper:
+      <span class="frac frac-sm"><span class="num">whole × denominator + numerator</span><span class="den">denominator</span></span>
     </div>
 
-    <div class="i18n-th" style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-th" style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>ตัวอย่าง:</strong>
-      <span class="fraction" style="color:var(--secondary)"><span class="num">11</span><span class="den">4</span></span>
+      <span class="frac" style="color:var(--secondary)"><span class="num">11</span><span class="den">4</span></span>
       = 11 ÷ 4 = 2 เหลือ 3 → <strong>2
-        <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
       </strong>
     </div>
-    <div class="i18n-en" hidden style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-en" hidden style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>Example:</strong>
-      <span class="fraction" style="color:var(--secondary)"><span class="num">11</span><span class="den">4</span></span>
+      <span class="frac" style="color:var(--secondary)"><span class="num">11</span><span class="den">4</span></span>
       = 11 ÷ 4 = 2 remainder 3 → <strong>2
-        <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
       </strong>
     </div>
   </div>
@@ -401,7 +464,7 @@
   <div class="card">
     <div class="card-title"><span class="icon">📍</span><span data-th="เศษส่วนบนเส้นจำนวน" data-en="Fractions on a Number Line">เศษส่วนบนเส้นจำนวน</span></div>
     <div class="numline-wrap">
-      <canvas id="numlineCanvas" width="800" height="90"></canvas>
+      <canvas id="numlineCanvas" width="800" height="104"></canvas>
     </div>
     <p style="text-align:center; color:var(--muted); font-size:.95rem; margin-top:8px;" data-th="เส้นจำนวนแสดงเศษส่วนระหว่าง 0 ถึง 2" data-en="Number line showing fractions between 0 and 2">เส้นจำนวนแสดงเศษส่วนระหว่าง 0 ถึง 2</p>
   </div>
@@ -420,19 +483,20 @@
     <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; margin:20px 0;">
       <div style="text-align:center;">
         <div style="font-weight:700; margin-bottom:6px; color:var(--primary);" data-th="เศษส่วนที่ 1" data-en="Fraction 1">เศษส่วนที่ 1</div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <input type="number" id="cmp_a1" value="3" min="1" max="99" style="width:60px; padding:8px; border:2px solid var(--primary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
-          <span style="font-size:1.5rem; font-weight:700;">/</span>
-          <input type="number" id="cmp_b1" value="4" min="1" max="99" style="width:60px; padding:8px; border:2px solid var(--primary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
+        <!-- ช่องกรอกวางบน-ล่างคั่นด้วยขีด แบบเดียวกับเครื่องคิดเลขในแท็บบวก-ลบ -->
+        <div>
+          <input type="number" id="cmp_a1" value="3" min="1" max="99" style="width:64px; padding:8px; border:2px solid var(--primary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
+          <div style="height:3px; background:var(--primary); margin:3px 0;"></div>
+          <input type="number" id="cmp_b1" value="4" min="1" max="99" style="width:64px; padding:8px; border:2px solid var(--primary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
         </div>
       </div>
       <button onclick="compareNow()" style="padding:12px 28px; background:var(--primary); color:white; border:none; border-radius:30px; font-family:Sarabun; font-size:1rem; font-weight:700; cursor:pointer; margin-top:12px;" data-th="เปรียบเทียบ ▶" data-en="Compare ▶">เปรียบเทียบ ▶</button>
       <div style="text-align:center;">
         <div style="font-weight:700; margin-bottom:6px; color:var(--secondary);" data-th="เศษส่วนที่ 2" data-en="Fraction 2">เศษส่วนที่ 2</div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <input type="number" id="cmp_a2" value="2" min="1" max="99" style="width:60px; padding:8px; border:2px solid var(--secondary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
-          <span style="font-size:1.5rem; font-weight:700;">/</span>
-          <input type="number" id="cmp_b2" value="3" min="1" max="99" style="width:60px; padding:8px; border:2px solid var(--secondary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
+        <div>
+          <input type="number" id="cmp_a2" value="2" min="1" max="99" style="width:64px; padding:8px; border:2px solid var(--secondary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
+          <div style="height:3px; background:var(--secondary); margin:3px 0;"></div>
+          <input type="number" id="cmp_b2" value="3" min="1" max="99" style="width:64px; padding:8px; border:2px solid var(--secondary); border-radius:8px; font-size:1.2rem; text-align:center; font-family:Sarabun;">
         </div>
       </div>
     </div>
@@ -444,24 +508,24 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card mathy">
     <div class="card-title"><span class="icon">📋</span><span data-th="วิธีเปรียบเทียบ — 3 วิธีหลัก" data-en="Comparison Methods — 3 Main Approaches">วิธีเปรียบเทียบ — 3 วิธีหลัก</span></div>
 
     <div class="i18n-th" style="margin-bottom:16px;">
-      <strong style="color:var(--primary);">วิธีที่ 1: ทำส่วนให้เท่ากัน (หา LCM)</strong>
+      <strong style="color:var(--primary);">วิธีที่ 1: ทำส่วนให้เท่ากัน (หา ค.ร.น.)</strong>
       <div class="steps">
-        <div class="step"><div class="step-num">1</div><div class="step-body">หา LCM ของตัวส่วน</div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-body">หา ค.ร.น. ของตัวส่วน</div></div>
         <div class="step"><div class="step-num">2</div><div class="step-body">ทำส่วนให้เท่ากัน (คูณเศษตาม)</div></div>
         <div class="step"><div class="step-num">3</div><div class="step-body">เปรียบเทียบเศษ — เศษมากกว่า เศษส่วนมากกว่า</div></div>
       </div>
-      <div style="background:#F8F4FF; border-radius:10px; padding:12px 16px;">
-        <span class="fraction" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+      <div style="background:#F2F8EC; border-radius:10px; padding:12px 16px;">
+        <span class="frac" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         กับ
-        <span class="fraction" style="color:var(--secondary)"><span class="num">2</span><span class="den">3</span></span>
-        → LCM(4,3)=12 →
-        <span class="fraction" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">2</span><span class="den">3</span></span>
+        → ค.ร.น.(4,3)=12 →
+        <span class="frac" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
         กับ
-        <span class="fraction" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
         → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
       </div>
     </div>
@@ -472,14 +536,14 @@
         <div class="step"><div class="step-num">2</div><div class="step-body">Make the denominators equal (multiply the numerators to match)</div></div>
         <div class="step"><div class="step-num">3</div><div class="step-body">Compare the numerators — the bigger numerator is the bigger fraction</div></div>
       </div>
-      <div style="background:#F8F4FF; border-radius:10px; padding:12px 16px;">
-        <span class="fraction" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+      <div style="background:#F2F8EC; border-radius:10px; padding:12px 16px;">
+        <span class="frac" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         vs
-        <span class="fraction" style="color:var(--secondary)"><span class="num">2</span><span class="den">3</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">2</span><span class="den">3</span></span>
         → LCM(4,3)=12 →
-        <span class="fraction" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
+        <span class="frac" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
         vs
-        <span class="fraction" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
+        <span class="frac" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
         → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
       </div>
     </div>
@@ -487,18 +551,24 @@
     <div class="i18n-th" style="margin-bottom:16px;">
       <strong style="color:var(--secondary);">วิธีที่ 2: คูณไขว้</strong>
       <div class="formula">
-        a/b กับ c/d → เปรียบเทียบ a×d กับ b×c
+        <span class="frac" style="font-size:.9em;color:white"><span class="num">a</span><span class="den">b</span></span>
+        กับ
+        <span class="frac" style="font-size:.9em;color:white"><span class="num">c</span><span class="den">d</span></span>
+        → เปรียบเทียบ a×d กับ b×c
       </div>
-      <div style="background:#FFF0F3; border-radius:10px; padding:12px 16px;">
+      <div style="background:#FFF4EC; border-radius:10px; padding:12px 16px;">
         3/4 กับ 2/3 → 3×3=<strong>9</strong> กับ 4×2=<strong>8</strong> → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
       </div>
     </div>
     <div class="i18n-en" hidden style="margin-bottom:16px;">
       <strong style="color:var(--secondary);">Method 2: Cross-Multiplication</strong>
       <div class="formula">
-        a/b vs c/d → compare a×d vs b×c
+        <span class="frac" style="font-size:.9em;color:white"><span class="num">a</span><span class="den">b</span></span>
+        vs
+        <span class="frac" style="font-size:.9em;color:white"><span class="num">c</span><span class="den">d</span></span>
+        → compare a×d vs b×c
       </div>
-      <div style="background:#FFF0F3; border-radius:10px; padding:12px 16px;">
+      <div style="background:#FFF4EC; border-radius:10px; padding:12px 16px;">
         3/4 vs 2/3 → 3×3=<strong>9</strong> vs 4×2=<strong>8</strong> → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
       </div>
     </div>
@@ -525,34 +595,34 @@
   <div class="card">
     <div class="card-title"><span class="icon">➕</span><span data-th="การบวกเศษส่วน — ส่วนเท่ากัน" data-en="Adding Fractions — Same Denominator">การบวกเศษส่วน — ส่วนเท่ากัน</span></div>
     <div class="formula">
-      <span class="fraction" style="font-size:.9em;color:white"><span class="num">a</span><span class="den">c</span></span>
+      <span class="frac" style="font-size:.9em;color:white"><span class="num">a</span><span class="den">c</span></span>
       +
-      <span class="fraction" style="font-size:.9em;color:white"><span class="num">b</span><span class="den">c</span></span>
+      <span class="frac" style="font-size:.9em;color:white"><span class="num">b</span><span class="den">c</span></span>
       =
-      <span class="fraction" style="font-size:.9em;color:white"><span class="num">a + b</span><span class="den">c</span></span>
+      <span class="frac" style="font-size:.9em;color:white"><span class="num">a + b</span><span class="den">c</span></span>
     </div>
     <div class="box-info i18n-th">เมื่อส่วนเท่ากัน → <strong>บวกแค่เศษ</strong> ส่วนคงเดิม</div>
     <div class="box-info i18n-en" hidden>When denominators match → <strong>just add the numerators</strong>, the denominator stays the same</div>
 
-    <div class="i18n-th" style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-th" style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>ตัวอย่าง:</strong>
       <div style="font-size:1.3rem; margin:10px 0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">7</span></span>
         <span style="font-size:1.8rem;">+</span>
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">7</span></span>
         <span style="font-size:1.8rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">7</span></span>
       </div>
       <canvas id="addSameCanvas" width="500" height="60"></canvas>
     </div>
-    <div class="i18n-en" hidden style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-en" hidden style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>Example:</strong>
       <div style="font-size:1.3rem; margin:10px 0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">7</span></span>
         <span style="font-size:1.8rem;">+</span>
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">7</span></span>
         <span style="font-size:1.8rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">7</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">7</span></span>
       </div>
     </div>
   </div>
@@ -560,7 +630,7 @@
   <div class="card">
     <div class="card-title"><span class="icon">➕</span><span data-th="การบวกเศษส่วน — ส่วนต่างกัน" data-en="Adding Fractions — Different Denominators">การบวกเศษส่วน — ส่วนต่างกัน</span></div>
     <div class="steps i18n-th">
-      <div class="step"><div class="step-num">1</div><div class="step-body">หา <strong>LCM</strong> ของตัวส่วน</div></div>
+      <div class="step"><div class="step-num">1</div><div class="step-body">หา <strong>ค.ร.น.</strong> ของตัวส่วน</div></div>
       <div class="step"><div class="step-num">2</div><div class="step-body">ทำส่วนให้เท่ากันโดยคูณเศษและส่วนด้วยจำนวนที่เหมาะสม</div></div>
       <div class="step"><div class="step-num">3</div><div class="step-body">บวกเศษ แล้ว<strong>ทำเศษส่วนให้อยู่ในรูปอย่างต่ำ</strong></div></div>
     </div>
@@ -571,7 +641,7 @@
     </div>
 
     <!-- Interactive calculator -->
-    <div style="background:#F8F4FF; border-radius:12px; padding:20px; margin-top:16px;">
+    <div style="background:#F2F8EC; border-radius:12px; padding:20px; margin-top:16px;">
       <div style="font-weight:700; margin-bottom:12px;" data-th="🧮 ลองคำนวณเอง" data-en="🧮 Try It Yourself">🧮 ลองคำนวณเอง</div>
       <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
         <div>
@@ -603,16 +673,16 @@
       ⚠️ If subtracting leaves a negative numerator, be careful converting it to a mixed number
     </div>
     <div class="i18n-th" style="background:#FFFBEB; border-radius:10px; padding:14px 18px; margin-top:10px;">
-      <strong>ตัวอย่าง:</strong> 2 - <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="fraction"><span class="num">8</span><span class="den">4</span></span> - <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="fraction" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
-      = 1<span class="fraction" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
+      <strong>ตัวอย่าง:</strong> 2 - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+      = <span class="frac"><span class="num">8</span><span class="den">4</span></span> - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+      = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
+      = 1<span class="frac" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
     </div>
     <div class="i18n-en" hidden style="background:#FFFBEB; border-radius:10px; padding:14px 18px; margin-top:10px;">
-      <strong>Example:</strong> 2 - <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="fraction"><span class="num">8</span><span class="den">4</span></span> - <span class="fraction" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="fraction" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
-      = 1<span class="fraction" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
+      <strong>Example:</strong> 2 - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+      = <span class="frac"><span class="num">8</span><span class="den">4</span></span> - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+      = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
+      = 1<span class="frac" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
     </div>
   </div>
 
@@ -624,74 +694,74 @@
   <div class="card">
     <div class="card-title"><span class="icon">✖️</span><span data-th="การคูณเศษส่วน" data-en="Multiplying Fractions">การคูณเศษส่วน</span></div>
     <div class="formula">
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
       ×
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">c</span><span class="den">d</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">c</span><span class="den">d</span></span>
       =
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">a × c</span><span class="den">b × d</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">a × c</span><span class="den">b × d</span></span>
     </div>
     <div class="box-ok i18n-th">✅ คูณเศษกับเศษ คูณส่วนกับส่วน — <strong>ไม่ต้องทำส่วนให้เท่ากัน!</strong></div>
     <div class="box-ok i18n-en" hidden>✅ Multiply numerator by numerator, denominator by denominator — <strong>no need to match denominators!</strong></div>
 
-    <div class="i18n-th" style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-th" style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>ตัวอย่าง:</strong>
       <div style="font-size:1.2rem; margin:12px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">3</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">3</span></span>
         <span style="font-size:1.6rem;">×</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">3</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">3</span><span class="den">5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg"><span class="num">2×3</span><span class="den">3×5</span></span>
+        <span class="frac frac-lg"><span class="num">2×3</span><span class="den">3×5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg"><span class="num">6</span><span class="den">15</span></span>
+        <span class="frac frac-lg"><span class="num">6</span><span class="den">15</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
       </div>
     </div>
-    <div class="i18n-en" hidden style="background:#F8F4FF; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-en" hidden style="background:#F2F8EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>Example:</strong>
       <div style="font-size:1.2rem; margin:12px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">3</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den">3</span></span>
         <span style="font-size:1.6rem;">×</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">3</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">3</span><span class="den">5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg"><span class="num">2×3</span><span class="den">3×5</span></span>
+        <span class="frac frac-lg"><span class="num">2×3</span><span class="den">3×5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg"><span class="num">6</span><span class="den">15</span></span>
+        <span class="frac frac-lg"><span class="num">6</span><span class="den">15</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
       </div>
     </div>
 
     <div class="box-warn i18n-th">
       💡 <strong>เทคนิค Cancellation (ตัดทอนก่อนคูณ):</strong>
       ลดตัวเลขเฉียงกันก่อน ทำให้คำนวณง่ายขึ้น<br>
-      <span class="fraction" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
+      <span class="frac" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
       ×
-      <span class="fraction" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
+      <span class="frac" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
       → ตัด 3 ออก →
-      <span class="fraction" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+      <span class="frac" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
     </div>
     <div class="box-warn i18n-en" hidden>
       💡 <strong>Cancellation trick (simplify before multiplying):</strong>
       cancel matching diagonal numbers first to make the calculation easier<br>
-      <span class="fraction" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
+      <span class="frac" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
       ×
-      <span class="fraction" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
+      <span class="frac" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
       → cancel the 3s →
-      <span class="fraction" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+      <span class="frac" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title"><span class="icon">➗</span><span data-th="การหารเศษส่วน" data-en="Dividing Fractions">การหารเศษส่วน</span></div>
     <div class="formula">
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
       ÷
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">c</span><span class="den">d</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">c</span><span class="den">d</span></span>
       =
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">a</span><span class="den">b</span></span>
       ×
-      <span class="fraction" style="color:white;font-size:.9em"><span class="num">d</span><span class="den">c</span></span>
+      <span class="frac" style="color:white;font-size:.9em"><span class="num">d</span><span class="den">c</span></span>
     </div>
     <div class="box-pink i18n-th">
       🔄 <strong>กลับเศษเป็นส่วน ส่วนเป็นเศษ แล้วเปลี่ยน ÷ เป็น ×</strong>
@@ -700,43 +770,43 @@
       🔄 <strong>Flip the second fraction (numerator↔denominator), then change ÷ to ×</strong>
     </div>
 
-    <div class="i18n-th" style="background:#FFF0F3; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-th" style="background:#FFF4EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>ตัวอย่าง:</strong>
       <div style="font-size:1.2rem; margin:12px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         <span style="font-size:1.6rem;">÷</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">2</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">2</span><span class="den">5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         <span style="font-size:1.6rem;">×</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">2</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">2</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">15</span><span class="den">8</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">15</span><span class="den">8</span></span>
         <span style="font-size:1.3rem;">= 1</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">7</span><span class="den">8</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">7</span><span class="den">8</span></span>
       </div>
     </div>
-    <div class="i18n-en" hidden style="background:#FFF0F3; border-radius:12px; padding:16px 20px; margin-top:12px;">
+    <div class="i18n-en" hidden style="background:#FFF4EC; border-radius:12px; padding:16px 20px; margin-top:12px;">
       <strong>Example:</strong>
       <div style="font-size:1.2rem; margin:12px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         <span style="font-size:1.6rem;">÷</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">2</span><span class="den">5</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">2</span><span class="den">5</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">3</span><span class="den">4</span></span>
         <span style="font-size:1.6rem;">×</span>
-        <span class="fraction frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">2</span></span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num">5</span><span class="den">2</span></span>
         <span style="font-size:1.6rem;">=</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">15</span><span class="den">8</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">15</span><span class="den">8</span></span>
         <span style="font-size:1.3rem;">= 1</span>
-        <span class="fraction frac-lg" style="color:var(--accent)"><span class="num">7</span><span class="den">8</span></span>
+        <span class="frac frac-lg" style="color:var(--accent)"><span class="num">7</span><span class="den">8</span></span>
       </div>
     </div>
   </div>
 
   <div class="card">
     <div class="card-title"><span class="icon">🧮</span><span data-th="เครื่องคิดเลขเศษส่วน" data-en="Fraction Calculator">เครื่องคิดเลขเศษส่วน</span></div>
-    <div style="background:#F8F4FF; border-radius:12px; padding:20px;">
+    <div style="background:#F2F8EC; border-radius:12px; padding:20px;">
       <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
         <div>
           <input type="number" id="md_a1" value="2" min="-99" max="99" style="width:55px;padding:8px;border:2px solid #ccc;border-radius:8px;font-size:1.1rem;text-align:center;font-family:Sarabun;">
@@ -761,7 +831,8 @@
 </section>
 
 <!-- ══════════════ TAB 5: ประยุกต์ ══════════════ -->
-<section id="tab-apply" class="tab-panel">
+<!-- mathy = ให้ applyMathText แปลงโทเคน a/b ในบล็อกนี้เป็นเศษส่วนบน/ล่างตอนโหลด (docs/adr/0004) -->
+<section id="tab-apply" class="tab-panel mathy">
 
   <div class="card">
     <div class="card-title"><span class="icon">🧩</span><span data-th="โจทย์ประยุกต์เศษส่วน" data-en="Fraction Word Problems">โจทย์ประยุกต์เศษส่วน</span></div>
@@ -771,24 +842,24 @@
   <!-- Problem 1 -->
   <div class="card">
     <div class="card-title" style="color:var(--secondary)"><span class="icon">🍰</span><span data-th="โจทย์ที่ 1 — เค้กวันเกิด" data-en="Problem 1 — Birthday Cake">โจทย์ที่ 1 — เค้กวันเกิด</span></div>
-    <div class="i18n-th" style="background:#FFF0F3; border-radius:10px; padding:16px; margin-bottom:16px; font-size:1.05rem; line-height:1.8;">
+    <div class="i18n-th" style="background:#FFF4EC; border-radius:10px; padding:16px; margin-bottom:16px; font-size:1.05rem; line-height:1.8;">
       น้องมีเค้ก 1 ชิ้น แบ่งออกเป็น 8 ส่วน น้องกิน <strong>3/8</strong> ของเค้ก แม่กิน <strong>2/8</strong> ของเค้ก <br>
       ถามว่าเค้กที่เหลืออยู่เท่าใด?
     </div>
-    <div class="i18n-en" hidden style="background:#FFF0F3; border-radius:10px; padding:16px; margin-bottom:16px; font-size:1.05rem; line-height:1.8;">
+    <div class="i18n-en" hidden style="background:#FFF4EC; border-radius:10px; padding:16px; margin-bottom:16px; font-size:1.05rem; line-height:1.8;">
       Nong has 1 cake cut into 8 pieces. Nong eats <strong>3/8</strong> of the cake, Mom eats <strong>2/8</strong> of the cake. <br>
       How much cake is left?
     </div>
     <details>
       <summary style="cursor:pointer; font-weight:700; color:var(--primary); padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
-      <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F8F4FF; border-radius:10px; line-height:1.9;">
+      <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
           <div class="step"><div class="step-num">1</div><div class="step-body">น้องและแม่กินรวมกัน = 3/8 + 2/8 = <strong>5/8</strong></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">เค้กที่เหลือ = 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: เค้กที่เหลือ = <strong>3/8</strong> ของทั้งหมด</div>
       </div>
-      <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F8F4FF; border-radius:10px; line-height:1.9;">
+      <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
           <div class="step"><div class="step-num">1</div><div class="step-body">Nong and Mom together ate = 3/8 + 2/8 = <strong>5/8</strong></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">Cake left = 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></div></div>
@@ -811,16 +882,16 @@
     </div>
     <details>
       <summary style="cursor:pointer; font-weight:700; color:var(--primary); padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
-      <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F8F4FF; border-radius:10px; line-height:1.9;">
+      <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
           <div class="step"><div class="step-num">1</div><div class="step-body">แปลงเป็นเศษเกิน: 2 2/5 = <strong>12/5</strong>, 1 3/4 = <strong>7/4</strong></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">LCM(5,4) = 20</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">ค.ร.น.(5,4) = 20</div></div>
           <div class="step"><div class="step-num">3</div><div class="step-body">12/5 = 48/20, 7/4 = 35/20</div></div>
           <div class="step"><div class="step-num">4</div><div class="step-body">48/20 - 35/20 = <strong>13/20</strong></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: พ่อวิ่งมากกว่าแม่ <strong>13/20 กิโลเมตร</strong></div>
       </div>
-      <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F8F4FF; border-radius:10px; line-height:1.9;">
+      <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
           <div class="step"><div class="step-num">1</div><div class="step-body">Convert to improper fractions: 2 2/5 = <strong>12/5</strong>, 1 3/4 = <strong>7/4</strong></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">LCM(5,4) = 20</div></div>
@@ -925,7 +996,8 @@ function applyLang(lang) {
   document.documentElement.lang = lang;
   document.title = PAGE_TITLE[lang];
   document.querySelectorAll('[data-th]').forEach(el => {
-    el.textContent = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
+    // ค่าใน data-th/data-en ถือเป็น HTML ทั้งเว็บ — ดู docs/adr/0002
+    el.innerHTML = (lang === 'en' && el.dataset.en) ? el.dataset.en : el.dataset.th;
   });
   document.querySelectorAll('.i18n-th').forEach(el => { el.hidden = lang !== 'th'; });
   document.querySelectorAll('.i18n-en').forEach(el => { el.hidden = lang !== 'en'; });
@@ -943,20 +1015,23 @@ function onLangChange(lang) {
   // รีเฟรชส่วนที่ข้อความถูกสร้างจาก JS ให้ตรงภาษาปัจจุบันทันที
   renderQuestion();
   drawPizza();
+  drawTypeVisuals();
+  compareNow();
 }
 
 // ── ข้อความที่ JS สร้างขึ้นเอง (สองภาษา) ──
 const I18N = {
   th: {
-    pizzaProper: (num, den, pct, simp) => `🍕 สีม่วง/สี = <strong>${num}</strong> ส่วน จากทั้งหมด <strong>${den}</strong> ส่วน คิดเป็น <strong>${pct}%</strong>${simp ? ` &nbsp;|&nbsp; รูปอย่างต่ำ = <strong>${simp}</strong>` : ''}`,
-    pizzaImproper: '⚠️ เศษ > ส่วน = เศษเกิน',
+    pizzaProper: (num, den, pct, simp) => `🍕 ระบายไปแล้ว <strong>${num}</strong> ส่วน จากทั้งหมด <strong>${den}</strong> ส่วน คิดเป็น <strong>${pct}%</strong>${simp ? ` &nbsp;|&nbsp; รูปอย่างต่ำ = <strong>${simp}</strong>` : ''}`,
+    pizzaImproper: (num, den, pies) => `⚠️ เศษ (<strong>${num}</strong>) มากกว่าส่วน (<strong>${den}</strong>) = <strong>เศษเกิน</strong> — ต้องใช้พิซซ่าถึง <strong>${pies}</strong> ถาด`,
     cmpSteps: (a1, b1, a2, b2, L, n1, n2, c1, c2) =>
       `<strong>วิธีคูณไขว้:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong><br>
-       <strong>LCM(${b1},${b2}) = ${L}:</strong>
+       <strong>ค.ร.น.(${b1},${b2}) = ${L}:</strong>
        <span style="color:${c1}">${a1}/${b1} = ${n1}/${L}</span> &nbsp;|&nbsp;
        <span style="color:${c2}">${a2}/${b2} = ${n2}/${L}</span>`,
+    cmpTicks: (L, units) => `แต่ละรางถูกแบ่งเป็น <strong>${L}</strong> ช่องเท่าๆ กัน${units > 1 ? ` ต่อ 1 หน่วย (เส้นทึบคือ 1 หน่วยเต็ม)` : ''} — ลองนับช่องที่ระบายดู`,
     asSteps: (b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, showSimplified) =>
-      `LCM(${b1}, ${b2}) = <strong>${L}</strong><br>
+      `ค.ร.น.(${b1}, ${b2}) = <strong>${L}</strong><br>
        ${a1}/${b1} = <strong>${n1}/${L}</strong> &nbsp;&nbsp; ${a2}/${b2} = <strong>${n2}/${L}</strong><br>
        ${n1} ${op} ${n2} = <strong>${res}</strong> &nbsp;→&nbsp; ${res}/${L}${showSimplified ? ` = <strong>${sn}/${sd}</strong>` : ''}`,
     quizProgress: (i, total) => `ข้อที่ ${i} / ${total}`,
@@ -967,12 +1042,13 @@ const I18N = {
   },
   en: {
     pizzaProper: (num, den, pct, simp) => `🍕 Colored slices = <strong>${num}</strong> out of <strong>${den}</strong> total, that's <strong>${pct}%</strong>${simp ? ` &nbsp;|&nbsp; lowest terms = <strong>${simp}</strong>` : ''}`,
-    pizzaImproper: '⚠️ numerator > denominator = improper fraction',
+    pizzaImproper: (num, den, pies) => `⚠️ numerator (<strong>${num}</strong>) &gt; denominator (<strong>${den}</strong>) = <strong>improper fraction</strong> — it takes <strong>${pies}</strong> whole pizzas`,
     cmpSteps: (a1, b1, a2, b2, L, n1, n2, c1, c2) =>
       `<strong>Cross-multiplication:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong><br>
        <strong>LCM(${b1},${b2}) = ${L}:</strong>
        <span style="color:${c1}">${a1}/${b1} = ${n1}/${L}</span> &nbsp;|&nbsp;
        <span style="color:${c2}">${a2}/${b2} = ${n2}/${L}</span>`,
+    cmpTicks: (L, units) => `Each track is split into <strong>${L}</strong> equal parts${units > 1 ? ` per unit (the solid line marks one whole)` : ''} — try counting the filled ones`,
     asSteps: (b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, showSimplified) =>
       `LCM(${b1}, ${b2}) = <strong>${L}</strong><br>
        ${a1}/${b1} = <strong>${n1}/${L}</strong> &nbsp;&nbsp; ${a2}/${b2} = <strong>${n2}/${L}</strong><br>
@@ -1004,6 +1080,46 @@ function simplify(n, d) {
   const g = gcd(Math.abs(n), Math.abs(d));
   return [n / g, d / g];
 }
+// ══════════════ เศษส่วนบน/ล่าง ══════════════
+// มาร์กอัปมาตรฐานของทั้งเว็บ (ดู CONTEXT.md หัวข้อ "เศษส่วนบน/ล่าง")
+function frac(num, den, cls, color) {
+  const c = 'frac' + (cls ? ' ' + cls : '');
+  const s = color ? ` style="color:${color}"` : '';
+  return `<span class="${c}"${s}><span class="num">${num}</span><span class="den">${den}</span></span>`;
+}
+// จำนวนคละ: จำนวนเต็มชิดหน้าเศษส่วน
+function mixed(whole, num, den, cls, color) {
+  const s = color ? ` style="color:${color}"` : '';
+  return `<span class="mixed"${s}>${whole}${frac(num, den, cls)}</span>`;
+}
+
+// แปลงโทเคน a/b และ w a/b ในข้อความให้เป็นเศษส่วนบน/ล่าง — ดู docs/adr/0004
+// เรียกเฉพาะสตริงที่เป็นคณิตศาสตร์เท่านั้น ห้ามเรียกครอบทั้งหน้า เพราะสแลชบางตัวไม่ใช่เศษส่วน
+// (ตัวนับลำดับอย่าง "ข้อที่ 1 / 10" และหน่วยวัด — ดู CONTEXT.md)
+// สแลชต้องติดกับตัวเลขทั้งสองข้าง — เศษส่วนเขียน "3/4" ส่วนตัวนับลำดับเขียน "1 / 10" จึงรอดจากตัวแปลง
+const FRAC_TOKEN = /(?:(\d+)\s+)?(\([^()]*\)|\d+)\/(\([^()]*\)|\d+)/g;
+function mathText(s) {
+  // ตัดแท็กออกก่อน แล้วแทนที่เฉพาะเนื้อความ — กันไม่ให้ไปยุ่งกับ style="..." ที่ปนอยู่ในสตริง
+  return String(s).split(/(<[^>]*>)/).map(part => {
+    if (part.charAt(0) === '<') return part;
+    return part.replace(FRAC_TOKEN, (m, whole, num, den) => {
+      const n = num.replace(/^\((.*)\)$/, '$1');
+      const d = den.replace(/^\((.*)\)$/, '$1');
+      return whole ? mixed(whole, n, d) : frac(n, d);
+    });
+  }).join('');
+}
+
+// แปลงเศษส่วนในบล็อกที่ทำเครื่องหมาย class="mathy" ไว้ (opt-in — ดู docs/adr/0004)
+// ใช้กับเนื้อหาคงที่ล้วนเท่านั้น เพราะมันเขียนทับ innerHTML ของทั้งบล็อก
+function applyMathText(root) {
+  (root || document).querySelectorAll('.mathy').forEach(el => {
+    if (el.dataset.mathDone) return;
+    el.innerHTML = mathText(el.innerHTML);
+    el.dataset.mathDone = '1';
+  });
+}
+
 function fracStr(n, d) {
   if (d === 0) return '∞';
   [n, d] = simplify(n, d);
@@ -1012,9 +1128,9 @@ function fracStr(n, d) {
     const whole = Math.trunc(n / d);
     const rem = n % d;
     if (rem === 0) return `${whole}`;
-    return `${whole} <span class='fraction' style='color:var(--accent)'><span class='num'>${Math.abs(rem)}</span><span class='den'>${d}</span></span>`;
+    return mixed(whole, Math.abs(rem), d, '', 'var(--accent-2)');
   }
-  return `<span class='fraction' style='color:var(--accent)'><span class='num'>${n}</span><span class='den'>${d}</span></span>`;
+  return frac(n, d, '', 'var(--accent-2)');
 }
 function fracStrPlain(n, d) {
   [n, d] = simplify(n, d);
@@ -1022,46 +1138,163 @@ function fracStrPlain(n, d) {
   return `${n}/${d}`;
 }
 
-// ══════════════ PIZZA CANVAS ══════════════
+// ── วาดเศษส่วนบน/ล่างลงบน canvas (HTML ใส่ใน canvas ไม่ได้ จึงวาดเลข-ขีด-เลข เอง) ──
+function drawFrac(ctx, num, den, x, y, size, color) {
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.font = `bold ${size}px Sarabun,sans-serif`;
+  const half = size * 0.62;
+  const w = Math.max(ctx.measureText(String(num)).width, ctx.measureText(String(den)).width) / 2 + 2;
+  ctx.fillText(num, x, y - half);
+  ctx.fillText(den, x, y + half);
+  ctx.lineWidth = Math.max(1.5, size / 9);
+  ctx.beginPath();
+  ctx.moveTo(x - w, y);
+  ctx.lineTo(x + w, y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ── วาดพิซซ่า "หลายถาด" สำหรับเศษ num ส่วน den (num เกิน den ได้ → ถาดที่ 2, 3, …) ──
+// opts.colors = อาร์เรย์สีวนต่อชิ้น (การ์ดสไลเดอร์) หรือ opts.color = สีเดียวทั้งรูป (การ์ดประเภท)
+function drawPizzaSet(ctx, num, den, r, opts) {
+  opts = opts || {};
+  const gap = opts.gap != null ? opts.gap : 8;
+  const pies = Math.max(1, Math.ceil(num / den));
+  const lineW = opts.lineWidth || 3;
+  let drawn = 0;
+  for (let p = 0; p < pies; p++) {
+    const cx = r + lineW + p * (2 * r + gap), cy = r + lineW;
+    for (let i = 0; i < den; i++) {
+      const start = -Math.PI / 2 + (2 * Math.PI * i) / den;
+      const end   = -Math.PI / 2 + (2 * Math.PI * (i + 1)) / den;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+      ctx.fillStyle = drawn < num
+        ? (opts.colors ? opts.colors[drawn % opts.colors.length] : opts.color)
+        : (opts.empty || '#E2E8F0');
+      ctx.fill();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = lineW;
+      ctx.stroke();
+      drawn++;
+    }
+    if (opts.hole) {
+      ctx.beginPath(); ctx.arc(cx, cy, r * 0.14, 0, Math.PI * 2);
+      ctx.fillStyle = 'white'; ctx.fill();
+    }
+  }
+  return pies;
+}
+
+// ══════════════ PIZZA CANVAS (การ์ดสไลเดอร์) ══════════════
+// สี 12 ตัวนี้ทำหน้าที่ "แยกชิ้น" ไม่ใช่สีตกแต่ง — DESIGN.md ห้ามไล่เปลี่ยนตอนทำธีม
+const PIE_COLORS = ['#6C63FF','#FF8A3D','#68EF3F','#FFB347','#9B59B6','#3498DB','#E74C3C','#2ECC71','#F39C12','#1ABC9C','#E67E22','#8E44AD'];
+
 function drawPizza() {
   const den = parseInt(document.getElementById('denSlider').value);
-  const numRaw = parseInt(document.getElementById('numSlider').value);
-  const num = Math.min(numRaw, den);
+  const numSlider = document.getElementById('numSlider');
+  // เลื่อนเศษเกินส่วนได้ถึง 2 เท่า จะได้เห็นเศษเกินจริงๆ (ถาดที่สองโผล่มา)
+  numSlider.max = den * 2;
+  const numRaw = Math.min(parseInt(numSlider.value), den * 2);
   document.getElementById('denVal').textContent = den;
   document.getElementById('numVal').textContent = numRaw;
-  document.getElementById('numSlider').max = den;
 
+  const pies = Math.ceil(numRaw / den);
+  const r = pies > 1 ? 92 : 130;
+  const gap = 14, pad = 3;
   const canvas = document.getElementById('pizzaCanvas');
+  canvas.width  = pies * (2 * r + gap) - gap + pad * 2;
+  canvas.height = 2 * r + pad * 2;
   const ctx = canvas.getContext('2d');
-  const cx = 150, cy = 150, r = 130;
-  ctx.clearRect(0, 0, 300, 300);
-
-  const colors = ['#6C63FF','#FF8A3D','#68EF3F','#FFB347','#9B59B6','#3498DB','#E74C3C','#2ECC71','#F39C12','#1ABC9C','#E67E22','#8E44AD'];
-
-  for (let i = 0; i < den; i++) {
-    const start = -Math.PI / 2 + (2 * Math.PI * i) / den;
-    const end   = -Math.PI / 2 + (2 * Math.PI * (i + 1)) / den;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, end);
-    ctx.closePath();
-    ctx.fillStyle = i < num ? colors[i % colors.length] : '#E2E8F0';
-    ctx.fill();
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  }
-  // Center circle
-  ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI*2);
-  ctx.fillStyle = 'white'; ctx.fill();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawPizzaSet(ctx, numRaw, den, r, { colors: PIE_COLORS, gap: gap, hole: true, lineWidth: pad });
 
   const [sn, sd] = simplify(numRaw, den);
-  document.getElementById('pizzaLabel').innerHTML = `<span class='fraction frac-lg' style='color:var(--primary)'><span class='num'>${numRaw}</span><span class='den'>${den}</span></span>`;
+  document.getElementById('pizzaLabel').innerHTML =
+    frac(numRaw, den, 'frac-lg', 'var(--primary)') +
+    (numRaw > den ? ' <span style="font-size:1.3rem;">=</span> ' + fracStr(numRaw, den) : '');
+
   const pct = Math.round(numRaw / den * 100);
   document.getElementById('pizzaDesc').innerHTML =
     numRaw <= den
-      ? t('pizzaProper')(numRaw, den, pct, sn !== numRaw ? `${sn}/${sd}` : '')
-      : t('pizzaImproper');
+      ? mathText(t('pizzaProper')(numRaw, den, pct, sn !== numRaw ? `${sn}/${sd}` : ''))
+      : mathText(t('pizzaImproper')(numRaw, den, pies));
+}
+
+// ══════════════ การ์ด "ประเภทของเศษส่วน" ══════════════
+// เศษเกินกับจำนวนคละใช้เศษส่วนตัวเดียวกันเสมอ ภาพจึงเหมือนกัน ต่างกันแค่วิธีเขียน
+const TYPE_R = 34;
+
+// อ่านค่าจากช่องกรอก แล้วบีบให้อยู่ในนิยามของแต่ละประเภท —
+// ช่องซ้ายต้องเป็นเศษแท้เสมอ (เศษ < ส่วน) ช่องขวาต้องเป็นเศษเกินเสมอ (เศษ > ส่วน)
+// ถ้าปล่อยให้พิมพ์อะไรก็ได้ ภาพจะขัดกับป้ายชื่อประเภทที่อยู่ใต้ภาพเอง
+function readTypeInputs() {
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const el = id => document.getElementById(id);
+  const val = (id, fb) => { const v = parseInt(el(id).value, 10); return isNaN(v) ? fb : v; };
+
+  const pd = clamp(val('propDen', 4), 2, 12);
+  const pn = clamp(val('propNum', 3), 1, pd - 1);
+  const iden = clamp(val('impDen', 2), 2, 12);
+  // เกินได้มากสุด 3 ถาด พอให้เห็นว่า "เกิน 1" โดยไม่ล้นการ์ด
+  const inum = clamp(val('impNum', iden + 1), iden + 1, iden * 3);
+
+  // เขียนค่าที่บีบแล้วกลับลงช่อง เพื่อให้เห็นทันทีว่าอะไรใส่ไม่ได้
+  el('propNum').max = pd - 1;
+  el('impNum').min = iden + 1;
+  el('impNum').max = iden * 3;
+  if (el('propDen').value !== '') el('propDen').value = pd;
+  if (el('propNum').value !== '') el('propNum').value = pn;
+  if (el('impDen').value !== '') el('impDen').value = iden;
+  if (el('impNum').value !== '') el('impNum').value = inum;
+
+  return { pn, pd, inum, iden };
+}
+
+function drawTypePie(id, num, den, color) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const pies = Math.ceil(num / den), gap = 8, pad = 3;
+  canvas.width  = pies * (2 * TYPE_R + gap) - gap + pad * 2;
+  canvas.height = 2 * TYPE_R + pad * 2;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawPizzaSet(ctx, num, den, TYPE_R, { color: color, gap: gap, lineWidth: pad });
+}
+
+function drawTypeVisuals() {
+  if (!document.getElementById('propNum')) return;
+  const { pn, pd, inum, iden } = readTypeInputs();
+
+  drawTypePie('typeProper', pn, pd, '#2E5936');
+  drawTypePie('typeImproper', inum, iden, '#FF8A3D');
+  drawTypePie('typeMixed', inum, iden, '#3FA82E');
+
+  const whole = Math.floor(inum / iden), rem = inum % iden;
+  const mixedHtml = (size, color) => rem === 0
+    ? `<span class="mixed" style="color:${color}">${whole}</span>`
+    : mixed(whole, rem, iden, size, color);
+
+  document.getElementById('typeProperLabel').innerHTML = frac(pn, pd, '', 'var(--primary)');
+  document.getElementById('typeImproperLabel').innerHTML = frac(inum, iden, '', 'var(--secondary)');
+  document.getElementById('typeMixedLabel').innerHTML = mixedHtml('', 'var(--accent-2)');
+
+  const same = frac(inum, iden, 'frac-sm', 'var(--secondary)') + ' <strong>=</strong> ' + mixedHtml('frac-sm', 'var(--accent-2)');
+  const th = document.getElementById('typeSameNote');
+  const en = document.getElementById('typeSameNoteEn');
+  // เศษเกินที่หารลงตัวเป็น "จำนวนเต็ม" ไม่ใช่จำนวนคละ — จำนวนคละต้องมีเศษเหลือ ห้ามติดป้ายผิด
+  if (th) th.innerHTML = rem === 0
+    ? '⚠️ ' + same + ' พอดี เป็น<strong>จำนวนเต็ม</strong> ไม่ใช่จำนวนคละ (จำนวนคละต้องมีเศษเหลือ)'
+    : 'สองช่องขวาเป็นภาพเดียวกัน เพราะ ' + same + ' คือจำนวนเดียวกัน เขียนคนละแบบ';
+  if (en) en.innerHTML = rem === 0
+    ? '⚠️ ' + same + ' exactly — that is a <strong>whole number</strong>, not a mixed number (a mixed number needs a remainder)'
+    : 'The two panels on the right show the same picture — ' + same + ' is one number written two ways.';
 }
 
 // ══════════════ NUMBER LINE ══════════════
@@ -1071,27 +1304,34 @@ function drawNumline() {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
-  const left = 40, right = W - 40, y = 45;
+  const left = 44, right = W - 44, y = 50;
   // Line
   ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y);
   ctx.strokeStyle = '#CBD5E0'; ctx.lineWidth = 3; ctx.stroke();
 
+  // เก็บเป็นคู่ เศษ/ส่วน แล้ววาดบน-ล่างเอง — ยูนิโค้ดอย่าง ⁵⁄₄ เล็กเกินกว่าจะอ่านตอนฉายขึ้นจอ
   const marks = [
-    {v:0,label:'0'},{v:1/4,label:'¼'},{v:1/3,label:'⅓'},{v:1/2,label:'½'},
-    {v:2/3,label:'⅔'},{v:3/4,label:'¾'},{v:1,label:'1'},{v:5/4,label:'⁵⁄₄'},
-    {v:4/3,label:'⁴⁄₃'},{v:3/2,label:'³⁄₂'},{v:7/4,label:'⁷⁄₄'},{v:2,label:'2'}
+    {n:0,d:1},{n:1,d:4},{n:1,d:3},{n:1,d:2},{n:2,d:3},{n:3,d:4},
+    {n:1,d:1},{n:5,d:4},{n:4,d:3},{n:3,d:2},{n:7,d:4},{n:2,d:1}
   ];
   const colors2 = ['#6C63FF','#FF8A3D','#68EF3F','#FFB347','#9B59B6','#3498DB','#E74C3C','#2ECC71','#F39C12','#1ABC9C','#E67E22','#8E44AD'];
   marks.forEach((m, i) => {
-    const x = left + (right - left) * (m.v / 2);
+    const x = left + (right - left) * (m.n / m.d / 2);
+    const color = colors2[i % colors2.length];
     ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x, y + 12);
-    ctx.strokeStyle = colors2[i % colors2.length]; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = colors2[i % colors2.length];
-    ctx.font = 'bold 13px Sarabun,sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(m.label, x, i % 2 === 0 ? y - 18 : y + 26);
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+    const ty = i % 2 === 0 ? y - 28 : y + 32;
+    if (m.d === 1) {
+      ctx.save();
+      ctx.fillStyle = color; ctx.font = 'bold 15px Sarabun,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(m.n, x, ty);
+      ctx.restore();
+    } else {
+      drawFrac(ctx, m.n, m.d, x, ty, 13, color);
+    }
   });
 }
-
 // ══════════════ ADD SAME CANVAS ══════════════
 function drawAddSame() {
   const canvas = document.getElementById('addSameCanvas');
@@ -1102,7 +1342,7 @@ function drawAddSame() {
   const segW = w / den, bh = 36, y = 12;
   for (let i = 0; i < den; i++) {
     const x = 20 + i * segW;
-    ctx.fillStyle = i < 2 ? '#6C63FF' : i < 5 ? '#FF8A3D' : '#E2E8F0';
+    ctx.fillStyle = i < 2 ? '#1C3B22' : i < 5 ? '#FF8A3D' : '#E2E8F0';
     ctx.fillRect(x, y, segW - 3, bh);
     ctx.fillStyle = i < 5 ? 'white' : '#999';
     ctx.font = 'bold 14px Sarabun,sans-serif'; ctx.textAlign = 'center';
@@ -1122,27 +1362,36 @@ function compareNow() {
   const n1 = a1 * (L / b1), n2 = a2 * (L / b2);
   const pct1 = Math.round(a1 / b1 * 100), pct2 = Math.round(a2 / b2 * 100);
   const sym = n1 > n2 ? '>' : n1 < n2 ? '<' : '=';
-  const color1 = '#6C63FF', color2 = '#FF8A3D';
-  const maxPct = Math.max(pct1, pct2, 10);
+  const color1 = '#1C3B22', color2 = '#FF8A3D';
 
-  document.getElementById('cmpBars').innerHTML = `
+  // แท่งต้องวัดจาก "1 เต็ม" เสมอ ไม่ใช่สเกลเทียบตัวที่มากที่สุด ไม่งั้นภาพจะโกหกว่าตัวมากที่สุด = ทั้งหมด
+  // ถ้ามีเศษเกิน รางจะยืดเป็นหลายหน่วยแล้วขีดเส้นทึบไว้ที่ 1 หน่วย
+  const units = Math.max(1, Math.ceil(a1 / b1), Math.ceil(a2 / b2));
+  const segTotal = L * units;
+  // ขีดแบ่งช่องมีประโยชน์เฉพาะตอนที่ยังนับไหว ส่วนที่ถี่เกินไปจะกลายเป็นพื้นทึบ
+  const showTicks = segTotal <= 24;
+  const ticks = showTicks ? `<div class="bar-ticks">${'<span></span>'.repeat(segTotal)}</div>` : '';
+  const unitMarks = units > 1
+    ? Array.from({length: units - 1}, (_, k) => `<div class="bar-unit" style="left:${(k + 1) / units * 100}%"></div>`).join('')
+    : '';
+
+  const bar = (a, b, pct, color) => `
     <div class="bar-row">
-      <div class="bar-label" style="color:${color1}">${a1}/${b1}</div>
+      <div class="bar-label" style="color:${color}">${frac(a, b)}</div>
       <div class="bar-track">
-        <div class="bar-fill" style="width:${pct1/maxPct*100}%;background:${color1};">${pct1}%</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-label" style="color:${color2}">${a2}/${b2}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${pct2/maxPct*100}%;background:${color2};">${pct2}%</div>
+        <div class="bar-fill" style="width:${Math.min(100, a / b / units * 100)}%;background:${color};">${pct}%</div>
+        ${ticks}${unitMarks}
       </div>
     </div>`;
 
-  document.getElementById('cmpSteps').innerHTML = t('cmpSteps')(a1, b1, a2, b2, L, n1, n2, color1, color2);
+  document.getElementById('cmpBars').innerHTML =
+    bar(a1, b1, pct1, color1) + bar(a2, b2, pct2, color2) +
+    (showTicks ? `<div style="color:var(--muted); font-size:.85rem; margin:6px 0 0 68px;">${t('cmpTicks')(L, units)}</div>` : '');
+
+  document.getElementById('cmpSteps').innerHTML = mathText(t('cmpSteps')(a1, b1, a2, b2, L, n1, n2, color1, color2));
 
   document.getElementById('cmpAnswer').innerHTML =
-    `<span style="color:${color1}">${a1}/${b1}</span> <span style="font-size:2.5rem;">${sym}</span> <span style="color:${color2}">${a2}/${b2}</span>`;
+    `${frac(a1, b1, '', color1)} <span style="font-size:2.5rem;">${sym}</span> ${frac(a2, b2, '', color2)}`;
   document.getElementById('cmpResult').style.display = 'block';
 }
 
@@ -1162,7 +1411,7 @@ function calcAddSub() {
 
   document.getElementById('as_result').innerHTML = fracStr(sn, sd);
   document.getElementById('as_steps').innerHTML =
-    t('asSteps')(b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, res !== sn || L !== sd);
+    mathText(t('asSteps')(b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, res !== sn || L !== sd));
 }
 
 // ══════════════ MUL/DIV CALCULATOR ══════════════
@@ -1184,16 +1433,16 @@ function calcMulDiv() {
   }
   const [sn, sd] = simplify(rn, rd);
   document.getElementById('md_result').innerHTML = fracStr(sn, sd);
-  document.getElementById('md_steps').innerHTML = stepHtml +
-    (rn !== sn || rd !== sd ? ` = <strong>${sn}/${sd}</strong>` : '');
+  document.getElementById('md_steps').innerHTML = mathText(stepHtml +
+    (rn !== sn || rd !== sd ? ` = <strong>${sn}/${sd}</strong>` : ''));
 }
 
 // ══════════════ QUIZ ══════════════
 const quizData = [
-  { q_th: 'ข้อใดต่อไปนี้เป็นเศษแท้?', q_en: 'Which of these is a proper fraction?', opts: ['5/3','7/4','3/5','8/3'], ans: 2, exp_th: '3/5 เป็นเศษแท้ เพราะเศษ (3) < ส่วน (5)', exp_en: '3/5 is proper because the numerator (3) < denominator (5)' },
+  { q_th: 'ข้อใดต่อไปนี้เป็นเศษแท้?', q_en: 'Which of these is a proper fraction?', opts: ['5/3','7/4','3/5','8/3'], ans: 2, exp_th: '3/5 เป็นเศษแท้ เพราะเศษ (3) &lt; ส่วน (5)', exp_en: '3/5 is proper because the numerator (3) &lt; denominator (5)' },
   { q_th: '2/3 + 1/3 = ?', q_en: '2/3 + 1/3 = ?', opts: ['1','3/3','2/6','1/3'], ans: 0, exp_th: '2/3 + 1/3 = 3/3 = 1', exp_en: '2/3 + 1/3 = 3/3 = 1' },
   { q_th: '3/4 - 1/4 = ?', q_en: '3/4 - 1/4 = ?', opts: ['2/4','1/2','4/8','2/0'], ans: 1, exp_th: '3/4 - 1/4 = 2/4 = 1/2', exp_en: '3/4 - 1/4 = 2/4 = 1/2' },
-  { q_th: '1/2 + 1/3 = ?', q_en: '1/2 + 1/3 = ?', opts: ['2/5','5/6','2/6','3/5'], ans: 1, exp_th: 'LCM(2,3)=6 → 3/6 + 2/6 = 5/6', exp_en: 'LCM(2,3)=6 → 3/6 + 2/6 = 5/6' },
+  { q_th: '1/2 + 1/3 = ?', q_en: '1/2 + 1/3 = ?', opts: ['2/5','5/6','2/6','3/5'], ans: 1, exp_th: 'ค.ร.น.(2,3)=6 → 3/6 + 2/6 = 5/6', exp_en: 'LCM(2,3)=6 → 3/6 + 2/6 = 5/6' },
   { q_th: '2/3 × 3/4 = ?', q_en: '2/3 × 3/4 = ?', opts: ['6/12','1/2','5/7','3/8'], ans: 1, exp_th: '(2×3)/(3×4) = 6/12 = 1/2', exp_en: '(2×3)/(3×4) = 6/12 = 1/2' },
   { q_th: '3/4 ÷ 1/2 = ?', q_en: '3/4 ÷ 1/2 = ?', opts: ['3/8','3/2','6/4','1 1/2'], ans: 3, exp_th: '3/4 × 2/1 = 6/4 = 3/2 = 1 1/2', exp_en: '3/4 × 2/1 = 6/4 = 3/2 = 1 1/2' },
   { q_th: 'เศษส่วนใดมีค่ามากที่สุด?', q_en: 'Which fraction has the greatest value?', opts: ['2/3','3/4','5/8','7/12'], ans: 1, exp_th: '3/4 = 0.75 มากที่สุด', exp_en: '3/4 = 0.75 is the greatest' },
@@ -1220,9 +1469,9 @@ function renderQuestion() {
 
   const lang = getLang();
   document.getElementById('quizBox').innerHTML = `
-    <div class="quiz-q">${qIdx + 1}. ${lang === 'en' ? q.q_en : q.q_th}</div>
+    <div class="quiz-q">${qIdx + 1}. ${mathText(lang === 'en' ? q.q_en : q.q_th)}</div>
     <div class="quiz-opts">
-      ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})" id="qopt${i}">${o}</button>`).join('')}
+      ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})" id="qopt${i}">${mathText(o)}</button>`).join('')}
     </div>
     <div class="quiz-feedback" id="qfb"></div>
   `;
@@ -1239,14 +1488,15 @@ function answer(i) {
     else if (idx === i) b.classList.add('wrong');
     b.style.pointerEvents = 'none';
   });
+  // ใช้ innerHTML เพราะคำอธิบายผ่าน mathText แล้วมีมาร์กอัปเศษส่วนอยู่ข้างใน
   if (i === q.ans) {
     score++;
     document.getElementById('quizScore').textContent = score;
     fb.className = 'quiz-feedback ok';
-    fb.textContent = t('correctPrefix') + exp;
+    fb.innerHTML = t('correctPrefix') + mathText(exp);
   } else {
     fb.className = 'quiz-feedback err';
-    fb.textContent = t('wrongPrefix') + exp;
+    fb.innerHTML = t('wrongPrefix') + mathText(exp);
   }
   if (qIdx < quizData.length - 1) {
     document.getElementById('btnNext').style.display = 'inline-block';
@@ -1274,7 +1524,9 @@ function nextQuestion() {
 
 // ══════════════ INIT ══════════════
 window.addEventListener('load', () => {
+  applyMathText();
   drawPizza();
+  drawTypeVisuals();
   drawNumline();
   drawAddSame();
   initQuiz();
