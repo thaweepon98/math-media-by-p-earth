@@ -299,6 +299,12 @@
   .bar-scale { display: flex; margin: 2px 0 10px 68px; font-size: .8rem; color: var(--muted); }
   .bar-scale span { text-align: right; }
 
+  /* ── กล่อง "วิธีเปรียบเทียบ" ── ผลเทียบตัวเลข (เช่น 9 > 8) และบทสรุป ต้องอยู่คนละบรรทัดกับโจทย์
+     ไม่งั้นบนจอมือถือมันจะตกบรรทัดคาไว้กลางประโยค อ่านแล้วสะดุด (เจอจริงตอนฉายในห้อง) */
+  .cmp-key   { font-size: 1.9rem; font-weight: 800; line-height: 1.2; margin-top: 10px; }
+  .cmp-concl { display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+               font-size: 1.15rem; font-weight: 800; margin-top: 6px; }
+
   /* ── Responsive ── */
   @media (max-width: 600px) {
     header h1 { font-size: 1.5rem; }
@@ -526,7 +532,8 @@
         <span class="frac" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
         กับ
         <span class="frac" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
-        → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
+        <div class="cmp-key">9 &gt; 8</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
     <div class="i18n-en" hidden style="margin-bottom:16px;">
@@ -544,7 +551,8 @@
         <span class="frac" style="color:var(--primary)"><span class="num">9</span><span class="den">12</span></span>
         vs
         <span class="frac" style="color:var(--secondary)"><span class="num">8</span><span class="den">12</span></span>
-        → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
+        <div class="cmp-key">9 &gt; 8</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
 
@@ -557,7 +565,9 @@
         → เปรียบเทียบ a×d กับ b×c
       </div>
       <div style="background:#FFF4EC; border-radius:10px; padding:12px 16px;">
-        3/4 กับ 2/3 → 3×3=<strong>9</strong> กับ 4×2=<strong>8</strong> → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
+        3/4 กับ 2/3 → 3×3=<strong>9</strong> กับ 4×2=<strong>8</strong>
+        <div class="cmp-key">9 &gt; 8</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
     <div class="i18n-en" hidden style="margin-bottom:16px;">
@@ -569,20 +579,26 @@
         → compare a×d vs b×c
       </div>
       <div style="background:#FFF4EC; border-radius:10px; padding:12px 16px;">
-        3/4 vs 2/3 → 3×3=<strong>9</strong> vs 4×2=<strong>8</strong> → <strong>9 &gt; 8 ∴ 3/4 &gt; 2/3</strong>
+        3/4 vs 2/3 → 3×3=<strong>9</strong> vs 4×2=<strong>8</strong>
+        <div class="cmp-key">9 &gt; 8</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
 
     <div class="i18n-th">
       <strong style="color:#047857;">วิธีที่ 3: แปลงเป็นทศนิยม</strong>
       <div class="box-ok">
-        3÷4 = <strong>0.75</strong> &nbsp;|&nbsp; 2÷3 = <strong>0.667</strong> → <strong>0.75 &gt; 0.667 ∴ 3/4 &gt; 2/3</strong>
+        3÷4 = <strong>0.75</strong> &nbsp;|&nbsp; 2÷3 = <strong>0.667</strong>
+        <div class="cmp-key">0.75 &gt; 0.667</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
     <div class="i18n-en" hidden>
       <strong style="color:#047857;">Method 3: Convert to Decimals</strong>
       <div class="box-ok">
-        3÷4 = <strong>0.75</strong> &nbsp;|&nbsp; 2÷3 = <strong>0.667</strong> → <strong>0.75 &gt; 0.667 ∴ 3/4 &gt; 2/3</strong>
+        3÷4 = <strong>0.75</strong> &nbsp;|&nbsp; 2÷3 = <strong>0.667</strong>
+        <div class="cmp-key">0.75 &gt; 0.667</div>
+        <div class="cmp-concl">∴ 3/4 &gt; 2/3</div>
       </div>
     </div>
   </div>
@@ -1375,9 +1391,11 @@ function compareNow() {
     ? Array.from({length: units - 1}, (_, k) => `<div class="bar-unit" style="left:${(k + 1) / units * 100}%"></div>`).join('')
     : '';
 
-  const bar = (a, b, pct, color) => `
+  // ป้ายหน้าแท่งต้องเป็นเศษส่วนที่ทำส่วนเป็น ค.ร.น. แล้ว (เช่น 3/4 → 6/8) ให้ตรงกับจำนวนช่องในราง
+  // ถ้าโชว์ 3/4 คู่กับรางที่แบ่ง 8 ช่อง เด็กนับช่องได้ 6 ช่องแล้วงงว่าทำไมป้ายเขียน 3
+  const bar = (a, b, n, pct, color) => `
     <div class="bar-row">
-      <div class="bar-label" style="color:${color}">${frac(a, b)}</div>
+      <div class="bar-label" style="color:${color}">${frac(n, L)}</div>
       <div class="bar-track">
         <div class="bar-fill" style="width:${Math.min(100, a / b / units * 100)}%;background:${color};">${pct}%</div>
         ${ticks}${unitMarks}
@@ -1385,7 +1403,7 @@ function compareNow() {
     </div>`;
 
   document.getElementById('cmpBars').innerHTML =
-    bar(a1, b1, pct1, color1) + bar(a2, b2, pct2, color2) +
+    bar(a1, b1, n1, pct1, color1) + bar(a2, b2, n2, pct2, color2) +
     (showTicks ? `<div style="color:var(--muted); font-size:.85rem; margin:6px 0 0 68px;">${t('cmpTicks')(L, units)}</div>` : '');
 
   document.getElementById('cmpSteps').innerHTML = mathText(t('cmpSteps')(a1, b1, a2, b2, L, n1, n2, color1, color2));
