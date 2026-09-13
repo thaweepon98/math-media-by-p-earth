@@ -287,7 +287,11 @@
   /* ── Compare visual ── */
   .compare-bar-wrap { margin: 10px 0; }
   .bar-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
-  .bar-label { min-width: 56px; font-weight: 700; text-align: right; font-size: 1rem; display: flex; justify-content: flex-end; }
+  /* ป้ายโชว์ทั้งเศษส่วนตั้งต้นและรูปที่ทำส่วนเป็น ค.ร.น. แล้ว (3/4 = 9/12) เด็กจะได้เห็นที่มาของเลขในราง
+     flex:0 0 auto กันไม่ให้เศษส่วนโดนบีบเวลาจอแคบ — ให้รางเป็นฝ่ายหดแทน */
+  .bar-label { flex: 0 0 auto; min-width: 56px; font-weight: 700; text-align: right; font-size: 1rem;
+               display: flex; align-items: center; justify-content: flex-end; }
+  .bar-eq { margin: 0 1px; }
   .bar-track { position: relative; flex: 1; background: #EEF7E6; border-radius: 8px; height: 38px; overflow: hidden; }
   .bar-fill  { height: 100%; display: flex; align-items: center; padding-left: 12px; color: white; font-weight: 700; font-size: .95rem; transition: width .5s ease; }
   /* ขีดแบ่งช่องตาม LCM — วางทับรางเพื่อให้นับช่องได้ทั้งส่วนที่ระบายและไม่ระบาย */
@@ -1066,10 +1070,10 @@ const I18N = {
     pizzaProper: (num, den, pct, simp) => `🍕 ระบายไปแล้ว <strong>${num}</strong> ส่วน จากทั้งหมด <strong>${den}</strong> ส่วน คิดเป็น <strong>${pct}%</strong>${simp ? ` &nbsp;|&nbsp; รูปอย่างต่ำ = <strong>${simp}</strong>` : ''}`,
     pizzaImproper: (num, den, pies) => `⚠️ เศษ (<strong>${num}</strong>) มากกว่าส่วน (<strong>${den}</strong>) = <strong>เศษเกิน</strong> — ต้องใช้พิซซ่าถึง <strong>${pies}</strong> ถาด`,
     cmpSteps: (a1, b1, a2, b2, L, n1, n2, c1, c2) =>
-      `<strong>วิธีคูณไขว้:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong><br>
-       <strong>ค.ร.น.(${b1},${b2}) = ${L}:</strong>
-       <span style="color:${c1}">${a1}/${b1} = ${n1}/${L}</span> &nbsp;|&nbsp;
-       <span style="color:${c2}">${a2}/${b2} = ${n2}/${L}</span>`,
+      `<strong>วิธีคูณไขว้:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong>
+       <div style="margin-top:8px;"><strong>ค.ร.น.(${b1},${b2}) = ${L}:</strong></div>
+       <div class="calc" style="color:${c1}; margin-top:2px;">${a1}/${b1} = ${n1}/${L}</div>
+       <div class="calc" style="color:${c2}; margin-top:2px;">${a2}/${b2} = ${n2}/${L}</div>`,
     cmpTicks: (L, units) => `แต่ละรางถูกแบ่งเป็น <strong>${L}</strong> ช่องเท่าๆ กัน${units > 1 ? ` ต่อ 1 หน่วย (เส้นทึบคือ 1 หน่วยเต็ม)` : ''} — ลองนับช่องที่ระบายดู`,
     asSteps: (b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, showSimplified) =>
       `ค.ร.น.(${b1}, ${b2}) = <strong>${L}</strong><br>
@@ -1085,10 +1089,10 @@ const I18N = {
     pizzaProper: (num, den, pct, simp) => `🍕 Colored slices = <strong>${num}</strong> out of <strong>${den}</strong> total, that's <strong>${pct}%</strong>${simp ? ` &nbsp;|&nbsp; lowest terms = <strong>${simp}</strong>` : ''}`,
     pizzaImproper: (num, den, pies) => `⚠️ numerator (<strong>${num}</strong>) &gt; denominator (<strong>${den}</strong>) = <strong>improper fraction</strong> — it takes <strong>${pies}</strong> whole pizzas`,
     cmpSteps: (a1, b1, a2, b2, L, n1, n2, c1, c2) =>
-      `<strong>Cross-multiplication:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong><br>
-       <strong>LCM(${b1},${b2}) = ${L}:</strong>
-       <span style="color:${c1}">${a1}/${b1} = ${n1}/${L}</span> &nbsp;|&nbsp;
-       <span style="color:${c2}">${a2}/${b2} = ${n2}/${L}</span>`,
+      `<strong>Cross-multiplication:</strong> ${a1}×${b2} = <strong>${a1*b2}</strong> &nbsp;|&nbsp; ${b1}×${a2} = <strong>${b1*a2}</strong>
+       <div style="margin-top:8px;"><strong>LCM(${b1},${b2}) = ${L}:</strong></div>
+       <div class="calc" style="color:${c1}; margin-top:2px;">${a1}/${b1} = ${n1}/${L}</div>
+       <div class="calc" style="color:${c2}; margin-top:2px;">${a2}/${b2} = ${n2}/${L}</div>`,
     cmpTicks: (L, units) => `Each track is split into <strong>${L}</strong> equal parts${units > 1 ? ` per unit (the solid line marks one whole)` : ''} — try counting the filled ones`,
     asSteps: (b1, b2, L, a1, n1, a2, n2, op, res, sn, sd, showSimplified) =>
       `LCM(${b1}, ${b2}) = <strong>${L}</strong><br>
@@ -1420,7 +1424,7 @@ function compareNow() {
   // ถ้าโชว์ 3/4 คู่กับรางที่แบ่ง 8 ช่อง เด็กนับช่องได้ 6 ช่องแล้วงงว่าทำไมป้ายเขียน 3
   const bar = (a, b, n, pct, color) => `
     <div class="bar-row">
-      <div class="bar-label" style="color:${color}">${frac(n, L)}</div>
+      <div class="bar-label" style="color:${color}">${b === L ? frac(a, b) : frac(a, b) + '<span class="bar-eq">=</span>' + frac(n, L)}</div>
       <div class="bar-track">
         <div class="bar-fill" style="width:${Math.min(100, a / b / units * 100)}%;background:${color};">${pct}%</div>
         ${ticks}${unitMarks}
@@ -1429,7 +1433,7 @@ function compareNow() {
 
   document.getElementById('cmpBars').innerHTML =
     bar(a1, b1, n1, pct1, color1) + bar(a2, b2, n2, pct2, color2) +
-    (showTicks ? `<div style="color:var(--muted); font-size:.85rem; margin:6px 0 0 68px;">${t('cmpTicks')(L, units)}</div>` : '');
+    (showTicks ? `<div style="color:var(--muted); font-size:.85rem; margin:8px 0 0 0;">${t('cmpTicks')(L, units)}</div>` : '');
 
   document.getElementById('cmpSteps').innerHTML = mathText(t('cmpSteps')(a1, b1, a2, b2, L, n1, n2, color1, color2));
 
