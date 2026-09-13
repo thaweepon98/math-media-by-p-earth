@@ -305,6 +305,15 @@
   .cmp-concl { display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
                font-size: 1.15rem; font-weight: 800; margin-top: 6px; }
 
+  /* สมการในขั้นตอนวิธีทำ — ตบลงบรรทัดใหม่ใต้ข้อความ เพราะเศษส่วนบน/ล่างสูงกว่าตัวอักษรมาก
+     ถ้าปล่อยต่อท้ายประโยค พอจอแคบมันจะตกบรรทัดคาอยู่กลางสมการ */
+  .calc { display: flex; align-items: center; flex-wrap: wrap; gap: 0 4px; margin-top: 6px; }
+  /* ตัดทอนก่อนคูณ — ขีดฆ่าตัวที่ตัดออก แล้วเขียนตัวใหม่ตัวเล็กกำกับ เหมือนที่ครูขีดบนกระดาน */
+  .cx { position: relative; opacity: .5; }
+  .cx::after { content: ''; position: absolute; left: -3px; right: -3px; top: 45%;
+               height: 3px; border-radius: 2px; background: #D14343; transform: rotate(-20deg); }
+  .cx-new { font-size: .55em; vertical-align: super; color: #D14343; margin-left: 1px; }
+
   /* ── Responsive ── */
   @media (max-width: 600px) {
     header h1 { font-size: 1.5rem; }
@@ -689,16 +698,26 @@
       ⚠️ If subtracting leaves a negative numerator, be careful converting it to a mixed number
     </div>
     <div class="i18n-th" style="background:#FFFBEB; border-radius:10px; padding:14px 18px; margin-top:10px;">
-      <strong>ตัวอย่าง:</strong> 2 - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="frac"><span class="num">8</span><span class="den">4</span></span> - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
-      = 1<span class="frac" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
+      <strong>ตัวอย่าง:</strong>
+      <div class="calc" style="font-size:1.05rem;">
+        <span style="color:var(--primary); font-weight:800;">2</span> -
+        <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        = <span class="frac" style="color:var(--primary)"><span class="num">8</span><span class="den">4</span></span>
+        - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
+        = <span class="mixed" style="color:var(--accent)">1<span class="frac"><span class="num">1</span><span class="den">4</span></span></span>
+      </div>
     </div>
     <div class="i18n-en" hidden style="background:#FFFBEB; border-radius:10px; padding:14px 18px; margin-top:10px;">
-      <strong>Example:</strong> 2 - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="frac"><span class="num">8</span><span class="den">4</span></span> - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
-      = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
-      = 1<span class="frac" style="color:var(--accent)"><span class="num">1</span><span class="den">4</span></span>
+      <strong>Example:</strong>
+      <div class="calc" style="font-size:1.05rem;">
+        <span style="color:var(--primary); font-weight:800;">2</span> -
+        <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        = <span class="frac" style="color:var(--primary)"><span class="num">8</span><span class="den">4</span></span>
+        - <span class="frac" style="color:var(--secondary)"><span class="num">3</span><span class="den">4</span></span>
+        = <span class="frac" style="color:var(--accent)"><span class="num">5</span><span class="den">4</span></span>
+        = <span class="mixed" style="color:var(--accent)">1<span class="frac"><span class="num">1</span><span class="den">4</span></span></span>
+      </div>
     </div>
   </div>
 
@@ -750,21 +769,27 @@
 
     <div class="box-warn i18n-th">
       💡 <strong>เทคนิค Cancellation (ตัดทอนก่อนคูณ):</strong>
-      ลดตัวเลขเฉียงกันก่อน ทำให้คำนวณง่ายขึ้น<br>
-      <span class="frac" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
-      ×
-      <span class="frac" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
-      → ตัด 3 ออก →
-      <span class="frac" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+      ตัดตัวที่หารกันลงตัวแบบ "เฉียงกัน" ออกก่อน แล้วค่อยคูณ
+      <div class="calc" style="font-size:1.1rem;">
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den"><span class="cx">3</span><span class="cx-new">1</span></span></span>
+        <span style="font-size:1.4rem;">×</span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num"><span class="cx">3</span><span class="cx-new">1</span></span><span class="den">5</span></span>
+        <span style="font-size:1.4rem;">=</span>
+        <span class="frac frac-lg" style="color:var(--accent-2)"><span class="num">2</span><span class="den">5</span></span>
+      </div>
+      <div style="font-size:.92rem; color:var(--muted); margin-top:6px;">ส่วนของตัวหน้า (3) กับเศษของตัวหลัง (3) หารกันลงตัว — ตัดออกทั้งคู่ กลายเป็น 1 ทั้งสองตัว เหลือ 2 กับ 5</div>
     </div>
     <div class="box-warn i18n-en" hidden>
       💡 <strong>Cancellation trick (simplify before multiplying):</strong>
-      cancel matching diagonal numbers first to make the calculation easier<br>
-      <span class="frac" style="color:var(--primary)"><span class="num"><s>2</s> 2</span><span class="den">3</span></span>
-      ×
-      <span class="frac" style="color:var(--secondary)"><span class="num"><s>3</s> 3</span><span class="den">5</span></span>
-      → cancel the 3s →
-      <span class="frac" style="color:var(--accent)"><span class="num">2</span><span class="den">5</span></span>
+      cancel numbers that divide evenly "diagonally" first, then multiply
+      <div class="calc" style="font-size:1.1rem;">
+        <span class="frac frac-lg" style="color:var(--primary)"><span class="num">2</span><span class="den"><span class="cx">3</span><span class="cx-new">1</span></span></span>
+        <span style="font-size:1.4rem;">×</span>
+        <span class="frac frac-lg" style="color:var(--secondary)"><span class="num"><span class="cx">3</span><span class="cx-new">1</span></span><span class="den">5</span></span>
+        <span style="font-size:1.4rem;">=</span>
+        <span class="frac frac-lg" style="color:var(--accent-2)"><span class="num">2</span><span class="den">5</span></span>
+      </div>
+      <div style="font-size:.92rem; color:var(--muted); margin-top:6px;">The first denominator (3) and the second numerator (3) divide evenly — cancel both, each becomes 1, leaving 2 and 5</div>
     </div>
   </div>
 
@@ -870,15 +895,15 @@
       <summary style="cursor:pointer; font-weight:700; color:var(--primary); padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
       <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">น้องและแม่กินรวมกัน = 3/8 + 2/8 = <strong>5/8</strong></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">เค้กที่เหลือ = 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">น้องและแม่กินรวมกัน<span class="calc">= 3/8 + 2/8 = <strong>5/8</strong></span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">เค้กที่เหลือ<span class="calc">= 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></span></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: เค้กที่เหลือ = <strong>3/8</strong> ของทั้งหมด</div>
       </div>
       <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">Nong and Mom together ate = 3/8 + 2/8 = <strong>5/8</strong></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">Cake left = 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">Nong and Mom together ate<span class="calc">= 3/8 + 2/8 = <strong>5/8</strong></span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body">Cake left<span class="calc">= 1 - 5/8 = 8/8 - 5/8 = <strong>3/8</strong></span></div></div>
         </div>
         <div class="box-ok">✅ Answer: cake left = <strong>3/8</strong> of the whole</div>
       </div>
@@ -900,19 +925,19 @@
       <summary style="cursor:pointer; font-weight:700; color:var(--primary); padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
       <div class="i18n-th" style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">แปลงเป็นเศษเกิน: 2 2/5 = <strong>12/5</strong>, 1 3/4 = <strong>7/4</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">แปลงเป็นเศษเกิน:<span class="calc">2 2/5 = <strong>12/5</strong>&nbsp;,&nbsp; 1 3/4 = <strong>7/4</strong></span></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">ค.ร.น.(5,4) = 20</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body">12/5 = 48/20, 7/4 = 35/20</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body">48/20 - 35/20 = <strong>13/20</strong></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><span class="calc" style="margin-top:0;">12/5 = 48/20, 7/4 = 35/20</span></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><span class="calc" style="margin-top:0;">48/20 - 35/20 = <strong>13/20</strong></span></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: พ่อวิ่งมากกว่าแม่ <strong>13/20 กิโลเมตร</strong></div>
       </div>
       <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#F2F8EC; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">Convert to improper fractions: 2 2/5 = <strong>12/5</strong>, 1 3/4 = <strong>7/4</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">Convert to improper fractions:<span class="calc">2 2/5 = <strong>12/5</strong>&nbsp;,&nbsp; 1 3/4 = <strong>7/4</strong></span></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body">LCM(5,4) = 20</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body">12/5 = 48/20, 7/4 = 35/20</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body">48/20 - 35/20 = <strong>13/20</strong></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><span class="calc" style="margin-top:0;">12/5 = 48/20, 7/4 = 35/20</span></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><span class="calc" style="margin-top:0;">48/20 - 35/20 = <strong>13/20</strong></span></div></div>
         </div>
         <div class="box-ok">✅ Answer: Dad ran <strong>13/20 km</strong> further than Mom</div>
       </div>
@@ -934,15 +959,15 @@
       <summary style="cursor:pointer; font-weight:700; color:#047857; padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
       <div class="i18n-th" style="margin-top:12px; padding:12px; background:#ECFDF5; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">จำนวนถุง = 3/4 ÷ 1/8</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">= 3/4 × 8/1 = 24/4 = <strong>6</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">จำนวนถุง<span class="calc">= 3/4 ÷ 1/8</span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><span class="calc" style="margin-top:0;">= 3/4 × 8/1 = 24/4 = <strong>6</strong></span></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: แบ่งได้ <strong>6 ถุง</strong></div>
       </div>
       <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#ECFDF5; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">Number of bags = 3/4 ÷ 1/8</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">= 3/4 × 8/1 = 24/4 = <strong>6</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">Number of bags<span class="calc">= 3/4 ÷ 1/8</span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><span class="calc" style="margin-top:0;">= 3/4 × 8/1 = 24/4 = <strong>6</strong></span></div></div>
         </div>
         <div class="box-ok">✅ Answer: <strong>6 bags</strong></div>
       </div>
@@ -964,15 +989,15 @@
       <summary style="cursor:pointer; font-weight:700; color:var(--warning); padding:8px 0;" data-th="🔍 ดูวิธีทำ" data-en="🔍 See Solution">🔍 ดูวิธีทำ</summary>
       <div class="i18n-th" style="margin-top:12px; padding:12px; background:#FFFBEB; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">พื้นที่ = กว้าง × ยาว = 2/3 × 3/4</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">= (2×3)/(3×4) = 6/12 = <strong>1/2</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">พื้นที่ = กว้าง × ยาว<span class="calc">= 2/3 × 3/4</span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><span class="calc" style="margin-top:0;">= (2×3)/(3×4) = 6/12 = <strong>1/2</strong></span></div></div>
         </div>
         <div class="box-ok">✅ ตอบ: พื้นที่ = <strong>1/2 ตารางเมตร</strong></div>
       </div>
       <div class="i18n-en" hidden style="margin-top:12px; padding:12px; background:#FFFBEB; border-radius:10px; line-height:1.9;">
         <div class="steps">
-          <div class="step"><div class="step-num">1</div><div class="step-body">Area = width × length = 2/3 × 3/4</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body">= (2×3)/(3×4) = 6/12 = <strong>1/2</strong></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body">Area = width × length<span class="calc">= 2/3 × 3/4</span></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><span class="calc" style="margin-top:0;">= (2×3)/(3×4) = 6/12 = <strong>1/2</strong></span></div></div>
         </div>
         <div class="box-ok">✅ Answer: area = <strong>1/2 square meter</strong></div>
       </div>
